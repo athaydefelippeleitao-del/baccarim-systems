@@ -126,6 +126,16 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
             L.marker([p.lat, p.lng], { icon: L.divIcon({ className: 'b-marker', html: iconHtml, iconSize: [28, 28], iconAnchor: [14, 14] }) }).addTo(map);
           });
 
+          // Draw a line connecting the points
+          if (points.length > 1) {
+            L.polyline(points.map(p => [p.lat, p.lng] as [number, number]), {
+              color: '#3FA9F5',
+              weight: 4,
+              opacity: 0.8,
+              dashArray: '10, 10'
+            }).addTo(map);
+          }
+
           map.invalidateSize();
           if (points.length > 1) {
             const bounds = L.latLngBounds(points.map(pt => [pt.lat, pt.lng]));
@@ -253,7 +263,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       margin: 0,
       filename: `BACCARIM_LAUDO_${selectedReport.projectName.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 1.0 },
-      html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: false },
+      html2canvas: { scale: 3, useCORS: true, logging: false },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     try { await (window as any).html2pdf().set(opt).from(reportContentRef.current).save(); } finally { setIsGeneratingPdf(false); }
