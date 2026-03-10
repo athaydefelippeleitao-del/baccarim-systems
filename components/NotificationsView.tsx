@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Notification, NotificationSeverity, Attachment } from '../types';
-import { generateNotificationDraft } from '../services/geminiService';
+import { generateNotificationDraft } from '../services/geminiClient';
 import { downloadFile } from '../utils/fileUtils';
 
 interface NotificationsViewProps {

@@ -25,6 +25,14 @@ import {
   upsertContracts,
 } from "./services/supabaseService";
 
+// Import Gemini service (server-side only)
+import {
+  analyzeLicensePortfolio,
+  analyzeVistoriaImage,
+  generateNotificationDraft,
+  suggestExcelMapping,
+} from "./services/geminiService";
+
 const DB_FILE = path.resolve(process.cwd(), "db.json");
 
 function getDefaultState() {
@@ -136,6 +144,55 @@ async function startServer() {
       lastUpdate: new Date()
     };
     res.json(stats);
+  });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // GEMINI AI ROUTES (server-side — API key never leaves the server)
+  // ──────────────────────────────────────────────────────────────────────
+
+  app.post("/api/gemini/analyze-portfolio", async (req, res) => {
+    try {
+      const { licenses, notifications } = req.body;
+      const result = await analyzeLicensePortfolio(licenses || [], notifications || []);
+      res.json({ result });
+    } catch (e: any) {
+      console.error("Gemini analyze-portfolio error:", e);
+      res.status(500).json({ error: e.message || "Erro ao analisar portfólio" });
+    }
+  });
+
+  app.post("/api/gemini/analyze-image", async (req, res) => {
+    try {
+      const { base64Image } = req.body;
+      if (!base64Image) return res.status(400).json({ error: "base64Image required" });
+      const result = await analyzeVistoriaImage(base64Image);
+      res.json({ result });
+    } catch (e: any) {
+      console.error("Gemini analyze-image error:", e);
+      res.status(500).json({ error: e.message || "Erro ao analisar imagem" });
+    }
+  });
+
+  app.post("/api/gemini/notification-draft", async (req, res) => {
+    try {
+      const { agency, description, clientName } = req.body;
+      const result = await generateNotificationDraft(agency, description, clientName);
+      res.json({ result });
+    } catch (e: any) {
+      console.error("Gemini notification-draft error:", e);
+      res.status(500).json({ error: e.message || "Erro ao gerar rascunho" });
+    }
+  });
+
+  app.post("/api/gemini/suggest-mapping", async (req, res) => {
+    try {
+      const { headers } = req.body;
+      const result = await suggestExcelMapping(headers || []);
+      res.json({ result });
+    } catch (e: any) {
+      console.error("Gemini suggest-mapping error:", e);
+      res.status(500).json({ error: e.message || "Erro ao sugerir mapeamento" });
+    }
   });
 
   app.post("/api/restore", async (req, res) => {
