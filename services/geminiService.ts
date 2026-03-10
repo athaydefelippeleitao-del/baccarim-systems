@@ -46,7 +46,7 @@ export async function suggestExcelMapping(headers: string[]): Promise<Record<str
   const prompt = `Analise cabecalhos de engenharia: ${headers.join(', ')}. Retorne JSON mapeando para: name, clientName, processNumber, expiryDate, agency, status.`;
   try {
     const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-1.5-flash',
+      model: 'gemini-2.5-flash',
       contents: prompt,
       config: { responseMimeType: "application/json" }
     }));
@@ -74,7 +74,7 @@ LICENÇAS: ${JSON.stringify(licenseSummary)}
 NOTIFICAÇÕES: ${JSON.stringify(notifSummary)}`;
 
   const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     contents: prompt,
   }));
   return response.text || "Nenhuma análise disponível.";
@@ -91,7 +91,7 @@ export async function analyzeVistoriaImage(base64Image: string): Promise<any> {
 Retorne EXCLUSIVAMENTE um JSON no formato: {"coordE": "string", "coordN": "string"}`;
 
   const result = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-2.5-flash',
     contents: [
       { inlineData: { mimeType, data: cleanBase64 } },
       { text: prompt }
