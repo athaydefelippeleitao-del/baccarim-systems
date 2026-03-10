@@ -184,28 +184,35 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     }
     setDraftReport(prev => ({ ...prev, photos: [...(prev.photos || []), ...incoming] }));
 
-    incoming.forEach(async (photo) => {
-      try {
-        // Usar a imagem já otimizada para análise
-        const res = await analyzeVistoriaImage(photo.url);
+    // Processar imagens sequencialmente para não estourar os limites da OpenAI (Too Many Requests / 429)
+    const processImages = async () => {
+      for (const photo of incoming) {
+        try {
+          // Usar a imagem já otimizada para análise
+          const res = await analyzeVistoriaImage(photo.url);
 
-        if (res) {
+          if (res) {
+            setDraftReport(prev => ({
+              ...prev,
+              photos: prev.photos?.map(p => p.id === photo.id ? { ...p, ...res, isAnalyzing: false } : p)
+            }));
+          }
+        } catch (error: any) {
+          console.error("Erro na análise da imagem:", error);
+          alert(`Erro na OpenAI: ${error?.message || error || 'Erro desconhecido'}`);
+        } finally {
+          // Garantir que o estado de carregamento seja removido mesmo em caso de erro ou se res for nulo
           setDraftReport(prev => ({
             ...prev,
-            photos: prev.photos?.map(p => p.id === photo.id ? { ...p, ...res, isAnalyzing: false } : p)
+            photos: prev.photos?.map(p => p.id === photo.id ? { ...p, isAnalyzing: false } : p)
           }));
         }
-      } catch (error: any) {
-        console.error("Erro na análise da imagem:", error);
-        alert(`Erro na API do Google: ${error?.message || error || 'Erro desconhecido'}`);
-      } finally {
-        // Garantir que o estado de carregamento seja removido mesmo em caso de erro ou se res for nulo
-        setDraftReport(prev => ({
-          ...prev,
-          photos: prev.photos?.map(p => p.id === photo.id ? { ...p, isAnalyzing: false } : p)
-        }));
+        // Aguardar 1 segundo entre uma requisição e outra para proteger contra Rate Limit
+        await new Promise(resolve => setTimeout(resolve, 1000));
       }
-    });
+    };
+
+    processImages();
   };
 
   const handleConfirmDelete = () => {
