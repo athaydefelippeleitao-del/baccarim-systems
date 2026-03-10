@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { analyzeLicensePortfolio } from '../services/geminiClient';
+import { analyzeLicensePortfolio } from '../services/openaiClient';
 import { EnvironmentalLicense, Notification } from '../types';
 
 interface SmartAnalysisProps {

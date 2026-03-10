@@ -11,7 +11,6 @@
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@google/genai": "^1.38.0",
     "@supabase/supabase-js": "^2.99.0",
     "cors": "^2.8.6",
     "dotenv": "^17.3.1",
@@ -20,6 +19,7 @@
     "google-auth-library": "^10.6.1",
     "googleapis": "^171.4.0",
     "jszip": "^3.10.1",
+    "openai": "^6.27.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.0",

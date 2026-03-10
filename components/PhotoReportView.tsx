@@ -1,7 +1,7 @@
 
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PhotoReport, Project, PhotoItem } from '../types';
-import { analyzeVistoriaImage } from '../services/geminiClient';
+import { analyzeVistoriaImage } from '../services/openaiClient';
 
 declare const L: any;
 

@@ -4,7 +4,7 @@
  * The API key stays on the server — never exposed in the browser bundle.
  */
 
-const BASE = '/api/gemini';
+const BASE = '/api/openai';
 
 async function post<T>(endpoint: string, body: object): Promise<T> {
   const res = await fetch(`${BASE}${endpoint}`, {

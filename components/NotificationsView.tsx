@@ -1,7 +1,7 @@
 
 import React, { useState, useMemo } from 'react';
 import { Notification, NotificationSeverity, Attachment } from '../types';
-import { generateNotificationDraft } from '../services/geminiClient';
+import { generateNotificationDraft } from '../services/openaiClient';
 import { downloadFile } from '../utils/fileUtils';
 
 interface NotificationsViewProps {
@@ -18,7 +18,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
   const fileInputRef = React.useRef<HTMLInputElement>(null);
-  
+
   const [newNotifForm, setNewNotifForm] = useState({
     title: '',
     clientName: clients[0] || '',
@@ -53,10 +53,10 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     reader.onload = (event) => {
       const base64Data = event.target?.result as string;
       const dateStr = new Date().toLocaleDateString('pt-BR');
-      const newAttachment: Attachment = { 
-        fileName: file.name, 
-        fileData: base64Data, 
-        fileDate: dateStr 
+      const newAttachment: Attachment = {
+        fileName: file.name,
+        fileData: base64Data,
+        fileDate: dateStr
       };
 
       onUpdateNotification({
@@ -79,7 +79,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const handleCreateNotification = (e: React.FormEvent) => {
     e.preventDefault();
     const formattedDeadline = newNotifForm.deadline.split('-').reverse().join('/');
-    
+
     const newNotif: Notification = {
       id: `n-${Date.now()}`,
       title: newNotifForm.title,
@@ -128,14 +128,14 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20">
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        className="hidden" 
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
         onChange={(e) => {
           const notif = notifications.find(n => n.id === activeUploadId);
           if (notif) handleFileUpload(e, notif);
-        }} 
+        }}
       />
       <header className="flex flex-col md:flex-row md:items-center justify-between gap-6">
         <div>
@@ -145,7 +145,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         <div className="flex flex-col sm:flex-row gap-4 items-center">
           <div className="flex bg-baccarim-hover p-1 rounded-2xl shadow-sm border border-baccarim-border-hover">
             {(['All', 'Open', 'Resolved'] as const).map(f => (
-              <button 
+              <button
                 key={f}
                 onClick={() => setFilter(f)}
                 className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-hover'}`}
@@ -154,7 +154,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               </button>
             ))}
           </div>
-          <button 
+          <button
             onClick={() => setShowAddModal(true)}
             className="px-8 py-3.5 bg-baccarim-green text-baccarim-text rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-green/20 hover:-translate-y-1 transition-all"
           >
@@ -191,7 +191,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         {filtered.map(notif => (
           <div key={notif.id} className={`bg-baccarim-card rounded-[2.5rem] border p-8 shadow-2xl transition-all hover:shadow-baccarim-blue/5 relative overflow-hidden group ${notif.status === 'Resolved' ? 'opacity-60 grayscale-[0.5]' : 'border-baccarim-border'}`}>
             <div className={`absolute left-0 top-0 bottom-0 w-2 ${getSeverityColor(notif.severity)}`}></div>
-            
+
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8">
               <div className="flex-1 space-y-4">
                 <div className="flex items-center space-x-3">
@@ -210,7 +210,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <h4 className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Documentos Anexos</h4>
-                    <button 
+                    <button
                       onClick={() => { setActiveUploadId(notif.id); fileInputRef.current?.click(); }}
                       className="text-[9px] font-black text-baccarim-blue hover:underline uppercase tracking-widest"
                     >
@@ -221,13 +221,13 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     {notif.attachedFiles?.map((file, fIdx) => (
                       <div key={fIdx} className="flex items-center space-x-2 bg-baccarim-hover border border-baccarim-border px-3 py-1.5 rounded-xl shadow-sm animate-in slide-in-from-left-2">
                         <i className="fas fa-file-pdf text-baccarim-rose text-[10px]"></i>
-                        <button 
+                        <button
                           onClick={() => downloadFile(file)}
                           className="text-[9px] font-bold text-baccarim-text hover:text-baccarim-blue truncate max-w-[120px]"
                         >
                           {file.fileName}
                         </button>
-                        <button 
+                        <button
                           onClick={() => handleRemoveAttachment(notif, file.fileName)}
                           className="text-baccarim-text-muted hover:text-red-500 transition-colors"
                         >
@@ -244,10 +244,10 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 {notif.responseDraft && (
                   <div className="bg-baccarim-blue/5 p-6 rounded-3xl border border-baccarim-blue/10 space-y-3 animate-in fade-in zoom-in-95">
                     <div className="flex items-center justify-between">
-                       <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-widest flex items-center">
-                         <i className="fas fa-robot mr-2"></i> Sugestão de Resposta Gemini
-                       </h4>
-                       <button onClick={() => onUpdateNotification({...notif, responseDraft: undefined})} className="text-baccarim-text-muted hover:text-red-500 transition-colors"><i className="fas fa-times-circle"></i></button>
+                      <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-widest flex items-center">
+                        <i className="fas fa-robot mr-2"></i> Sugestão de Resposta Gemini
+                      </h4>
+                      <button onClick={() => onUpdateNotification({ ...notif, responseDraft: undefined })} className="text-baccarim-text-muted hover:text-red-500 transition-colors"><i className="fas fa-times-circle"></i></button>
                     </div>
                     <div className="text-[11px] text-baccarim-text leading-relaxed whitespace-pre-wrap font-medium">
                       {notif.responseDraft}
@@ -264,15 +264,15 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 </div>
 
                 <div className="grid grid-cols-1 gap-3">
-                  <button 
+                  <button
                     onClick={() => handleToggleStatus(notif)}
                     className={`w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${notif.status === 'Open' ? 'bg-baccarim-green text-baccarim-text shadow-lg shadow-emerald-500/20' : 'bg-baccarim-hover text-baccarim-text-muted'}`}
                   >
                     {notif.status === 'Open' ? 'Marcar como Resolvida' : 'Reabrir Notificação'}
                   </button>
-                  
+
                   {!notif.responseDraft && notif.status === 'Open' && (
-                    <button 
+                    <button
                       onClick={() => generateAiDraft(notif)}
                       disabled={aiLoadingId === notif.id}
                       className="w-full py-4 bg-baccarim-blue text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-green transition-all flex items-center justify-center space-x-3"
@@ -290,7 +290,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                       )}
                     </button>
                   )}
-                  
+
                   <button onClick={() => onDeleteNotification(notif.id)} className="w-full py-3 text-baccarim-text-muted hover:text-red-500 text-[10px] font-black uppercase tracking-widest transition-colors">Excluir Registro</button>
                 </div>
               </div>
@@ -300,8 +300,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
 
         {filtered.length === 0 && (
           <div className="py-20 text-center bg-baccarim-card rounded-[3rem] border border-dashed border-baccarim-border-hover">
-             <i className="fas fa-clipboard-check text-5xl text-baccarim-text/5 mb-4"></i>
-             <p className="text-baccarim-text-muted font-bold uppercase tracking-widest text-[10px]">Tudo limpo! Nenhuma notificação pendente.</p>
+            <i className="fas fa-clipboard-check text-5xl text-baccarim-text/5 mb-4"></i>
+            <p className="text-baccarim-text-muted font-bold uppercase tracking-widest text-[10px]">Tudo limpo! Nenhuma notificação pendente.</p>
           </div>
         )}
       </div>
@@ -314,21 +314,21 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
             <form onSubmit={handleCreateNotification} className="space-y-6 pb-20">
               <div className="space-y-1">
                 <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título da Exigência</label>
-                <input 
-                  required 
-                  value={newNotifForm.title} 
-                  onChange={e => setNewNotifForm({...newNotifForm, title: e.target.value})}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text" 
-                  placeholder="Ex: Complementação Técnica LI" 
+                <input
+                  required
+                  value={newNotifForm.title}
+                  onChange={e => setNewNotifForm({ ...newNotifForm, title: e.target.value })}
+                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text"
+                  placeholder="Ex: Complementação Técnica LI"
                 />
               </div>
 
               <div className="space-y-1">
                 <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Cliente</label>
-                <select 
+                <select
                   required
-                  value={newNotifForm.clientName} 
-                  onChange={e => setNewNotifForm({...newNotifForm, clientName: e.target.value})}
+                  value={newNotifForm.clientName}
+                  onChange={e => setNewNotifForm({ ...newNotifForm, clientName: e.target.value })}
                   className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
                 >
                   {clients.map(c => <option key={c} value={c} className="bg-baccarim-card">{c}</option>)}
@@ -338,21 +338,21 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Órgão</label>
-                  <input 
-                    required 
-                    value={newNotifForm.agency} 
-                    onChange={e => setNewNotifForm({...newNotifForm, agency: e.target.value})}
-                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text" 
+                  <input
+                    required
+                    value={newNotifForm.agency}
+                    onChange={e => setNewNotifForm({ ...newNotifForm, agency: e.target.value })}
+                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text"
                   />
                 </div>
                 <div className="space-y-1">
                   <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Prazo Fatal</label>
-                  <input 
-                    type="date" 
-                    required 
-                    value={newNotifForm.deadline} 
-                    onChange={e => setNewNotifForm({...newNotifForm, deadline: e.target.value})}
-                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none" 
+                  <input
+                    type="date"
+                    required
+                    value={newNotifForm.deadline}
+                    onChange={e => setNewNotifForm({ ...newNotifForm, deadline: e.target.value })}
+                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
                   />
                 </div>
               </div>
@@ -364,12 +364,11 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     <button
                       key={sev}
                       type="button"
-                      onClick={() => setNewNotifForm({...newNotifForm, severity: sev})}
-                      className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                        newNotifForm.severity === sev 
-                        ? `${getSeverityColor(sev)} text-baccarim-text border-transparent shadow-lg` 
-                        : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
-                      }`}
+                      onClick={() => setNewNotifForm({ ...newNotifForm, severity: sev })}
+                      className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newNotifForm.severity === sev
+                          ? `${getSeverityColor(sev)} text-baccarim-text border-transparent shadow-lg`
+                          : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
+                        }`}
                     >
                       {sev}
                     </button>
@@ -379,11 +378,11 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
 
               <div className="space-y-1">
                 <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Descrição Detalhada</label>
-                <textarea 
-                  required 
-                  value={newNotifForm.description} 
-                  onChange={e => setNewNotifForm({...newNotifForm, description: e.target.value})}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text h-24 resize-none" 
+                <textarea
+                  required
+                  value={newNotifForm.description}
+                  onChange={e => setNewNotifForm({ ...newNotifForm, description: e.target.value })}
+                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text h-24 resize-none"
                   placeholder="Descreva o que foi solicitado pelo órgão..."
                 />
               </div>
