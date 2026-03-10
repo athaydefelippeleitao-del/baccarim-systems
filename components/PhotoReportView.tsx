@@ -108,12 +108,22 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       const points = getUniquePoints(selectedReport.photos);
 
       if (points.length > 0) {
+        // FORÇAR a desativação de animações e CSS 3D Transforms para o html2canvas conseguir capturar o mapa
+        if (typeof window !== 'undefined' && (window as any).L) {
+          (window as any).L.Browser.any3d = false;
+          (window as any).L.Browser.webkit3d = false;
+          (window as any).L.Browser.gecko3d = false;
+        }
+
         const timer = setTimeout(() => {
           const map = L.map(mapDiv, {
             zoomControl: false,
             attributionControl: false,
             interactive: false,
-            preferCanvas: true
+            preferCanvas: true,
+            zoomAnimation: false,
+            fadeAnimation: false,
+            markerZoomAnimation: false,
           }).setView([points[0].lat, points[0].lng], 18);
 
           L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
@@ -260,14 +270,27 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     const originalScrollY = window.scrollY;
     window.scrollTo(0, 0);
 
-    // Give Leaflet map extra time to fully render tiles before capture
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Give Leaflet map extra time to fully render tiles before capture (up to 3 seconds for ArcGIS)
+    await new Promise(resolve => setTimeout(resolve, 3000));
 
     const opt = {
       margin: 0,
       filename: `BACCARIM_LAUDO_${selectedReport.projectName.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 1.0 },
-      html2canvas: { scale: 3, useCORS: true, logging: false, scrollY: 0, windowWidth: document.documentElement.offsetWidth },
+      html2canvas: {
+        scale: 3,
+        useCORS: true,
+        logging: false,
+        scrollY: 0,
+        windowWidth: document.documentElement.offsetWidth,
+        onclone: (clonedDoc: Document) => {
+          // Extra step: Enforce hidden overflow and visibility for Leaflet layers in the cloned document
+          const leafletPanes = clonedDoc.querySelectorAll('.leaflet-pane, .leaflet-tile-pane, .leaflet-overlay-pane');
+          leafletPanes.forEach(pane => {
+            (pane as HTMLElement).style.transform = 'none';
+          });
+        }
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     try {
