@@ -19,8 +19,8 @@ const SmartAnalysis: React.FC<SmartAnalysisProps> = ({ licenses, notifications }
         try {
           const text = await analyzeLicensePortfolio(licenses, notifications);
           setAnalysis(text || 'Nenhuma análise disponível.');
-        } catch (error) {
-          setAnalysis('Erro ao processar análise estratégica.');
+        } catch (error: any) {
+          setAnalysis(`Erro ao processar análise estratégica:\n\nDetalhes do erro: ${error?.message || error || 'Erro desconhecido'}`);
         } finally {
           setLoading(false);
         }
@@ -45,7 +45,7 @@ const SmartAnalysis: React.FC<SmartAnalysisProps> = ({ licenses, notifications }
           </h2>
           <span className="px-3 py-1 bg-baccarim-hover rounded-full text-[9px] font-black uppercase tracking-widest border border-baccarim-border text-baccarim-blue">Cloud Processing</span>
         </div>
-        
+
         {loading ? (
           <div className="flex-1 flex flex-col items-center justify-center space-y-4 min-h-[200px]">
             <div className="animate-spin rounded-full h-10 w-10 border-2 border-baccarim-border border-t-baccarim-blue"></div>
@@ -64,7 +64,7 @@ const SmartAnalysis: React.FC<SmartAnalysisProps> = ({ licenses, notifications }
           <span className="flex items-center"><i className="fas fa-shield-halved mr-2 text-baccarim-green"></i> Dados Protegidos</span>
         </div>
       </div>
-      
+
       <style>{`
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
