@@ -109,10 +109,17 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
       if (points.length > 0) {
         const timer = setTimeout(() => {
-          const map = L.map(mapDiv, { zoomControl: false, attributionControl: false, interactive: false })
-            .setView([points[0].lat, points[0].lng], 18);
+          const map = L.map(mapDiv, {
+            zoomControl: false,
+            attributionControl: false,
+            interactive: false,
+            preferCanvas: true
+          }).setView([points[0].lat, points[0].lng], 18);
 
-          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { maxZoom: 22 }).addTo(map);
+          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+            maxZoom: 22,
+            crossOrigin: true
+          }).addTo(map);
 
           points.forEach((p) => {
             const iconHtml = `<div style="background: #002D62; color: white; border: 2.5px solid white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">${p.pointNumber}</div>`;
@@ -242,7 +249,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       margin: 0,
       filename: `BACCARIM_LAUDO_${selectedReport.projectName.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 1.0 },
-      html2canvas: { scale: 3, useCORS: true, logging: false },
+      html2canvas: { scale: 3, useCORS: true, allowTaint: true, logging: false },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     try { await (window as any).html2pdf().set(opt).from(reportContentRef.current).save(); } finally { setIsGeneratingPdf(false); }
