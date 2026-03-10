@@ -256,6 +256,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     if (!reportContentRef.current || !selectedReport) return;
     setIsGeneratingPdf(true);
 
+    // Fix: Save current scroll, scroll to top so html2canvas doesn't crop absolutely positioned elements
+    const originalScrollY = window.scrollY;
+    window.scrollTo(0, 0);
+
     // Give Leaflet map extra time to fully render tiles before capture
     await new Promise(resolve => setTimeout(resolve, 1500));
 
@@ -263,10 +267,15 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       margin: 0,
       filename: `BACCARIM_LAUDO_${selectedReport.projectName.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 1.0 },
-      html2canvas: { scale: 3, useCORS: true, logging: false },
+      html2canvas: { scale: 3, useCORS: true, logging: false, scrollY: 0, windowWidth: document.documentElement.offsetWidth },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
-    try { await (window as any).html2pdf().set(opt).from(reportContentRef.current).save(); } finally { setIsGeneratingPdf(false); }
+    try {
+      await (window as any).html2pdf().set(opt).from(reportContentRef.current).save();
+    } finally {
+      window.scrollTo(0, originalScrollY);
+      setIsGeneratingPdf(false);
+    }
   };
 
   const photoPages = useMemo(() => {
@@ -804,8 +813,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">7</div>
               <div className="pt-24 flex flex-col h-full relative z-10">
                 <h4 className="text-[16px] font-black uppercase mb-10 border-b-2 border-[#002D62] pb-4 text-[#002D62]">MAPA DE LOCALIZAÇÃO DOS PONTOS</h4>
-                <div className="flex-1 bg-white rounded-3xl overflow-hidden border-4 border-slate-100 relative shadow-inner">
-                  <div ref={mapContainerRef} className="w-full h-full"></div>
+                <div className="bg-white rounded-3xl border-4 border-slate-100 relative z-10 w-full" style={{ height: '700px' }}>
+                  <div ref={mapContainerRef} className="w-full h-full relative z-10" style={{ zIndex: 1 }}></div>
                 </div>
                 <p className="text-[11px] text-center mt-6 font-bold text-slate-500 italic">Figura 1 – Mapa de localização dos Pontos do Relatório fotográfico.</p>
               </div>
