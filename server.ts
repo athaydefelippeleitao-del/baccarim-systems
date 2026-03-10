@@ -1,0 +1,290 @@
+import 'dotenv/config';
+import express from "express";
+console.log("Server.ts is starting...");
+import { createServer } from "http";
+import { Server } from "socket.io";
+import { createServer as createViteServer } from "vite";
+import fs from "fs";
+import path from "path";
+import cors from "cors";
+
+// Import mock data for initial state (first-time seed)
+import { MOCK_PROJECTS, MOCK_LICENSES, MOCK_NOTIFICATIONS, MOCK_CONTRACTS, CLIENTS, getChecklistTemplate } from "./constants";
+import { LicenseType } from "./types";
+
+// Import Supabase service
+import {
+  loadStateFromSupabase,
+  saveKeyToSupabase,
+  insertAuditEntry,
+  upsertUsers,
+  upsertClients,
+  upsertProjects,
+  upsertLicenses,
+  upsertNotifications,
+  upsertContracts,
+} from "./services/supabaseService";
+
+const DB_FILE = path.resolve(process.cwd(), "db.json");
+
+function getDefaultState() {
+  return {
+    projects: MOCK_PROJECTS,
+    licenses: MOCK_LICENSES,
+    notifications: MOCK_NOTIFICATIONS,
+    contracts: MOCK_CONTRACTS,
+    clients: CLIENTS,
+    meetings: [],
+    videos: [],
+    reports: [],
+    auditLog: [],
+    checklistTemplates: {
+      [`SEMA-${LicenseType.LP}`]: getChecklistTemplate(LicenseType.LP, 'SEMA'),
+      [`SEMA-${LicenseType.LI}`]: getChecklistTemplate(LicenseType.LI, 'SEMA'),
+      [`SEMA-${LicenseType.LAS}`]: getChecklistTemplate(LicenseType.LAS, 'SEMA'),
+      [`SEMA-${LicenseType.LO}`]: getChecklistTemplate(LicenseType.LO, 'SEMA'),
+      [`IAT-${LicenseType.LP}`]: getChecklistTemplate(LicenseType.LP, 'IAT'),
+      [`IAT-${LicenseType.LI}`]: getChecklistTemplate(LicenseType.LI, 'IAT'),
+      [`IAT-${LicenseType.LAS}`]: getChecklistTemplate(LicenseType.LAS, 'IAT'),
+      [`IAT-${LicenseType.LO}`]: getChecklistTemplate(LicenseType.LO, 'IAT'),
+    },
+    users: [
+      { id: '1', name: 'Admin Baccarim', email: 'admin@baccarim.com.br', role: 'admin', password: 'admin123', createdAt: 'Jan 2026' },
+      { id: '2', name: 'A.yoshii', email: 'ayos@baccarim.com.br', role: 'client', clientNames: ['A.yoshii'], password: 'ayos123', createdAt: 'Jan 2026' }
+    ]
+  };
+}
+
+async function loadState() {
+  console.log("[Supabase] Loading state from Supabase...");
+  try {
+    const dbState = await loadStateFromSupabase();
+
+    // If the database is empty (first run), seed with mock data
+    if (dbState.projects.length === 0 && dbState.users.length === 0) {
+      console.log("[Supabase] Database is empty. Seeding with default data...");
+      const defaultState = getDefaultState();
+
+      // Seed all collections in parallel
+      await Promise.all([
+        upsertUsers(defaultState.users),
+        upsertClients(defaultState.clients),
+        upsertProjects(defaultState.projects),
+        upsertLicenses(defaultState.licenses),
+        upsertNotifications(defaultState.notifications),
+        upsertContracts(defaultState.contracts),
+      ]);
+
+      console.log("[Supabase] Default data seeded successfully.");
+      return defaultState;
+    }
+
+    // Merge DB state with default checklist templates if templates are empty
+    if (Object.keys(dbState.checklistTemplates).length === 0) {
+      const defaultState = getDefaultState();
+      dbState.checklistTemplates = defaultState.checklistTemplates;
+    }
+
+    console.log("[Supabase] State loaded successfully.");
+    return dbState;
+  } catch (e) {
+    console.error("[Supabase] Error loading state, falling back to default state:", e);
+    // Fallback: try to load from db.json if it exists
+    if (fs.existsSync(DB_FILE)) {
+      try {
+        const data = fs.readFileSync(DB_FILE, "utf-8");
+        console.log("[Fallback] Loaded state from db.json");
+        return JSON.parse(data);
+      } catch (e2) {
+        console.error("[Fallback] Error loading db.json:", e2);
+      }
+    }
+    return getDefaultState();
+  }
+}
+
+async function startServer() {
+  const app = express();
+  const httpServer = createServer(app);
+  const io = new Server(httpServer, {
+    cors: {
+      origin: "*",
+      methods: ["GET", "POST"]
+    },
+    maxHttpBufferSize: 5e8 // 500MB for very large base64 files and reports
+  });
+
+  const PORT = 3000;
+  let state: any = await loadState();
+
+  app.use(cors());
+  app.use(express.json({ limit: '800mb' }));
+
+  // API to get initial state
+  app.get("/api/state", (req, res) => {
+    res.json(state);
+  });
+
+  app.get("/api/server-stats", (req, res) => {
+    const stats = {
+      projects: state.projects?.length || 0,
+      licenses: state.licenses?.length || 0,
+      notifications: state.notifications?.length || 0,
+      reports: state.reports?.length || 0,
+      dbSize: fs.existsSync(DB_FILE) ? fs.statSync(DB_FILE).size : 0,
+      uptime: process.uptime(),
+      lastUpdate: new Date()
+    };
+    res.json(stats);
+  });
+
+  app.post("/api/restore", async (req, res) => {
+    console.log("Restore request received. Body size approx:", JSON.stringify(req.body).length);
+    try {
+      const newState = req.body;
+      if (!newState || typeof newState !== 'object') {
+        console.error("Restore failed: Invalid body type", typeof newState);
+        return res.status(400).json({ error: "Invalid backup file" });
+      }
+
+      console.log("Restoring state. Keys in backup:", Object.keys(newState));
+
+      // Fully replace state with backup content to ensure it matches exactly
+      state = {
+        ...newState,
+        projects: newState.projects || [],
+        licenses: newState.licenses || [],
+        notifications: newState.notifications || [],
+        reports: newState.reports || [],
+        users: newState.users || [],
+        clients: newState.clients || [],
+        checklistTemplates: newState.checklistTemplates || state.checklistTemplates,
+        auditLog: newState.auditLog || []
+      };
+
+      // Persist to Supabase
+      await Promise.all([
+        saveKeyToSupabase('users', state.users),
+        saveKeyToSupabase('clients', state.clients),
+        saveKeyToSupabase('projects', state.projects),
+        saveKeyToSupabase('licenses', state.licenses),
+        saveKeyToSupabase('notifications', state.notifications),
+        saveKeyToSupabase('contracts', state.contracts),
+        saveKeyToSupabase('meetings', state.meetings),
+        saveKeyToSupabase('videos', state.videos),
+        saveKeyToSupabase('reports', state.reports),
+        saveKeyToSupabase('checklistTemplates', state.checklistTemplates),
+      ]);
+
+      console.log("State restored to Supabase after restore.");
+
+      // Broadcast to all clients to force update
+      io.emit("state:init", state);
+      console.log("Broadcasted state:init to all clients.");
+
+      res.json({ success: true, message: "Backup restaurado com sucesso" });
+    } catch (e) {
+      console.error("Error restoring backup:", e);
+      res.status(500).json({ error: "Internal server error" });
+    }
+  });
+
+  const saveTimeouts: Record<string, NodeJS.Timeout> = {};
+  const presence: Record<string, any> = {};
+
+  // Socket.io for real-time updates
+  io.on("connection", (socket) => {
+    console.log("Client connected:", socket.id);
+
+    // Send current state to new client
+    socket.emit("state:init", state);
+    socket.emit("presence:update", Object.values(presence));
+
+    socket.on("presence:join", (user: any) => {
+      if (!user || !user.id) return;
+      presence[socket.id] = { ...user, socketId: socket.id, lastSeen: new Date().toISOString() };
+      io.emit("presence:update", Object.values(presence));
+      console.log(`User joined: ${user.name} (${socket.id})`);
+    });
+
+    socket.on("presence:leave", () => {
+      console.log("User left presence explicitly:", socket.id);
+      if (presence[socket.id]) {
+        delete presence[socket.id];
+        io.emit("presence:update", Object.values(presence));
+      }
+    });
+
+    socket.on("state:update", (update: { key: string, value: any, user?: any }) => {
+      if (!update.key || update.value === undefined) return;
+
+      console.log("State update received for key:", update.key);
+      state[update.key] = update.value;
+
+      // Record audit log if user info is provided
+      if (update.user) {
+        const auditEntry = {
+          id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          userId: update.user.id,
+          userName: update.user.name,
+          action: 'UPDATE',
+          details: `Alterou ${update.key}`,
+          timestamp: new Date().toISOString()
+        };
+        state.auditLog = [auditEntry, ...(state.auditLog || [])].slice(0, 100);
+        io.emit("state:changed", { key: 'auditLog', value: state.auditLog });
+
+        // Persist audit entry to Supabase immediately (no debounce)
+        insertAuditEntry(auditEntry).catch(e => console.error("Failed to save audit entry:", e));
+      }
+
+      // Debounce Supabase writes
+      if (saveTimeouts[update.key]) clearTimeout(saveTimeouts[update.key]);
+      saveTimeouts[update.key] = setTimeout(async () => {
+        try {
+          await saveKeyToSupabase(update.key, update.value);
+          console.log(`[Supabase] Saved key "${update.key}"`);
+        } catch (e) {
+          console.error(`[Supabase] Failed to save key "${update.key}":`, e);
+        }
+      }, 2000);
+
+      // Broadcast update to all other clients
+      socket.broadcast.emit("state:changed", update);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("Client disconnected:", socket.id);
+      if (presence[socket.id]) {
+        delete presence[socket.id];
+        io.emit("presence:update", Object.values(presence));
+      }
+    });
+  });
+
+  // Vite middleware for development
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      console.log("Starting Vite in middleware mode...");
+      const vite = await createViteServer({
+        server: { middlewareMode: true },
+        appType: "spa",
+      });
+      app.use(vite.middlewares);
+      console.log("Vite middleware integrated.");
+    } catch (e) {
+      console.error("Failed to start Vite server:", e);
+    }
+  } else {
+    app.use(express.static(path.resolve(process.cwd(), "dist")));
+    app.get("*", (req, res) => {
+      res.sendFile(path.resolve(process.cwd(), "dist", "index.html"));
+    });
+  }
+
+  httpServer.listen(PORT, "0.0.0.0", () => {
+    console.log(`Server running on http://localhost:${PORT}`);
+  });
+}
+
+startServer();

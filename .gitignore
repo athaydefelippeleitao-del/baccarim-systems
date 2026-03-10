@@ -1,0 +1,23 @@
+# Dependencies
+node_modules/
+
+# Environment variables (NEVER commit)
+.env
+
+# Build output
+dist/
+
+# Database file (now using Supabase)
+db.json
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
