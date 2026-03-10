@@ -1,21 +1,37 @@
 
-import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
+import { GoogleGenAI, GenerateContentResponse } from "@google/genai";
 import { EnvironmentalLicense, Notification } from "../types";
 import { utmToDecimal } from "../utils/geoUtils";
 
-async function withRetry<T>(fn: () => Promise<T>, maxRetries = 5, initialDelay = 3000): Promise<T> {
+function getAI() {
+  const apiKey = process.env.GEMINI_API_KEY || (process.env as any).API_KEY;
+  if (!apiKey) throw new Error("GEMINI_API_KEY não configurada no servidor");
+  return new GoogleGenAI({ apiKey });
+}
+
+// Timeout wrapper — prevents infinite hangs
+function withTimeout<T>(promise: Promise<T>, ms = 25000): Promise<T> {
+  const timeout = new Promise<never>((_, reject) =>
+    setTimeout(() => reject(new Error(`Timeout após ${ms / 1000}s`)), ms)
+  );
+  return Promise.race([promise, timeout]);
+}
+
+async function withRetry<T>(fn: () => Promise<T>, maxRetries = 2, initialDelay = 1500): Promise<T> {
   let retries = 0;
   while (true) {
-    try { return await fn(); } catch (error: any) {
-      const isQuotaError = 
-        error?.message?.includes('429') || 
-        error?.status === 429 || 
+    try {
+      return await withTimeout(fn(), 25000);
+    } catch (error: any) {
+      const isQuotaError =
+        error?.message?.includes('429') ||
+        error?.status === 429 ||
         error?.message?.includes('RESOURCE_EXHAUSTED') ||
         error?.message?.includes('quota');
-      
+
       if (isQuotaError && retries < maxRetries) {
-        const delay = initialDelay * Math.pow(2, retries) + Math.random() * 1000;
-        console.warn(`Atingido limite de cota da IA. Tentando novamente em ${Math.round(delay)}ms... (Tentativa ${retries + 1}/${maxRetries})`);
+        const delay = initialDelay * Math.pow(2, retries) + Math.random() * 500;
+        console.warn(`Cota da IA atingida. Tentando em ${Math.round(delay)}ms... (${retries + 1}/${maxRetries})`);
         await new Promise(resolve => setTimeout(resolve, delay));
         retries++;
         continue;
@@ -25,8 +41,8 @@ async function withRetry<T>(fn: () => Promise<T>, maxRetries = 5, initialDelay =
   }
 }
 
-export async function suggestExcelMapping(headers: string[]) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || (process.env as any).API_KEY });
+export async function suggestExcelMapping(headers: string[]): Promise<Record<string, string>> {
+  const ai = getAI();
   const prompt = `Analise cabecalhos de engenharia: ${headers.join(', ')}. Retorne JSON mapeando para: name, clientName, processNumber, expiryDate, agency, status.`;
   try {
     const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
@@ -35,98 +51,89 @@ export async function suggestExcelMapping(headers: string[]) {
       config: { responseMimeType: "application/json" }
     }));
     return JSON.parse(response.text || "{}");
-  } catch (error) { return {}; }
+  } catch (error) {
+    console.error("suggestExcelMapping error:", error);
+    return {};
+  }
 }
 
-export async function analyzeLicensePortfolio(licenses: EnvironmentalLicense[], notifications: Notification[]) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || (process.env as any).API_KEY });
-  const prompt = `Analise como consultor ambiental: Licencas: ${JSON.stringify(licenses)}. Notificacoes: ${JSON.stringify(notifications)}. Gere Status e Recomendacoes em Markdown.`;
-  try {
-    const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash', // Mudando para Flash para evitar limites de cota do Pro
-      contents: prompt,
-    }));
-    return response.text;
-  } catch (error) { return "Analise indisponivel no momento devido a alta demanda."; }
+export async function analyzeLicensePortfolio(licenses: EnvironmentalLicense[], notifications: Notification[]): Promise<string> {
+  const ai = getAI();
+  // Limit data size to avoid huge prompts
+  const licenseSummary = licenses.slice(0, 10).map(l => ({
+    name: l.name, client: l.clientName, type: l.type, status: l.status,
+    expiry: l.expiryDate, agency: l.agency
+  }));
+  const notifSummary = notifications.slice(0, 5).map(n => ({
+    title: n.title, client: n.clientName, severity: n.severity, deadline: n.deadline, status: n.status
+  }));
+
+  const prompt = `Você é um consultor ambiental sênior da Baccarim Engenharia. Analise o portfólio abaixo e gere um relatório em Markdown com: status geral, alertas críticos e recomendações.
+
+LICENÇAS: ${JSON.stringify(licenseSummary)}
+NOTIFICAÇÕES: ${JSON.stringify(notifSummary)}`;
+
+  const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: prompt,
+  }));
+  return response.text || "Nenhuma análise disponível.";
 }
 
-export async function analyzeVistoriaImage(base64Image: string) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || (process.env as any).API_KEY });
-  
-  // Extrair mimeType e dados limpos
+export async function analyzeVistoriaImage(base64Image: string): Promise<any> {
+  const ai = getAI();
+
   const mimeTypeMatch = base64Image.match(/^data:(image\/[a-zA-Z+]+);base64,/);
   const mimeType = mimeTypeMatch ? mimeTypeMatch[1] : 'image/jpeg';
   const cleanBase64 = base64Image.replace(/^data:image\/[a-zA-Z+]+;base64,/, '');
-  
-  const prompt = `VOCÊ É UM ESPECIALISTA EM LEITURA DE MARCA D'ÁGUA TÉCNICA.
-  Sua tarefa é extrair as coordenadas UTM de uma fotografia de vistoria.
-  
-  1. LEITURA DE MARCA D'ÁGUA (OCR):
-     - Extraia as Coordenadas UTM Leste (E) e Norte (N).
-  
-  Retorne EXCLUSIVAMENTE um JSON no formato:
-  {
-    "coordE": "string",
-    "coordN": "string"
-  }`;
 
-  try {
-    console.log("Iniciando análise profunda de imagem Baccarim...");
-    const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: [
-        { inlineData: { mimeType, data: cleanBase64 } },
-        { text: prompt }
-      ],
-      config: { 
-        responseMimeType: "application/json", 
-        temperature: 0.2 
-      }
-    }));
+  const prompt = `Extraia as coordenadas UTM Leste (E) e Norte (N) da marca d'água desta foto de vistoria.
+Retorne EXCLUSIVAMENTE um JSON no formato: {"coordE": "string", "coordN": "string"}`;
 
-    const text = response.text || "{}";
-    console.log("Resposta Gemini (OCR):", text);
-    const result = JSON.parse(text);
-    
-    if (result.coordE && result.coordN) {
-      // Limpeza robusta de strings UTM (remove tudo que não for número ou ponto)
-      const eStr = result.coordE.replace(/[^\d.]/g, '');
-      const nStr = result.coordN.replace(/[^\d.]/g, '');
-      
-      const e = parseFloat(eStr);
-      const n = parseFloat(nStr);
-      
-      if (!isNaN(e) && !isNaN(n)) {
-        try {
-          const converted = utmToDecimal(e, n);
-          result.lat = converted.lat;
-          result.lng = converted.lng;
-          console.log("Coordenadas convertidas:", result.lat, result.lng);
-        } catch (e) {
-          console.error("Erro na conversão UTM:", e);
-        }
+  const result = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: [
+      { inlineData: { mimeType, data: cleanBase64 } },
+      { text: prompt }
+    ],
+    config: { responseMimeType: "application/json", temperature: 0.2 }
+  }));
+
+  const text = result.text || "{}";
+  console.log("Resposta Gemini (OCR):", text);
+  const parsed = JSON.parse(text);
+
+  if (parsed.coordE && parsed.coordN) {
+    const eStr = parsed.coordE.replace(/[^\d.]/g, '');
+    const nStr = parsed.coordN.replace(/[^\d.]/g, '');
+    const e = parseFloat(eStr);
+    const n = parseFloat(nStr);
+    if (!isNaN(e) && !isNaN(n)) {
+      try {
+        const converted = utmToDecimal(e, n);
+        parsed.lat = converted.lat;
+        parsed.lng = converted.lng;
+      } catch (e) {
+        console.error("Erro conversão UTM:", e);
       }
     }
-    
-    return result;
-  } catch (error) {
-    console.error("Erro crítico no OCR Baccarim:", error);
-    return null;
   }
+  return parsed;
 }
 
-export async function generateNotificationDraft(agency: string, description: string, clientName: string) {
-  const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || (process.env as any).API_KEY });
-  const prompt = `Como consultor ambiental da Baccarim Engenharia, sugira um rascunho de resposta técnica e uma lista de documentos necessários para atender a esta notificação da ${agency}: "${description}". Cliente: ${clientName}. O tom deve ser profissional e proativo.`;
-  
-  try {
-    const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: prompt,
-    }));
-    return response.text;
-  } catch (error) {
-    console.error("Erro ao gerar rascunho de notificação:", error);
-    return "Não foi possível gerar o rascunho automaticamente. Por favor, tente novamente mais tarde.";
-  }
+export async function generateNotificationDraft(agency: string, description: string, clientName: string): Promise<string> {
+  const ai = getAI();
+  const prompt = `Como consultor ambiental da Baccarim Engenharia, crie um rascunho de resposta técnica profissional para esta notificação do órgão ${agency}:
+
+"${description}"
+
+Cliente: ${clientName}
+
+Inclua: introdução formal, medidas que serão adotadas e lista de documentos a apresentar.`;
+
+  const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
+    model: 'gemini-2.0-flash',
+    contents: prompt,
+  }));
+  return response.text || "Não foi possível gerar o rascunho.";
 }
