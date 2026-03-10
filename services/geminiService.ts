@@ -30,7 +30,7 @@ export async function suggestExcelMapping(headers: string[]) {
   const prompt = `Analise cabecalhos de engenharia: ${headers.join(', ')}. Retorne JSON mapeando para: name, clientName, processNumber, expiryDate, agency, status.`;
   try {
     const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
       config: { responseMimeType: "application/json" }
     }));
@@ -43,7 +43,7 @@ export async function analyzeLicensePortfolio(licenses: EnvironmentalLicense[], 
   const prompt = `Analise como consultor ambiental: Licencas: ${JSON.stringify(licenses)}. Notificacoes: ${JSON.stringify(notifications)}. Gere Status e Recomendacoes em Markdown.`;
   try {
     const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-3-flash-preview', // Mudando para Flash para evitar limites de cota do Pro
+      model: 'gemini-2.0-flash', // Mudando para Flash para evitar limites de cota do Pro
       contents: prompt,
     }));
     return response.text;
@@ -73,7 +73,7 @@ export async function analyzeVistoriaImage(base64Image: string) {
   try {
     console.log("Iniciando análise profunda de imagem Baccarim...");
     const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: [
         { inlineData: { mimeType, data: cleanBase64 } },
         { text: prompt }
@@ -121,7 +121,7 @@ export async function generateNotificationDraft(agency: string, description: str
   
   try {
     const response = await withRetry<GenerateContentResponse>(() => ai.models.generateContent({
-      model: 'gemini-3-flash-preview',
+      model: 'gemini-2.0-flash',
       contents: prompt,
     }));
     return response.text;
