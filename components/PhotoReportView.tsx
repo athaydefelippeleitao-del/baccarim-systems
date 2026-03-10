@@ -245,6 +245,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
   const handleGeneratePDF = async () => {
     if (!reportContentRef.current || !selectedReport) return;
     setIsGeneratingPdf(true);
+
+    // Give Leaflet map extra time to fully render tiles before capture
+    await new Promise(resolve => setTimeout(resolve, 1500));
+
     const opt = {
       margin: 0,
       filename: `BACCARIM_LAUDO_${selectedReport.projectName.replace(/ /g, '_')}.pdf`,
