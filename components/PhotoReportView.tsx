@@ -282,14 +282,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         useCORS: true,
         logging: false,
         scrollY: 0,
-        windowWidth: document.documentElement.offsetWidth,
-        onclone: (clonedDoc: Document) => {
-          // Extra step: Enforce hidden overflow and visibility for Leaflet layers in the cloned document
-          const leafletPanes = clonedDoc.querySelectorAll('.leaflet-pane, .leaflet-tile-pane, .leaflet-overlay-pane');
-          leafletPanes.forEach(pane => {
-            (pane as HTMLElement).style.transform = 'none';
-          });
-        }
+        windowWidth: document.documentElement.offsetWidth
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
