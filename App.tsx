@@ -41,7 +41,7 @@ const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  
+
   // Refs to track last known server state to prevent sync loops
   const lastServerState = useRef<Record<string, string>>({});
 
@@ -139,7 +139,7 @@ const App: React.FC = () => {
       }
 
       lastServerState.current[update.key] = JSON.stringify(update.value);
-      
+
       switch (update.key) {
         case 'users': setUsers(update.value); break;
         case 'clients': setClients([...update.value].sort((a, b) => a.localeCompare(b))); break;
@@ -166,7 +166,7 @@ const App: React.FC = () => {
 
   const emitUpdate = useCallback((key: string, value: any) => {
     if (!socket || !isConnected) return;
-    
+
     // Clear existing timeout for this key
     if (syncTimeoutRef.current[key]) {
       clearTimeout(syncTimeoutRef.current[key]);
@@ -176,12 +176,12 @@ const App: React.FC = () => {
     syncTimeoutRef.current[key] = setTimeout(() => {
       const stringified = JSON.stringify(value);
       if (lastServerState.current[key] === stringified) return;
-      
+
       console.log(`Syncing ${key} to server...`);
       setIsSyncing(true);
       lastServerState.current[key] = stringified;
       socket.emit('state:update', { key, value, user: currentUser });
-      
+
       // Reset syncing indicator after a short delay
       setTimeout(() => setIsSyncing(false), 1000);
     }, 500); // 500ms debounce
@@ -197,8 +197,8 @@ const App: React.FC = () => {
   }, [socket, isConnected, currentUser]);
 
   // Sync local state changes to server
-  useEffect(() => { 
-    if (isInitialLoadDone.current) emitUpdate('users', users); 
+  useEffect(() => {
+    if (isInitialLoadDone.current) emitUpdate('users', users);
   }, [users, emitUpdate]);
 
   useEffect(() => { if (isInitialLoadDone.current) emitUpdate('projects', projects); }, [projects, emitUpdate]);
@@ -239,18 +239,18 @@ const App: React.FC = () => {
   const handleLogin = (userLogin: string, pass: string) => {
     const loginLower = userLogin.toLowerCase().trim();
     setLoginError(undefined);
-    
+
     const foundUser = users.find(u => {
       const emailLower = u.email.toLowerCase();
       const nameLower = u.name.toLowerCase();
       const emailPrefix = emailLower.split('@')[0];
-      
+
       const loginMatches = (
-        emailLower === loginLower || 
-        nameLower === loginLower || 
+        emailLower === loginLower ||
+        nameLower === loginLower ||
         emailPrefix === loginLower
       );
-      
+
       return loginMatches && u.password === pass;
     });
 
@@ -418,12 +418,12 @@ const App: React.FC = () => {
     const phases = [LicenseType.LP, LicenseType.LI, LicenseType.LAS, LicenseType.LO];
     return phases.map(phase => {
       const phaseProjects = filteredProjects.filter(p => p.currentPhase === phase);
-      const avgProgress = phaseProjects.length > 0 
+      const avgProgress = phaseProjects.length > 0
         ? Math.round(phaseProjects.reduce((acc, curr) => acc + curr.progress, 0) / phaseProjects.length)
         : 0;
-      return { 
-        name: phase.split(' (')[0], 
-        progresso: avgProgress 
+      return {
+        name: phase.split(' (')[0],
+        progresso: avgProgress
       };
     });
   }, [filteredProjects]);
@@ -447,7 +447,7 @@ const App: React.FC = () => {
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (touchStartRef.current === null) return;
-    
+
     const touchEnd = e.changedTouches[0].clientX;
     const diff = touchStartRef.current - touchEnd;
     const currentIndex = tabOrder.indexOf(activeTab);
@@ -460,7 +460,7 @@ const App: React.FC = () => {
     else if (diff < -80 && currentIndex > 0) {
       setActiveTab(tabOrder[currentIndex - 1]);
     }
-    
+
     touchStartRef.current = null;
   };
 
@@ -491,14 +491,14 @@ const App: React.FC = () => {
               Sua sessão será encerrada e você precisará se identificar novamente para acessar o portal.
             </p>
             <div className="grid grid-cols-2 gap-4">
-              <button 
-                onClick={() => setShowLogoutConfirm(false)} 
+              <button
+                onClick={() => setShowLogoutConfirm(false)}
                 className="py-4 bg-baccarim-hover text-baccarim-text-muted rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-baccarim-active transition-colors"
               >
                 Voltar
               </button>
-              <button 
-                onClick={confirmLogout} 
+              <button
+                onClick={confirmLogout}
                 className="py-4 bg-red-500 text-baccarim-text rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-red-500/20 hover:bg-red-600 transition-all"
               >
                 Sair Agora
@@ -514,13 +514,13 @@ const App: React.FC = () => {
           <div className="text-center">
             <h1 className="text-3xl font-black text-baccarim-text tracking-tighter leading-none">Baccarim</h1>
             <div className="flex items-center justify-center space-x-2 mt-2">
-               <div className="h-[1px] w-4 bg-gradient-to-r from-transparent to-baccarim-blue/40"></div>
-               <span className="text-[9px] text-baccarim-blue/60 uppercase font-black tracking-[0.3em] whitespace-nowrap">Systems Cloud</span>
-               <div className="h-[1px] w-4 bg-gradient-to-l from-transparent to-baccarim-blue/40"></div>
+              <div className="h-[1px] w-4 bg-gradient-to-r from-transparent to-baccarim-blue/40"></div>
+              <span className="text-[9px] text-baccarim-blue/60 uppercase font-black tracking-[0.3em] whitespace-nowrap">Systems Cloud</span>
+              <div className="h-[1px] w-4 bg-gradient-to-l from-transparent to-baccarim-blue/40"></div>
             </div>
           </div>
         </div>
-        
+
         <nav className="flex-1 space-y-3">
           <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'dashboard' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
             <i className="fas fa-chart-pie w-5"></i>
@@ -592,7 +592,7 @@ const App: React.FC = () => {
                 </div>
               </div>
             </div>
-            <div 
+            <div
               className="flex items-center space-x-4 cursor-pointer hover:bg-baccarim-hover p-2 rounded-xl transition-all"
               onClick={() => setActiveTab('profile')}
             >
@@ -607,9 +607,9 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="grid grid-cols-2 gap-2">
-              <button 
+              <button
                 onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-                className="flex items-center justify-center space-x-2 p-2 rounded-xl bg-baccarim-blue/10 text-baccarim-blue hover:text-baccarim-text hover:bg-baccarim-blue transition-all text-[9px] font-black uppercase tracking-widest"
+                className="flex items-center justify-center space-x-2 p-2 rounded-xl bg-baccarim-blue text-white hover:bg-baccarim-green transition-all text-[9px] font-black uppercase tracking-widest"
               >
                 <i className={`fas ${theme === 'light' ? 'fa-moon' : 'fa-sun'}`}></i>
                 <span>{theme === 'light' ? 'Escuro' : 'Claro'}</span>
@@ -623,7 +623,7 @@ const App: React.FC = () => {
         </div>
       </aside>
 
-      <main 
+      <main
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         className={`flex-1 px-4 pt-24 pb-48 md:p-14 md:pt-14 ${activeTab === 'map' ? 'h-screen flex flex-col overflow-hidden !pt-0 !px-0 !pb-0' : 'overflow-y-auto'}`}
@@ -652,13 +652,13 @@ const App: React.FC = () => {
             </div>
           </div>
           <div className="flex items-center space-x-2">
-            <button 
+            <button
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
               className="w-10 h-10 rounded-xl bg-baccarim-hover flex items-center justify-center text-baccarim-text transition-all"
             >
               <i className={`fas ${theme === 'light' ? 'fa-moon' : 'fa-sun'}`}></i>
             </button>
-            <button 
+            <button
               onClick={() => setActiveTab('profile')}
               className="w-10 h-10 rounded-xl bg-baccarim-active flex items-center justify-center text-baccarim-text font-black text-xs border border-baccarim-border shadow-lg"
             >
@@ -677,41 +677,41 @@ const App: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-               <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
-                  <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Status Ambiental</h3>
-                  <div className="flex-1">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <PieChart>
-                        <Pie data={chartDataStatus} innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
-                          {chartDataStatus.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
-                        </Pie>
-                        <Tooltip contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '12px', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                      </PieChart>
-                    </ResponsiveContainer>
-                  </div>
-               </div>
- 
-               <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
-                  <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Média de Conformidade por Fase</h3>
-                  <div className="flex-1">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <BarChart data={chartDataCompliance}>
-                        <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                        <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} />
-                        <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} unit="%" />
-                        <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                        <Bar dataKey="progresso" fill="#3FA9F5" radius={[10, 10, 0, 0]} barSize={40} />
-                      </BarChart>
-                    </ResponsiveContainer>
-                  </div>
-               </div>
+              <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
+                <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Status Ambiental</h3>
+                <div className="flex-1">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie data={chartDataStatus} innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
+                        {chartDataStatus.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
+                      </Pie>
+                      <Tooltip contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '12px', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
+
+              <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
+                <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Média de Conformidade por Fase</h3>
+                <div className="flex-1">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={chartDataCompliance}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
+                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} />
+                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} unit="%" />
+                      <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                      <Bar dataKey="progresso" fill="#3FA9F5" radius={[10, 10, 0, 0]} barSize={40} />
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2"><SmartAnalysis licenses={filteredLicenses} notifications={filteredNotifications} /></div>
               <div className="bg-baccarim-card rounded-[3rem] p-10 shadow-xl border border-baccarim-border flex flex-col items-center justify-center text-center">
                 <AppLogo className="w-16 h-16 mb-4" />
                 <h3 className="mt-4 text-lg font-black text-baccarim-text">{currentClientFocus || 'Visão Geral'}</h3>
-                <button onClick={() => setActiveTab('reports')} className="mt-6 w-full py-4 bg-baccarim-blue text-baccarim-text rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all">Novo Relatório Fotográfico</button>
+                <button onClick={() => setActiveTab('reports')} className="mt-6 w-full py-4 bg-baccarim-blue text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all">Novo Relatório Fotográfico</button>
               </div>
             </div>
           </div>
@@ -724,25 +724,25 @@ const App: React.FC = () => {
         {activeTab === 'finance' && <FinanceView clients={filteredClientsList} contracts={filteredContracts} onUpdateContract={handleUpdateContract} onDeleteContract={handleDeleteContract} />}
         {activeTab === 'reports' && <PhotoReportView projects={filteredProjects} reports={filteredReports} onUpdateReport={handleUpdateReport} onDeleteReport={handleDeleteReport} />}
         {activeTab === 'users' && currentUser.role === 'admin' && (
-          <UsersView 
-            users={users} 
+          <UsersView
+            users={users}
             clients={clients}
             onAddUser={(newUser) => setUsers(prev => [...prev, newUser])}
             onDeleteUser={(id) => setUsers(prev => prev.filter(u => u.id !== id))}
           />
         )}
         {activeTab === 'config' && (currentUser.role === 'admin' || currentUser.role === 'engineer') && (
-          <ChecklistSettingsView 
-            templates={checklistTemplates} 
-            onUpdateTemplates={setChecklistTemplates} 
+          <ChecklistSettingsView
+            templates={checklistTemplates}
+            onUpdateTemplates={setChecklistTemplates}
             projectCategories={projectCategories}
             onUpdateProjectCategories={setProjectCategories}
           />
         )}
         {activeTab === 'profile' && (
-          <ProfileView 
-            user={currentUser} 
-            onUpdateUser={handleUpdateUser} 
+          <ProfileView
+            user={currentUser}
+            onUpdateUser={handleUpdateUser}
             allData={{
               projects,
               licenses,
@@ -756,7 +756,7 @@ const App: React.FC = () => {
           />
         )}
         {activeTab === 'server' && currentUser.role === 'admin' && (
-          <ServerManagementView 
+          <ServerManagementView
             auditLog={auditLog}
             presence={presence}
           />

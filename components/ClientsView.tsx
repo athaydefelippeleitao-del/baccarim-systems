@@ -26,7 +26,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [newClientName, setNewClientName] = useState('');
-  
+
   // Auto-seleção se houver apenas um cliente (usuário cliente)
   useEffect(() => {
     if (userRole === 'client' && clients.length === 1) {
@@ -132,7 +132,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
       specs: {
         areaTotal: '', qtdLotes: '', areaAPP: '', matricula: '', projectType: 'Parcelamento do Solo',
         contact: '', responsavelLegal: '', cpfResponsavel: '', sedeEndereco: '', orgaoResponsavel: 'SEMA',
-        responsavelTecnico: '', licencaObtida: 'Nenhuma / Em Requerimento', 
+        responsavelTecnico: '', licencaObtida: 'Nenhuma / Em Requerimento',
         numeroLicenca: '',
         numeroProtocolo: '', dataProtocolo: new Date().toLocaleDateString('pt-BR'),
         coordE: '', coordN: '',
@@ -144,13 +144,13 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
 
   if (selectedClientForProjects) {
     const clientProjects = projects.filter(p => p.clientName === selectedClientForProjects);
-    
+
     return (
       <div className="space-y-8 animate-in fade-in slide-in-from-left-4 duration-500 relative">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex items-center space-x-6">
             {userRole !== 'client' && (
-              <button 
+              <button
                 onClick={() => setSelectedClientForProjects(null)}
                 className="w-12 h-12 rounded-2xl bg-baccarim-hover border border-baccarim-border-hover flex items-center justify-center text-baccarim-text hover:bg-baccarim-active transition-all"
               >
@@ -163,22 +163,22 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
             </div>
           </div>
           {userRole !== 'client' && (
-            <button 
+            <button
               onClick={() => setShowNewProjectModal(true)}
-              className="px-6 py-3 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-blue/20 transition-all self-start"
+              className="px-6 py-3 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-green transition-all self-start"
             >
               <i className="fas fa-plus mr-2"></i> Novo Empreendimento
             </button>
           )}
         </div>
 
-        <ProjectsView 
-          projects={clientProjects} 
+        <ProjectsView
+          projects={clientProjects}
           licenses={licenses}
           notifications={notifications}
           checklistTemplates={checklistTemplates}
           projectCategories={projectCategories}
-          onUpdateProject={onUpdateProject} 
+          onUpdateProject={onUpdateProject}
           onDeleteProject={onDeleteProject}
           onAddNotification={onAddNotification}
         />
@@ -203,19 +203,19 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Nome Fantasia do Empreendimento</label>
-                        <input required value={newProjectForm.name} onChange={e => setNewProjectForm({...newProjectForm, name: e.target.value})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: RESIDENCIAL BOULEVARD" />
+                        <input required value={newProjectForm.name} onChange={e => setNewProjectForm({ ...newProjectForm, name: e.target.value })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: RESIDENCIAL BOULEVARD" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Razão Social (P/ Licenciamento)</label>
-                        <input required value={newProjectForm.razaoSocial} onChange={e => setNewProjectForm({...newProjectForm, razaoSocial: e.target.value})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: EMPREENDIMENTOS LTDA" />
+                        <input required value={newProjectForm.razaoSocial} onChange={e => setNewProjectForm({ ...newProjectForm, razaoSocial: e.target.value })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: EMPREENDIMENTOS LTDA" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">CNPJ</label>
-                        <input required value={newProjectForm.cnpj} onChange={e => setNewProjectForm({...newProjectForm, cnpj: e.target.value})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="00.000.000/0001-00" />
+                        <input required value={newProjectForm.cnpj} onChange={e => setNewProjectForm({ ...newProjectForm, cnpj: e.target.value })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="00.000.000/0001-00" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Localização / Endereço da Obra</label>
-                        <input required value={newProjectForm.location} onChange={e => setNewProjectForm({...newProjectForm, location: e.target.value})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Rua, Número, Bairro, Cidade/UF" />
+                        <input required value={newProjectForm.location} onChange={e => setNewProjectForm({ ...newProjectForm, location: e.target.value })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Rua, Número, Bairro, Cidade/UF" />
                       </div>
                     </div>
                   </div>
@@ -225,39 +225,39 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Área Total (m²)</label>
-                        <input value={newProjectForm.specs.areaTotal} onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, areaTotal: e.target.value}})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="42.500 m²" />
+                        <input value={newProjectForm.specs.areaTotal} onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, areaTotal: e.target.value } })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="42.500 m²" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Qtd Lotes / UH</label>
-                        <input value={newProjectForm.specs.qtdLotes} onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, qtdLotes: e.target.value}})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="120" />
+                        <input value={newProjectForm.specs.qtdLotes} onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, qtdLotes: e.target.value } })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="120" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1 flex items-center">
                           Latitude (Mapa)
                           <span className="ml-2 text-[7px] text-baccarim-blue animate-pulse">Obrigatório p/ Mapa</span>
                         </label>
-                        <input value={newProjectForm.specs.lat} onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, lat: e.target.value}})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: -23.3283" />
+                        <input value={newProjectForm.specs.lat} onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, lat: e.target.value } })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: -23.3283" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1 flex items-center">
                           Longitude (Mapa)
                           <span className="ml-2 text-[7px] text-baccarim-blue animate-pulse">Obrigatório p/ Mapa</span>
                         </label>
-                        <input value={newProjectForm.specs.lng} onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, lng: e.target.value}})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: -51.1963" />
+                        <input value={newProjectForm.specs.lng} onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, lng: e.target.value } })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: -51.1963" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Coordenada UTM (E)</label>
-                        <input value={newProjectForm.specs.coordE} onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, coordE: e.target.value}})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: 479850" />
+                        <input value={newProjectForm.specs.coordE} onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, coordE: e.target.value } })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: 479850" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Coordenada UTM (N)</label>
-                        <input value={newProjectForm.specs.coordN} onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, coordN: e.target.value}})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: 7419200" />
+                        <input value={newProjectForm.specs.coordN} onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, coordN: e.target.value } })} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" placeholder="Ex: 7419200" />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Zona UTM</label>
-                        <select 
-                          value={newProjectForm.specs.zone || 22} 
-                          onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, zone: parseInt(e.target.value)}})}
+                        <select
+                          value={newProjectForm.specs.zone || 22}
+                          onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, zone: parseInt(e.target.value) } })}
                           className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue appearance-none"
                         >
                           {[21, 22, 23, 24, 25].map(z => <option key={z} value={z} className="bg-baccarim-card">{z}S</option>)}
@@ -273,9 +273,9 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 bg-baccarim-green/5 p-6 rounded-2xl border border-emerald-500/10">
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Licença Obtida</label>
-                        <select 
-                          value={newProjectForm.specs.licencaObtida} 
-                          onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, licencaObtida: e.target.value}})}
+                        <select
+                          value={newProjectForm.specs.licencaObtida}
+                          onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, licencaObtida: e.target.value } })}
                           className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue appearance-none"
                         >
                           <option value="Nenhuma / Em Requerimento" className="bg-baccarim-card">Nenhuma / Em Requerimento</option>
@@ -286,18 +286,18 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Número da Licença</label>
-                        <input 
-                          value={newProjectForm.specs.numeroLicenca} 
-                          onChange={e => setNewProjectForm({...newProjectForm, specs: {...newProjectForm.specs, numeroLicenca: e.target.value}})}
-                          className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue" 
-                          placeholder="Ex: 12345/2024" 
+                        <input
+                          value={newProjectForm.specs.numeroLicenca}
+                          onChange={e => setNewProjectForm({ ...newProjectForm, specs: { ...newProjectForm.specs, numeroLicenca: e.target.value } })}
+                          className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue"
+                          placeholder="Ex: 12345/2024"
                         />
                       </div>
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Fase de Licenciamento Atual (Checklist)</label>
-                        <select 
-                          value={newProjectForm.currentPhase} 
-                          onChange={e => setNewProjectForm({...newProjectForm, currentPhase: e.target.value as LicenseType})}
+                        <select
+                          value={newProjectForm.currentPhase}
+                          onChange={e => setNewProjectForm({ ...newProjectForm, currentPhase: e.target.value as LicenseType })}
                           className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue appearance-none"
                         >
                           {Object.keys(checklistTemplates)
@@ -316,16 +316,16 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                       <div className="space-y-1">
                         <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Órgão do Checklist (Modelo)</label>
                         <div className="flex bg-baccarim-hover p-1 rounded-xl border border-baccarim-border">
-                          <button 
+                          <button
                             type="button"
-                            onClick={() => setNewProjectForm({...newProjectForm, checklistAgency: 'SEMA'})}
+                            onClick={() => setNewProjectForm({ ...newProjectForm, checklistAgency: 'SEMA' })}
                             className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${newProjectForm.checklistAgency === 'SEMA' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
                           >
                             SEMA
                           </button>
-                          <button 
+                          <button
                             type="button"
-                            onClick={() => setNewProjectForm({...newProjectForm, checklistAgency: 'IAT'})}
+                            onClick={() => setNewProjectForm({ ...newProjectForm, checklistAgency: 'IAT' })}
                             className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${newProjectForm.checklistAgency === 'IAT' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
                           >
                             IAT
@@ -339,7 +339,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
 
               <div className="p-8 md:p-10 border-t border-baccarim-border bg-baccarim-hover flex justify-end items-center gap-4">
                 <button type="button" onClick={() => setShowNewProjectModal(false)} className="px-8 py-4 bg-baccarim-hover text-baccarim-text-muted rounded-xl text-[10px] font-black uppercase tracking-widest border border-baccarim-border hover:bg-baccarim-active transition-colors">Cancelar</button>
-                <button form="new-project-form" type="submit" className="px-12 py-4 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:-translate-y-1 transition-all">Criar Empreendimento</button>
+                <button form="new-project-form" type="submit" className="px-12 py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:-translate-y-1 transition-all">Criar Empreendimento</button>
               </div>
             </div>
           </div>
@@ -356,9 +356,9 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
           <p className="text-xs md:text-sm text-baccarim-text-muted font-medium mt-2">Gerencie e cadastre novos clientes estratégicos da Baccarim.</p>
         </div>
         {userRole !== 'client' && (
-          <button 
+          <button
             onClick={() => setShowNewClientModal(true)}
-            className="px-8 py-4 bg-baccarim-green/10 border border-baccarim-border text-baccarim-text rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:-translate-y-1 transition-all"
+            className="px-8 py-4 bg-baccarim-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:-translate-y-1 transition-all"
           >
             <i className="fas fa-plus mr-2"></i> Novo Cliente
           </button>
@@ -369,10 +369,10 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
         {[...clients].sort((a, b) => a.localeCompare(b)).map(client => {
           const clientLicenses = licenses.filter(l => l.clientName === client);
           const clientProjectsCount = projects.filter(p => p.clientName === client).length;
-          
+
           return (
-            <div 
-              key={client} 
+            <div
+              key={client}
               className="bg-baccarim-card rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-2xl border border-baccarim-border hover:border-baccarim-blue/20 hover:-translate-y-1 transition-all duration-500 group cursor-pointer flex flex-col relative overflow-hidden"
               onClick={() => {
                 setSelectedClientForProjects(client);
@@ -426,17 +426,17 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
             <form onSubmit={handleCreateClient} className="space-y-6 pb-20">
               <div className="space-y-1">
                 <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Nome do Cliente</label>
-                <input 
-                  required 
+                <input
+                  required
                   autoFocus
-                  value={newClientName} 
+                  value={newClientName}
                   onChange={e => setNewClientName(e.target.value)}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text" 
-                  placeholder="Ex: Grupo Paysage" 
+                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text"
+                  placeholder="Ex: Grupo Paysage"
                 />
               </div>
               <div className="flex gap-4 pt-6">
-                <button type="submit" className="flex-1 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-blue/20 transition-all">Cadastrar Cliente</button>
+                <button type="submit" className="flex-1 bg-baccarim-blue text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all">Cadastrar Cliente</button>
                 <button type="button" onClick={() => setShowNewClientModal(false)} className="px-8 bg-baccarim-hover text-baccarim-text-muted py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-baccarim-active transition-all">Cancelar</button>
               </div>
             </form>

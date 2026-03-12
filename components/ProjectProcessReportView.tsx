@@ -48,10 +48,10 @@ const ProjectProcessReportView: React.FC<ProjectProcessReportViewProps> = ({ pro
       <div className="w-full max-w-4xl flex justify-between items-center mb-6 print:hidden">
         <h2 className="text-baccarim-text text-2xl font-black uppercase tracking-widest">Relatório do Processo</h2>
         <div className="flex space-x-4">
-          <button 
-            onClick={handleGeneratePDF} 
+          <button
+            onClick={handleGeneratePDF}
             disabled={isGenerating}
-            className="px-6 py-3 bg-baccarim-green text-baccarim-text rounded-xl font-black uppercase text-[10px] shadow-xl flex items-center space-x-2 hover:bg-baccarim-green transition-all"
+            className="px-6 py-3 bg-baccarim-green text-white rounded-xl font-black uppercase text-[10px] shadow-xl flex items-center space-x-2 hover:bg-emerald-600 transition-all"
           >
             {isGenerating ? <i className="fas fa-spinner fa-spin"></i> : <i className="fas fa-file-pdf"></i>}
             <span>{isGenerating ? 'Gerando...' : 'Exportar PDF'}</span>
@@ -62,8 +62,8 @@ const ProjectProcessReportView: React.FC<ProjectProcessReportViewProps> = ({ pro
         </div>
       </div>
 
-      <div 
-        ref={reportRef} 
+      <div
+        ref={reportRef}
         className="bg-white w-full max-w-[210mm] min-h-[297mm] shadow-2xl p-[20mm] text-baccarim-text font-sans"
       >
         {/* Header */}
@@ -136,8 +136,8 @@ const ProjectProcessReportView: React.FC<ProjectProcessReportViewProps> = ({ pro
             <div className="col-span-2">
               <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest block mb-1">12 Tipo</label>
               <p className="text-xs font-bold text-baccarim-text">
-                {project.specs.projectCategory === 'Parcelamento' ? 'Parcelamento do solo urbano para fins habitacionais, como loteamentos e desmembramentos' : 
-                 project.specs.projectCategory === 'Implantação' ? 'Implantação de conjuntos habitacionais/construção de empreendimentos horizontais e/ou verticais' : '-'}
+                {project.specs.projectCategory === 'Parcelamento' ? 'Parcelamento do solo urbano para fins habitacionais, como loteamentos e desmembramentos' :
+                  project.specs.projectCategory === 'Implantação' ? 'Implantação de conjuntos habitacionais/construção de empreendimentos horizontais e/ou verticais' : '-'}
               </p>
             </div>
             <div className="col-span-2">
@@ -236,10 +236,10 @@ const ProjectProcessReportView: React.FC<ProjectProcessReportViewProps> = ({ pro
             <div className="relative w-20 h-20 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90">
                 <circle cx="40" cy="40" r="35" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-baccarim-text/10" />
-                <circle cx="40" cy="40" r="35" stroke="currentColor" strokeWidth="6" fill="transparent" 
-                  strokeDasharray={220} 
+                <circle cx="40" cy="40" r="35" stroke="currentColor" strokeWidth="6" fill="transparent"
+                  strokeDasharray={220}
                   strokeDashoffset={220 - (220 * project.progress) / 100}
-                  className="text-baccarim-blue transition-all duration-1000" 
+                  className="text-baccarim-blue transition-all duration-1000"
                 />
               </svg>
               <span className="absolute text-lg font-black">{project.progress}%</span>
@@ -298,9 +298,8 @@ const ProjectProcessReportView: React.FC<ProjectProcessReportViewProps> = ({ pro
                     <p className="text-[9px] font-bold text-baccarim-text-muted mt-1">Processo: {license.processNumber}</p>
                   </div>
                   <div className="text-right">
-                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${
-                      license.status === 'Ativa' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
-                    }`}>
+                    <span className={`px-3 py-1 rounded-full text-[8px] font-black uppercase ${license.status === 'Ativa' ? 'bg-emerald-100 text-emerald-600' : 'bg-amber-100 text-amber-600'
+                      }`}>
                       {license.status}
                     </span>
                     <p className="text-[9px] font-bold text-baccarim-text-muted mt-2">Vencimento: {license.expiryDate}</p>

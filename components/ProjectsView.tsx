@@ -17,10 +17,10 @@ interface ProjectsViewProps {
   onAddNotification: (notification: Notification) => void;
 }
 
-type UploadTarget = { 
-  projectId: string; 
-  itemId?: string; 
-  target: 'checklist' | 'license' | 'notification' 
+type UploadTarget = {
+  projectId: string;
+  itemId?: string;
+  target: 'checklist' | 'license' | 'notification'
 };
 
 type ConfirmDialogState = {
@@ -101,7 +101,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
     const reader = new FileReader();
     reader.onload = async (event) => {
       let base64Data = event.target?.result as string;
-      
+
       // Se for imagem, redimensiona para economizar espaço no db.json
       if (file.type.startsWith('image/')) {
         try {
@@ -110,21 +110,21 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
           console.error("Erro ao redimensionar imagem:", err);
         }
       }
-      
+
       const dateStr = new Date().toLocaleDateString('pt-BR');
       const newAttachment: Attachment = { fileName: file.name, fileData: base64Data, fileDate: dateStr };
 
       if (activeUpload.target === 'license') {
         const currentFiles = project.specs.licenseFiles || [];
-        onUpdateProject({ 
-          ...project, 
-          specs: { ...project.specs, licenseFiles: [...currentFiles, newAttachment] } 
+        onUpdateProject({
+          ...project,
+          specs: { ...project.specs, licenseFiles: [...currentFiles, newAttachment] }
         });
       } else if (activeUpload.target === 'notification') {
         const currentFiles = project.specs.notificationFiles || [];
-        onUpdateProject({ 
-          ...project, 
-          specs: { ...project.specs, notificationFiles: [...currentFiles, newAttachment] } 
+        onUpdateProject({
+          ...project,
+          specs: { ...project.specs, notificationFiles: [...currentFiles, newAttachment] }
         });
       } else if (activeUpload.target === 'checklist' && activeUpload.itemId) {
         const updatedChecklist = project.checklist.map(item => {
@@ -159,7 +159,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
     if (field === 'lat' || field === 'lng' || field === 'zone') {
       finalValue = value === '' ? undefined : parseFloat(value);
     }
-    
+
     const updatedSpecs = { ...project.specs, [field]: finalValue };
 
     // Se mudou coordE, coordN ou zone, tenta converter para lat/lng
@@ -174,7 +174,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
         updatedSpecs.lng = converted.lng;
       }
     }
-    
+
     onUpdateProject({
       ...project,
       specs: updatedSpecs
@@ -198,7 +198,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   };
 
   const handleUpdateCustomSpec = (project: Project, specId: string, value: string) => {
-    const updatedCustomSpecs = (project.specs.customSpecs || []).map(spec => 
+    const updatedCustomSpecs = (project.specs.customSpecs || []).map(spec =>
       spec.id === specId ? { ...spec, value } : spec
     );
     onUpdateProject({
@@ -216,14 +216,14 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   };
 
   const toggleChecklistItem = (project: Project, itemId: string) => {
-    const updated = project.checklist.map(item => 
+    const updated = project.checklist.map(item =>
       item.id === itemId ? { ...item, isCompleted: !item.isCompleted } : item
     );
     updateChecklistState(project, updated);
   };
 
   const updateChecklistItemComment = (project: Project, itemId: string, comment: string) => {
-    const updated = project.checklist.map(item => 
+    const updated = project.checklist.map(item =>
       item.id === itemId ? { ...item, comment } : item
     );
     onUpdateProject({ ...project, checklist: updated });
@@ -238,7 +238,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
   const handleAddNewItem = (project: Project) => {
     if (!newItem.label) return;
-    
+
     const newItemObj: ChecklistItem = {
       id: Math.random().toString(36).substr(2, 9),
       label: newItem.label,
@@ -298,8 +298,8 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       title: "Remover Documento?",
       message: `Tem certeza que deseja remover o documento "${fileName}" do checklist?`,
       onConfirm: () => {
-        const updated = project.checklist.map(item => 
-          item.id === itemId 
+        const updated = project.checklist.map(item =>
+          item.id === itemId
             ? { ...item, attachedFiles: item.attachedFiles?.filter(f => f.fileName !== fileName) }
             : item
         );
@@ -312,7 +312,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   const handleSwitchPhase = (project: Project, newPhase: string) => {
     const agency = project.checklistAgency || 'SEMA';
     const templateKey = `${agency}-${newPhase}`;
-    
+
     setConfirmDialog({
       isOpen: true,
       title: "Trocar Tipo de Checklist?",
@@ -343,7 +343,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
   const handleSwitchAgency = (project: Project, newAgency: 'IAT' | 'SEMA') => {
     if (project.checklistAgency === newAgency) return;
-    
+
     const phase = project.currentPhase;
     const templateKey = `${newAgency}-${phase}`;
 
@@ -376,18 +376,18 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
   return (
     <div className="space-y-6">
-      <input 
-        type="file" 
-        ref={fileInputRef} 
-        className="hidden" 
+      <input
+        type="file"
+        ref={fileInputRef}
+        className="hidden"
         onChange={(e) => {
           const project = projects.find(p => p.id === activeUpload?.projectId);
           if (project) handleFileUpload(e, project);
-        }} 
+        }}
       />
 
       {reportProject && (
-        <ProjectProcessReportView 
+        <ProjectProcessReportView
           project={reportProject}
           licenses={licenses}
           notifications={notifications}
@@ -402,7 +402,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
             <p className="text-xs text-baccarim-text-muted mb-8 leading-relaxed">{confirmDialog.message}</p>
             <div className="grid grid-cols-2 gap-4">
               <button onClick={() => setConfirmDialog(null)} className="py-4 bg-baccarim-hover text-baccarim-text-muted rounded-2xl font-black uppercase text-[10px] hover:bg-baccarim-active transition-colors">Cancelar</button>
-              <button onClick={confirmDialog.onConfirm} className="py-4 bg-baccarim-navy/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl">Confirmar</button>
+              <button onClick={confirmDialog.onConfirm} className="py-4 bg-baccarim-navy text-white rounded-2xl font-black uppercase text-[10px] shadow-xl">Confirmar</button>
             </div>
           </div>
         </div>
@@ -414,7 +414,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
         return (
           <div key={project.id} className="bg-baccarim-card rounded-[2rem] shadow-2xl border border-baccarim-border overflow-hidden transition-all duration-500 mb-6">
-            <div 
+            <div
               className="p-6 md:p-8 flex items-center justify-between cursor-pointer hover:bg-baccarim-hover transition-colors"
               onClick={() => setExpandedProjectId(isExpanded ? null : project.id)}
             >
@@ -449,7 +449,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                   ) : (
                     <div className="flex items-center gap-2 group/name">
                       <h3 className="text-xl font-black text-baccarim-text tracking-tight">{project.name}</h3>
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingProjectName(project.id);
@@ -459,7 +459,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       >
                         <i className="fas fa-pen text-[10px]"></i>
                       </button>
-                      <button 
+                      <button
                         onClick={(e) => {
                           e.stopPropagation();
                           handleDeleteProject(project);
@@ -486,7 +486,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
             {isExpanded && (
               <div className="px-6 md:px-10 pb-10 space-y-10 animate-in slide-in-from-top-4 duration-500">
-                
+
                 {/* 1. IDENTIFICAÇÃO TÉCNICA DETALHADA - EXPANDIDA E ESTILIZADA */}
                 <div className="bg-baccarim-hover rounded-[2.5rem] p-8 md:p-12 border border-baccarim-border shadow-2xl mt-4">
                   <div className="flex flex-col lg:flex-row justify-between lg:items-center mb-10 gap-6">
@@ -497,17 +497,17 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       <h4 className="text-[13px] font-black text-baccarim-text uppercase tracking-[0.2em]">Identificação Técnica Detalhada</h4>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); setReportProject(project); }}
-                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-baccarim-green/10 text-baccarim-green border border-emerald-500/20 uppercase tracking-widest hover:bg-baccarim-green hover:text-baccarim-text transition-all flex items-center space-x-2"
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-baccarim-green text-white uppercase tracking-widest hover:brightness-110 transition-all flex items-center space-x-2"
                       >
                         <i className="fas fa-file-invoice"></i>
                         <span>Relatório do Processo</span>
                       </button>
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); handleExportProjectZip(project); }}
                         disabled={isZipping === project.id}
-                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-baccarim-blue text-baccarim-text border border-baccarim-blue uppercase tracking-widest hover:bg-baccarim-green transition-all flex items-center space-x-2 disabled:opacity-50"
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-baccarim-blue text-white uppercase tracking-widest hover:bg-baccarim-green transition-all flex items-center space-x-2 disabled:opacity-50"
                       >
                         {isZipping === project.id ? (
                           <div className="w-3 h-3 border-2 border-baccarim-border/20 border-t-white rounded-full animate-spin"></div>
@@ -516,23 +516,23 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                         )}
                         <span>Baixar Todos Docs</span>
                       </button>
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); handleDilacaoPrazo(project); }}
-                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-amber-500/10 text-amber-600 border border-amber-500/20 uppercase tracking-widest hover:bg-amber-500/20 hover:text-baccarim-text transition-all flex items-center space-x-2"
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-amber-500 text-white uppercase tracking-widest hover:brightness-110 transition-all flex items-center space-x-2"
                         title="Solicitar Dilação de Prazo"
                       >
                         <i className="fas fa-clock-rotate-left"></i>
                         <span>Dilação de Prazo</span>
                       </button>
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); setIsEditingSpecs(isEditing ? null : project.id); }}
-                        className={`text-[9px] font-black px-8 py-3 rounded-xl border uppercase tracking-widest transition-all ${isEditing ? 'bg-baccarim-blue text-baccarim-text border-baccarim-blue shadow-lg' : 'bg-baccarim-hover text-baccarim-text border-baccarim-border-hover hover:bg-baccarim-active'}`}
+                        className={`text-[9px] font-black px-8 py-3 rounded-xl border uppercase tracking-widest transition-all ${isEditing ? 'bg-baccarim-blue text-white border-baccarim-blue shadow-lg' : 'bg-baccarim-hover text-baccarim-text border-baccarim-border-hover hover:bg-baccarim-active'}`}
                       >
                         {isEditing ? 'SALVAR DADOS' : 'EDITAR DADOS'}
                       </button>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-12">
                     {/* I - IDENTIFICAÇÃO DO REQUERENTE */}
                     <div className="space-y-6">
@@ -601,8 +601,8 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             <div className="flex flex-col gap-2 mt-2">
                               {projectCategories.map((category) => (
                                 <label key={category} className="flex items-center gap-3 text-xs text-baccarim-text cursor-pointer">
-                                  <input 
-                                    type="radio" 
+                                  <input
+                                    type="radio"
                                     name={`projectCategory-${project.id}`}
                                     checked={project.specs.projectCategory === category}
                                     onChange={() => updateSpecField(project, 'projectCategory', category)}
@@ -706,7 +706,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                           <h5 className="text-[11px] font-black text-baccarim-text uppercase tracking-widest">Campos Personalizados</h5>
                         </div>
                         {isEditing && (
-                          <button 
+                          <button
                             onClick={() => setIsAddingCustomSpec(project.id)}
                             className="text-[9px] font-black text-baccarim-blue hover:text-baccarim-green transition-colors flex items-center gap-2"
                           >
@@ -721,7 +721,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-1.5">
                               <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Nome do Campo</label>
-                              <input 
+                              <input
                                 value={newCustomSpec.label}
                                 onChange={(e) => setNewCustomSpec({ ...newCustomSpec, label: e.target.value })}
                                 placeholder="Ex: Inscrição Estadual"
@@ -730,7 +730,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             </div>
                             <div className="space-y-1.5">
                               <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Valor Inicial</label>
-                              <input 
+                              <input
                                 value={newCustomSpec.value}
                                 onChange={(e) => setNewCustomSpec({ ...newCustomSpec, value: e.target.value })}
                                 placeholder="Valor..."
@@ -739,15 +739,15 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             </div>
                           </div>
                           <div className="flex justify-end gap-3">
-                            <button 
+                            <button
                               onClick={() => setIsAddingCustomSpec(null)}
                               className="px-4 py-2 text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest hover:text-baccarim-text"
                             >
                               Cancelar
                             </button>
-                            <button 
+                            <button
                               onClick={() => handleAddCustomSpec(project)}
-                              className="px-6 py-2 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
+                              className="px-6 py-2 bg-baccarim-blue text-white rounded-lg text-[9px] font-black uppercase tracking-widest shadow-lg"
                             >
                               Confirmar
                             </button>
@@ -761,7 +761,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             <div className="flex items-center justify-between">
                               <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">{spec.label}</label>
                               {isEditing && (
-                                <button 
+                                <button
                                   onClick={() => handleDeleteCustomSpec(project, spec.id)}
                                   className="opacity-0 group-hover/spec:opacity-100 text-baccarim-text-muted hover:text-red-500 transition-all"
                                 >
@@ -770,10 +770,10 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               )}
                             </div>
                             {isEditing ? (
-                              <input 
-                                value={spec.value} 
-                                onChange={(e) => handleUpdateCustomSpec(project, spec.id, e.target.value)} 
-                                className="w-full bg-baccarim-hover border border-baccarim-border p-2.5 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" 
+                              <input
+                                value={spec.value}
+                                onChange={(e) => handleUpdateCustomSpec(project, spec.id, e.target.value)}
+                                className="w-full bg-baccarim-hover border border-baccarim-border p-2.5 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue"
                               />
                             ) : (
                               <p className="text-[14px] font-black text-baccarim-text">{spec.value || '-'}</p>
@@ -802,18 +802,18 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                         <div className="p-10 space-y-6">
                           <div className="space-y-1">
                             <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título do Item</label>
-                            <input 
-                              value={newItem.label} 
-                              onChange={e => setNewItem({...newItem, label: e.target.value})}
+                            <input
+                              value={newItem.label}
+                              onChange={e => setNewItem({ ...newItem, label: e.target.value })}
                               className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-sm font-bold text-baccarim-text outline-none focus:border-baccarim-blue transition-all"
                               placeholder="Ex: Matrícula atualizada"
                             />
                           </div>
                           <div className="space-y-1">
                             <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Descrição (Opcional)</label>
-                            <textarea 
-                              value={newItem.description} 
-                              onChange={e => setNewItem({...newItem, description: e.target.value})}
+                            <textarea
+                              value={newItem.description}
+                              onChange={e => setNewItem({ ...newItem, description: e.target.value })}
                               className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-sm font-bold text-baccarim-text outline-none focus:border-baccarim-blue transition-all h-24 resize-none"
                               placeholder="Detalhes adicionais..."
                             />
@@ -822,19 +822,18 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Categoria</label>
                             <div className="grid grid-cols-2 gap-2">
                               {['Legal', 'Técnica', 'Ambiental', 'Complementação Vigente'].map(cat => (
-                                <button 
+                                <button
                                   key={cat}
-                                  onClick={() => setNewItem({...newItem, category: cat})}
-                                  className={`p-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${
-                                    newItem.category === cat ? 'bg-baccarim-blue border-baccarim-blue text-baccarim-text' : 'bg-baccarim-hover border-baccarim-border text-baccarim-text-muted hover:border-baccarim-blue'
-                                  }`}
+                                  onClick={() => setNewItem({ ...newItem, category: cat })}
+                                  className={`p-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newItem.category === cat ? 'bg-baccarim-blue border-baccarim-blue text-baccarim-text' : 'bg-baccarim-hover border-baccarim-border text-baccarim-text-muted hover:border-baccarim-blue'
+                                    }`}
                                 >
                                   {cat}
                                 </button>
                               ))}
                             </div>
                           </div>
-                          <button 
+                          <button
                             onClick={() => handleAddNewItem(project)}
                             className="w-full bg-baccarim-navy text-baccarim-text p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-baccarim-blue transition-all mt-4"
                           >
@@ -853,14 +852,14 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       <div>
                         <p className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest">Checklist em Uso</p>
                         <h4 className="text-sm font-black text-baccarim-text uppercase">
-                          {project.currentPhase || 'Selecione uma fase'} 
+                          {project.currentPhase || 'Selecione uma fase'}
                           <span className="ml-2 text-baccarim-blue">({project.checklistAgency || 'SEMA'})</span>
                         </h4>
                       </div>
                     </div>
-                    
+
                     <div className="flex flex-col md:flex-row gap-4 items-center">
-                      <button 
+                      <button
                         onClick={(e) => { e.stopPropagation(); setIsAddingItem(project.id); }}
                         className="px-6 py-3 bg-baccarim-blue text-baccarim-text rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-navy transition-all flex items-center space-x-2"
                       >
@@ -874,9 +873,8 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             <button
                               key={agency}
                               onClick={() => handleSwitchAgency(project, agency as 'IAT' | 'SEMA')}
-                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                isActive ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
-                              }`}
+                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
+                                }`}
                             >
                               {agency}
                             </button>
@@ -894,19 +892,18 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               <button
                                 key={phaseKey}
                                 onClick={() => handleSwitchPhase(project, phaseName)}
-                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
-                                  isActive ? 'bg-baccarim-green text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
-                                }`}
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-baccarim-green text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
+                                  }`}
                               >
                                 {phaseName}
                               </button>
                             );
                           })}
                       </div>
+                    </div>
                   </div>
-                </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                     {Array.from(new Set(project.checklist.map(i => i.category))).map(cat => (
                       <div key={cat} className="space-y-6">
                         <div className="flex items-center justify-between border-b border-baccarim-border pb-3 group/cat">
@@ -917,7 +914,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               onChange={(e) => setTempCategoryName(e.target.value)}
                               onBlur={() => {
                                 if (tempCategoryName.trim() && tempCategoryName !== cat) {
-                                  const updatedChecklist = project.checklist.map(item => 
+                                  const updatedChecklist = project.checklist.map(item =>
                                     item.category === cat ? { ...item, category: tempCategoryName.trim() } : item
                                   );
                                   onUpdateProject({ ...project, checklist: updatedChecklist });
@@ -927,7 +924,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               onKeyDown={(e) => {
                                 if (e.key === 'Enter') {
                                   if (tempCategoryName.trim() && tempCategoryName !== cat) {
-                                    const updatedChecklist = project.checklist.map(item => 
+                                    const updatedChecklist = project.checklist.map(item =>
                                       item.category === cat ? { ...item, category: tempCategoryName.trim() } : item
                                     );
                                     onUpdateProject({ ...project, checklist: updatedChecklist });
@@ -940,7 +937,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                           ) : (
                             <div className="flex items-center gap-2">
                               <h5 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">{cat}</h5>
-                              <button 
+                              <button
                                 onClick={() => {
                                   setEditingCategory({ projectId: project.id, category: cat });
                                   setTempCategoryName(cat);
@@ -949,7 +946,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               >
                                 <i className="fas fa-pen text-[8px]"></i>
                               </button>
-                              <button 
+                              <button
                                 onClick={() => handleDeleteCategory(project, cat)}
                                 className="opacity-0 group-hover/cat:opacity-100 text-baccarim-text-muted hover:text-red-500 transition-all"
                               >
@@ -966,7 +963,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                                   <button onClick={() => toggleChecklistItem(project, item.id)} className={`mt-0.5 w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-all ${item.isCompleted ? 'bg-baccarim-green border-baccarim-green text-baccarim-text' : 'border-baccarim-border-hover bg-baccarim-hover'}`}><i className="fas fa-check text-[10px]"></i></button>
                                   <span className={`text-[11px] font-bold leading-tight ${item.isCompleted ? 'text-emerald-400 opacity-60' : 'text-slate-300'}`}>{item.label}</span>
                                 </div>
-                                <button 
+                                <button
                                   onClick={() => handleDeleteChecklistItem(project, item.id, item.label)}
                                   className="opacity-0 group-hover/item:opacity-100 text-baccarim-text-muted hover:text-red-500 transition-all"
                                 >
@@ -993,9 +990,9 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
                 <div className="pt-8 border-t border-baccarim-border flex items-center justify-between">
                   <div className="flex items-center space-x-4">
-                     <span className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest">Progresso Doc.</span>
-                     <div className="w-48 h-1.5 bg-baccarim-hover rounded-full overflow-hidden"><div className="h-full bg-baccarim-green" style={{ width: `${project.progress}%` }}></div></div>
-                     <span className="text-xs font-black text-baccarim-text">{project.progress}%</span>
+                    <span className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest">Progresso Doc.</span>
+                    <div className="w-48 h-1.5 bg-baccarim-hover rounded-full overflow-hidden"><div className="h-full bg-baccarim-green" style={{ width: `${project.progress}%` }}></div></div>
+                    <span className="text-xs font-black text-baccarim-text">{project.progress}%</span>
                   </div>
                   <button onClick={() => setExpandedProjectId(null)} className="px-12 py-4 bg-baccarim-navy text-baccarim-text rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-blue transition-all">Salvar e Fechar</button>
                 </div>

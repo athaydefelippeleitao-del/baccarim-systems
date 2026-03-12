@@ -156,7 +156,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
           </div>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-8 py-3.5 bg-baccarim-green text-baccarim-text rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-green/20 hover:-translate-y-1 transition-all"
+            className="px-8 py-3.5 bg-baccarim-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-green/20 hover:-translate-y-1 transition-all"
           >
             <i className="fas fa-plus mr-2"></i> Nova Notificação
           </button>
@@ -252,7 +252,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     <div className="text-[11px] text-baccarim-text leading-relaxed whitespace-pre-wrap font-medium">
                       {notif.responseDraft}
                     </div>
-                    <button className="text-[9px] font-black text-baccarim-text bg-baccarim-blue px-4 py-2 rounded-xl uppercase tracking-widest hover:bg-baccarim-green transition-all">Copiar Rascunho</button>
+                    <button className="text-[9px] font-black text-white bg-baccarim-blue px-4 py-2 rounded-xl uppercase tracking-widest hover:bg-baccarim-green transition-all">Copiar Rascunho</button>
                   </div>
                 )}
               </div>
@@ -266,7 +266,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 <div className="grid grid-cols-1 gap-3">
                   <button
                     onClick={() => handleToggleStatus(notif)}
-                    className={`w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${notif.status === 'Open' ? 'bg-baccarim-green text-baccarim-text shadow-lg shadow-emerald-500/20' : 'bg-baccarim-hover text-baccarim-text-muted'}`}
+                    className={`w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${notif.status === 'Open' ? 'bg-baccarim-green text-white shadow-lg shadow-emerald-500/20' : 'bg-baccarim-hover text-baccarim-text-muted'}`}
                   >
                     {notif.status === 'Open' ? 'Marcar como Resolvida' : 'Reabrir Notificação'}
                   </button>
@@ -275,7 +275,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     <button
                       onClick={() => generateAiDraft(notif)}
                       disabled={aiLoadingId === notif.id}
-                      className="w-full py-4 bg-baccarim-blue text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-green transition-all flex items-center justify-center space-x-3"
+                      className="w-full py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-green transition-all flex items-center justify-center space-x-3"
                     >
                       {aiLoadingId === notif.id ? (
                         <>
@@ -366,8 +366,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                       type="button"
                       onClick={() => setNewNotifForm({ ...newNotifForm, severity: sev })}
                       className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newNotifForm.severity === sev
-                          ? `${getSeverityColor(sev)} text-baccarim-text border-transparent shadow-lg`
-                          : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
+                        ? `${getSeverityColor(sev)} text-baccarim-text border-transparent shadow-lg`
+                        : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
                         }`}
                     >
                       {sev}
@@ -388,7 +388,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               </div>
 
               <div className="flex gap-4 pt-6">
-                <button type="submit" className="flex-1 bg-baccarim-blue text-baccarim-text py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all">Registrar Notificação</button>
+                <button type="submit" className="flex-1 bg-baccarim-blue text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all">Registrar Notificação</button>
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-8 bg-baccarim-hover text-baccarim-text-muted py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-baccarim-active transition-all">Cancelar</button>
               </div>
             </form>
