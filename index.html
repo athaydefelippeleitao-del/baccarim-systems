@@ -1,147 +1,206 @@
-
 <!DOCTYPE html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    <meta name="theme-color" content="#002D62" />
-    <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-    <link rel="manifest" href="/manifest.json" />
-    <title>Baccarim Systems - Gestão Ambiental</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <script>window.L_DISABLE_3D = true;</script>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-    <script>
-      tailwind.config = {
-        darkMode: 'class',
-        theme: {
-          extend: {
-            colors: {
-              baccarim: {
-                dark: 'rgb(var(--color-bg) / <alpha-value>)',
-                card: 'rgb(var(--color-card) / <alpha-value>)',
-                navy: 'rgb(var(--color-navy) / <alpha-value>)',
-                green: 'rgb(var(--color-green) / <alpha-value>)',
-                blue: 'rgb(var(--color-blue) / <alpha-value>)',
-                rose: 'rgb(var(--color-rose) / <alpha-value>)',
-                amber: 'rgb(var(--color-amber) / <alpha-value>)',
-                sky: 'rgb(var(--color-sky) / <alpha-value>)',
-                indigo: 'rgb(var(--color-indigo) / <alpha-value>)',
-                light: 'rgb(var(--color-light) / <alpha-value>)',
-                text: 'rgb(var(--color-text) / <alpha-value>)',
-                'text-strong': 'rgb(var(--color-text) / 0.95)',
-                'text-muted': 'rgb(var(--color-text) / 0.75)',
-                'text-subtle': 'rgb(var(--color-text) / 0.55)',
-                border: 'var(--color-border)',
-                'border-hover': 'var(--color-border-hover)',
-                hover: 'var(--color-hover)',
-                active: 'var(--color-active)'
-              }
-            },
-            fontFamily: {
-              sans: ['Plus Jakarta Sans', 'sans-serif'],
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#002D62" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <link rel="manifest" href="/manifest.json" />
+  <title>Baccarim Systems - Gestão Ambiental</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet">
+
+  <script>window.L_DISABLE_3D = true;</script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/dom-to-image/2.6.0/dom-to-image.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            baccarim: {
+              dark: 'rgb(var(--color-bg) / <alpha-value>)',
+              card: 'rgb(var(--color-card) / <alpha-value>)',
+              navy: 'rgb(var(--color-navy) / <alpha-value>)',
+              green: 'rgb(var(--color-green) / <alpha-value>)',
+              blue: 'rgb(var(--color-blue) / <alpha-value>)',
+              rose: 'rgb(var(--color-rose) / <alpha-value>)',
+              amber: 'rgb(var(--color-amber) / <alpha-value>)',
+              sky: 'rgb(var(--color-sky) / <alpha-value>)',
+              indigo: 'rgb(var(--color-indigo) / <alpha-value>)',
+              light: 'rgb(var(--color-light) / <alpha-value>)',
+              text: 'rgb(var(--color-text) / <alpha-value>)',
+              'text-strong': 'rgb(var(--color-text) / 0.95)',
+              'text-muted': 'rgb(var(--color-text) / 0.75)',
+              'text-subtle': 'rgb(var(--color-text) / 0.55)',
+              border: 'var(--color-border)',
+              'border-hover': 'var(--color-border-hover)',
+              hover: 'var(--color-hover)',
+              active: 'var(--color-active)'
             }
+          },
+          fontFamily: {
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
           }
         }
       }
-    </script>
-    <style>
-      .light-theme {
-        --color-bg: 255 255 255; /* Pure White */
-        --color-card: 255 255 255;
-        --color-navy: 0 45 98; /* Baccarim Navy #002D62 */
-        --color-green: 0 176 142; /* Baccarim Green #00B08E */
-        --color-blue: 63 169 245; /* Baccarim Blue #3FA9F5 */
-        --color-rose: 225 29 72;
-        --color-amber: 217 119 6;
-        --color-sky: 2 132 199;
-        --color-indigo: 79 70 229;
-        --color-light: 241 245 249;
-        --color-text: 63 169 245; /* Baccarim Blue Text */
-        --color-border: rgba(0, 0, 0, 0.12);
-        --color-border-hover: rgba(0, 0, 0, 0.2);
-        --color-hover: rgba(0, 0, 0, 0.05);
-        --color-active: rgba(0, 0, 0, 0.1);
+    }
+  </script>
+  <style>
+    .light-theme {
+      --color-bg: 255 255 255;
+      /* Pure White */
+      --color-card: 255 255 255;
+      --color-navy: 0 45 98;
+      /* Baccarim Navy #002D62 */
+      --color-green: 0 176 142;
+      /* Baccarim Green #00B08E */
+      --color-blue: 63 169 245;
+      /* Baccarim Blue #3FA9F5 */
+      --color-rose: 225 29 72;
+      --color-amber: 217 119 6;
+      --color-sky: 2 132 199;
+      --color-indigo: 79 70 229;
+      --color-light: 241 245 249;
+      --color-text: 63 169 245;
+      /* Baccarim Blue Text */
+      --color-border: rgba(0, 0, 0, 0.12);
+      --color-border-hover: rgba(0, 0, 0, 0.2);
+      --color-hover: rgba(0, 0, 0, 0.05);
+      --color-active: rgba(0, 0, 0, 0.1);
+    }
+
+    :root {
+      --color-bg: 248 250 252;
+      /* Very Light Slate */
+      --color-card: 255 255 255;
+      --color-navy: 0 45 98;
+      /* Baccarim Navy */
+      --color-green: 0 176 142;
+      /* Baccarim Green */
+      --color-blue: 63 169 245;
+      /* Baccarim Blue */
+      --color-rose: 244 63 94;
+      --color-amber: 245 158 11;
+      --color-sky: 14 165 233;
+      --color-indigo: 99 102 241;
+      --color-light: 241 245 249;
+      --color-text: 63 169 245;
+      /* Baccarim Blue Text */
+      --color-border: rgba(0, 0, 0, 0.12);
+      --color-border-hover: rgba(0, 0, 0, 0.2);
+      --color-hover: rgba(0, 0, 0, 0.05);
+      --color-active: rgba(0, 0, 0, 0.1);
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      -webkit-tap-highlight-color: transparent;
+      overscroll-behavior-y: none;
+      background-color: rgb(var(--color-bg));
+      color: rgb(var(--color-text));
+    }
+
+    .custom-scrollbar::-webkit-scrollbar {
+      width: 5px;
+      height: 5px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb {
+      background: rgb(var(--color-navy) / 0.2);
+      border-radius: 10px;
+    }
+
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+      background: rgb(var(--color-navy) / 0.4);
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
+    }
+
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+
+    .pb-safe {
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .pt-safe {
+      padding-top: env(safe-area-inset-top);
+    }
+
+    .glass-card {
+      background: rgb(var(--color-card) / 0.6);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--color-border);
+    }
+
+    @keyframes float-slow {
+
+      0%,
+      100% {
+        transform: translateY(0) rotate(var(--tw-rotate));
       }
 
-      :root {
-        --color-bg: 248 250 252; /* Very Light Slate */
-        --color-card: 255 255 255;
-        --color-navy: 0 45 98; /* Baccarim Navy */
-        --color-green: 0 176 142; /* Baccarim Green */
-        --color-blue: 63 169 245; /* Baccarim Blue */
-        --color-rose: 244 63 94;
-        --color-amber: 245 158 11;
-        --color-sky: 14 165 233;
-        --color-indigo: 99 102 241;
-        --color-light: 241 245 249;
-        --color-text: 63 169 245; /* Baccarim Blue Text */
-        --color-border: rgba(0, 0, 0, 0.12);
-        --color-border-hover: rgba(0, 0, 0, 0.2);
-        --color-hover: rgba(0, 0, 0, 0.05);
-        --color-active: rgba(0, 0, 0, 0.1);
+      50% {
+        transform: translateY(-10px) rotate(var(--tw-rotate));
+      }
+    }
+
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-100%);
       }
 
-      body { 
-        font-family: 'Plus Jakarta Sans', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-        overscroll-behavior-y: none;
-        background-color: rgb(var(--color-bg));
-        color: rgb(var(--color-text));
+      100% {
+        transform: translateX(100%);
       }
-      
-      .custom-scrollbar::-webkit-scrollbar { width: 5px; height: 5px; }
-      .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-      .custom-scrollbar::-webkit-scrollbar-thumb { background: rgb(var(--color-navy) / 0.2); border-radius: 10px; }
-      .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgb(var(--color-navy) / 0.4); }
-      
-      .no-scrollbar::-webkit-scrollbar { display: none; }
-      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      
-      .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
-      .pt-safe { padding-top: env(safe-area-inset-top); }
+    }
 
-      .glass-card {
-        background: rgb(var(--color-card) / 0.6);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--color-border);
+    .animate-float-slow {
+      animation: float-slow 4s ease-in-out infinite;
+    }
+
+    .animate-shimmer {
+      animation: shimmer 2s infinite;
+    }
+
+    @media print {
+      .print-hidden {
+        display: none !important;
       }
 
-      @keyframes float-slow {
-        0%, 100% { transform: translateY(0) rotate(var(--tw-rotate)); }
-        50% { transform: translateY(-10px) rotate(var(--tw-rotate)); }
+      .page-break {
+        page-break-after: always;
       }
-      @keyframes shimmer {
-        0% { transform: translateX(-100%); }
-        100% { transform: translateX(100%); }
-      }
-      .animate-float-slow {
-        animation: float-slow 4s ease-in-out infinite;
-      }
-      .animate-shimmer {
-        animation: shimmer 2s infinite;
-      }
+    }
+  </style>
+</head>
 
-      @media print {
-        .print-hidden { display: none !important; }
-        .page-break { page-break-after: always; }
-      }
-    </style>
-  </head>
-  <body class="bg-baccarim-dark text-baccarim-text select-none overflow-x-hidden">
-    <script>
-      if (localStorage.getItem('baccarim_theme') === 'light') {
-        document.body.classList.add('light-theme');
-      }
-    </script>
-    <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
-  </body>
+<body class="bg-baccarim-dark text-baccarim-text select-none overflow-x-hidden">
+  <script>
+    if (localStorage.getItem('baccarim_theme') === 'light') {
+      document.body.classList.add('light-theme');
+    }
+  </script>
+  <div id="root"></div>
+  <script type="module" src="./index.tsx"></script>
+</body>
+
 </html>

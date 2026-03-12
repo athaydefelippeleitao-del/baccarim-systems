@@ -110,8 +110,8 @@ Retorne EXCLUSIVAMENTE um JSON no formato: {"coordE": "string", "coordN": "strin
     const parsed = JSON.parse(text);
 
     if (parsed.coordE && parsed.coordN) {
-        const eStr = parsed.coordE.replace(/[^\\d.]/g, '');
-        const nStr = parsed.coordN.replace(/[^\\d.]/g, '');
+        const eStr = parsed.coordE.replace(/[^\d.]/g, '');
+        const nStr = parsed.coordN.replace(/[^\d.]/g, '');
         const e = parseFloat(eStr);
         const n = parseFloat(nStr);
         if (!isNaN(e) && !isNaN(n)) {

@@ -22,6 +22,24 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
   const [selectedReport, setSelectedReport] = useState<PhotoReport | null>(null);
   const [reportToDelete, setReportToDelete] = useState<PhotoReport | null>(null);
   const [formStep, setFormStep] = useState(1);
+  const [isLeafletLoaded, setIsLeafletLoaded] = useState(typeof L !== 'undefined');
+
+  // Verificar se o Leaflet carregou (caso o script demore)
+  useEffect(() => {
+    if (typeof L !== 'undefined') {
+      setIsLeafletLoaded(true);
+      return;
+    }
+
+    const interval = setInterval(() => {
+      if (typeof L !== 'undefined') {
+        setIsLeafletLoaded(true);
+        clearInterval(interval);
+      }
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, []);
 
 
   const initialDraftState: Partial<PhotoReport> = {
@@ -80,6 +98,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
   const fileInputRef = useRef<HTMLInputElement>(null);
   const reportContentRef = useRef<HTMLDivElement>(null);
   const mapContainerRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<any>(null);
 
   const getUniquePoints = (photos: PhotoItem[]) => {
     const points: { lat: number; lng: number; photos: PhotoItem[]; pointNumber: number }[] = [];
@@ -97,65 +116,106 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
   };
 
   useEffect(() => {
-    if (selectedReport && mapContainerRef.current) {
-      const container = mapContainerRef.current;
-      container.innerHTML = '';
-      const mapDiv = document.createElement('div');
-      mapDiv.style.width = '100%';
-      mapDiv.style.height = '100%';
-      container.appendChild(mapDiv);
+    if (!isLeafletLoaded || !selectedReport || !mapContainerRef.current) return;
 
-      const points = getUniquePoints(selectedReport.photos);
+    const container = mapContainerRef.current;
 
-      if (points.length > 0) {
-        // FORÇAR a desativação de animações e CSS 3D Transforms para o html2canvas conseguir capturar o mapa
-        if (typeof window !== 'undefined' && (window as any).L) {
-          (window as any).L.Browser.any3d = false;
-          (window as any).L.Browser.webkit3d = false;
-          (window as any).L.Browser.gecko3d = false;
-        }
+    // Limpar mapa anterior se existir
+    if (mapInstanceRef.current) {
+      mapInstanceRef.current.remove();
+      mapInstanceRef.current = null;
+    }
 
-        const timer = setTimeout(() => {
-          const map = L.map(mapDiv, {
-            zoomControl: false,
-            attributionControl: false,
-            interactive: false,
-            preferCanvas: true,
-            zoomAnimation: false,
-            fadeAnimation: false,
-            markerZoomAnimation: false,
-          }).setView([points[0].lat, points[0].lng], 18);
+    container.innerHTML = '';
+    const mapDiv = document.createElement('div');
+    mapDiv.style.width = '100%';
+    mapDiv.style.height = '100%';
+    mapDiv.className = 'rounded-3xl overflow-hidden';
+    container.appendChild(mapDiv);
 
-          L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-            maxZoom: 22,
-            crossOrigin: true
+    const points = getUniquePoints(selectedReport.photos);
+    const project = projects.find(p => p.id === selectedReport.projectId);
+
+    const fallbackLat = project?.specs?.lat || -23.3106;
+    const fallbackLng = project?.specs?.lng || -51.1628;
+
+    // FORÇAR a desativação de animações e CSS 3D Transforms para o html2canvas conseguir capturar o mapa
+    if (typeof window !== 'undefined' && (window as any).L) {
+      (window as any).L.Browser.any3d = false;
+      (window as any).L.Browser.webkit3d = false;
+      (window as any).L.Browser.gecko3d = false;
+    }
+
+    const initMap = () => {
+      try {
+        const initialLat = points.length > 0 ? points[0].lat : fallbackLat;
+        const initialLng = points.length > 0 ? points[0].lng : fallbackLng;
+        const initialZoom = points.length > 0 ? 18 : 15;
+
+        const map = L.map(mapDiv, {
+          zoomControl: false,
+          attributionControl: false,
+          interactive: false,
+          preferCanvas: true,
+          zoomAnimation: false,
+          fadeAnimation: false,
+          markerZoomAnimation: false,
+        }).setView([initialLat, initialLng], initialZoom);
+
+        mapInstanceRef.current = map;
+
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 22,
+          crossOrigin: true
+        }).addTo(map);
+
+        points.forEach((p) => {
+          const iconHtml = `<div style="background: #002D62; color: white; border: 2.5px solid white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">${p.pointNumber}</div>`;
+          L.marker([p.lat, p.lng], {
+            icon: L.divIcon({
+              className: 'b-marker',
+              html: iconHtml,
+              iconSize: [28, 28],
+              iconAnchor: [14, 14]
+            })
           }).addTo(map);
+        });
 
-          points.forEach((p) => {
-            const iconHtml = `<div style="background: #002D62; color: white; border: 2.5px solid white; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; box-shadow: 0 4px 10px rgba(0,0,0,0.4);">${p.pointNumber}</div>`;
-            L.marker([p.lat, p.lng], { icon: L.divIcon({ className: 'b-marker', html: iconHtml, iconSize: [28, 28], iconAnchor: [14, 14] }) }).addTo(map);
-          });
-
-          // Draw a line connecting the points
-          if (points.length > 1) {
-            L.polyline(points.map(p => [p.lat, p.lng] as [number, number]), {
-              color: '#3FA9F5',
-              weight: 4,
-              opacity: 0.8,
-              dashArray: '10, 10'
-            }).addTo(map);
-          }
-
-          map.invalidateSize();
-          if (points.length > 1) {
-            const bounds = L.latLngBounds(points.map(pt => [pt.lat, pt.lng]));
-            map.fitBounds(bounds.pad(0.3));
+        // Forçar renderização inicial
+        setTimeout(() => {
+          if (mapInstanceRef.current) {
+            mapInstanceRef.current.invalidateSize();
+            if (points.length > 1) {
+              const bounds = L.latLngBounds(points.map(pt => [pt.lat, pt.lng]));
+              mapInstanceRef.current.fitBounds(bounds.pad(0.3));
+            }
           }
         }, 300);
-        return () => clearTimeout(timer);
+
+      } catch (err) {
+        console.error("Erro ao inicializar mapa no relatório:", err);
       }
-    }
-  }, [selectedReport]);
+    };
+
+    initMap();
+
+    // ResizeObserver para garantir que o mapa preencha o container se o tamanho mudar
+    const observer = new ResizeObserver(() => {
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.invalidateSize();
+      }
+    });
+
+    observer.observe(container);
+
+    return () => {
+      observer.disconnect();
+      if (mapInstanceRef.current) {
+        mapInstanceRef.current.remove();
+        mapInstanceRef.current = null;
+      }
+    };
+  }, [selectedReport, projects, isLeafletLoaded]);
 
   const resizeImage = (base64Str: string, maxWidth = 1024, maxHeight = 1024): Promise<string> => {
     return new Promise((resolve) => {
@@ -270,8 +330,44 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     const originalScrollY = window.scrollY;
     window.scrollTo(0, 0);
 
-    // Give Leaflet map extra time to fully render tiles before capture (up to 3 seconds for ArcGIS)
-    await new Promise(resolve => setTimeout(resolve, 3000));
+    // Give Leaflet map extra time to fully render tiles before capture
+    await new Promise(resolve => setTimeout(resolve, 2500));
+
+    // Fix for Leaflet blank maps in html2pdf: 
+    // Use dom-to-image to snapshot the live map div BEFORE cloning, and temporarily swap it with a static <img>
+    let mapImageStr = '';
+    const mapDivWrapper = mapContainerRef.current?.parentElement;
+    const mapDivNode = mapContainerRef.current;
+
+    if (mapDivNode && (window as any).domtoimage) {
+      try {
+        console.log("Iniciando captura do mapa...");
+        // We use PNG to avoid JPEG artifacts, ensure CORS is handled internally by preferCanvas
+        mapImageStr = await (window as any).domtoimage.toPng(mapDivNode, {
+          quality: 1.0,
+          cacheBust: true
+        });
+        console.log("Mapa capturado com sucesso.");
+      } catch (error) {
+        console.error("DOM-to-Image failed to capture map:", error);
+      }
+    }
+
+    let tempImg: HTMLImageElement | null = null;
+    let originalDisplay = '';
+
+    if (mapImageStr && mapDivNode && mapDivWrapper) {
+      originalDisplay = mapDivNode.style.display || '';
+      mapDivNode.style.display = 'none'; // Hide interactive map
+
+      tempImg = document.createElement('img');
+      tempImg.src = mapImageStr;
+      tempImg.style.width = '100%';
+      tempImg.style.height = '100%';
+      tempImg.style.objectFit = 'cover';
+      tempImg.style.borderRadius = '24px'; // match rounded-3xl approx
+      mapDivWrapper.appendChild(tempImg); // Add static image
+    }
 
     const opt = {
       margin: 0,
@@ -286,9 +382,15 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
+
     try {
       await (window as any).html2pdf().set(opt).from(reportContentRef.current).save();
     } finally {
+      // Revert the map back to interactive Leaflet and remove the static image
+      if (tempImg && mapDivWrapper && mapDivNode) {
+        mapDivWrapper.removeChild(tempImg);
+        mapDivNode.style.display = originalDisplay;
+      }
       window.scrollTo(0, originalScrollY);
       setIsGeneratingPdf(false);
     }
