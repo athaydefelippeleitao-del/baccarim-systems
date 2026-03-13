@@ -38,12 +38,44 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
   const [localAppIcon, setLocalAppIcon] = useState<string | undefined>(appConfig.appIcon);
   const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [compressing, setCompressing] = useState(false);
 
   useEffect(() => {
     setLocalAppIcon(appConfig.appIcon);
   }, [appConfig.appIcon]);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const resizeImage = (base64Str: string): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const MAX_WIDTH = 512;
+        const MAX_HEIGHT = 512;
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > MAX_WIDTH) {
+            height *= MAX_WIDTH / width;
+            width = MAX_WIDTH;
+          }
+        } else {
+          if (height > MAX_HEIGHT) {
+            width *= MAX_HEIGHT / height;
+            height = MAX_HEIGHT;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx?.drawImage(img, 0, 0, width, height);
+        resolve(canvas.toDataURL('image/jpeg', 0.8)); // 80% quality jpeg
+      };
+    });
+  };
 
   const handleAgencyChange = (agency: 'IAT' | 'SEMA') => {
     setSelectedAgency(agency);
@@ -58,10 +90,13 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
   const handleIconUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setCompressing(true);
       const reader = new FileReader();
-      reader.onloadend = () => {
-        setLocalAppIcon(reader.result as string);
+      reader.onloadend = async () => {
+        const resized = await resizeImage(reader.result as string);
+        setLocalAppIcon(resized);
         setSaveSuccess(false);
+        setCompressing(false);
       };
       reader.readAsDataURL(file);
     }
@@ -74,11 +109,12 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
       appIcon: localAppIcon
     });
     
+    // Simulate server response wait or check for socket ACK if we had it
     setTimeout(() => {
       setIsSaving(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
-    }, 800);
+    }, 1200);
   };
 
   const handleAddItem = (e: React.FormEvent) => {
@@ -238,10 +274,15 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
                  </div>
 
                  <div 
-                   onClick={() => fileInputRef.current?.click()}
-                   className="relative aspect-video rounded-[2rem] border-2 border-dashed border-baccarim-border hover:border-baccarim-blue hover:bg-baccarim-blue/5 transition-all cursor-pointer group flex flex-col items-center justify-center p-8 text-center"
+                   onClick={() => !compressing && fileInputRef.current?.click()}
+                   className={`relative aspect-video rounded-[2rem] border-2 border-dashed border-baccarim-border hover:border-baccarim-blue hover:bg-baccarim-blue/5 transition-all cursor-pointer group flex flex-col items-center justify-center p-8 text-center ${compressing ? 'opacity-50 cursor-wait' : ''}`}
                  >
-                    {localAppIcon ? (
+                    {compressing ? (
+                      <div className="flex flex-col items-center space-y-4">
+                         <i className="fas fa-spinner animate-spin text-3xl text-baccarim-blue"></i>
+                         <p className="text-[10px] font-black text-baccarim-text uppercase tracking-widest">Processando Imagem...</p>
+                      </div>
+                    ) : localAppIcon ? (
                        <div className="space-y-4">
                           <div className="w-24 h-24 rounded-3xl overflow-hidden border-4 border-baccarim-green/20 shadow-2xl mx-auto ring-8 ring-baccarim-green/5">
                              <img src={localAppIcon} alt="App Icon" className="w-full h-full object-cover" />
@@ -265,7 +306,7 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
                  <div className="pt-4 flex items-center space-x-4">
                     <button
                       onClick={handleSaveBranding}
-                      disabled={isSaving || localAppIcon === appConfig.appIcon && localAppIcon !== undefined}
+                      disabled={isSaving || compressing || (localAppIcon === appConfig.appIcon && localAppIcon !== undefined)}
                       className={`flex-1 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center space-x-3 shadow-xl ${
                         saveSuccess 
                           ? 'bg-baccarim-green text-baccarim-text' 

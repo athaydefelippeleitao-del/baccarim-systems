@@ -277,7 +277,11 @@ async function startServer() {
     socket.on("state:update", (update: { key: string, value: any, user?: any }) => {
       if (!update.key || update.value === undefined) return;
 
-      console.log("State update received for key:", update.key);
+      if (update.key === 'appConfig') {
+        console.log('[Socket] appConfig update received', { hasIcon: !!update.value?.appIcon });
+      } else {
+        console.log("State update received for key:", update.key);
+      }
       state[update.key] = update.value;
 
       // Record audit log if user info is provided

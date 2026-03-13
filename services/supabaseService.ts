@@ -443,17 +443,25 @@ export async function upsertChecklistTemplates(templates: Record<string, any[]>)
 // APP CONFIG
 // ─────────────────────────────────────────────
 export async function getAppConfig(): Promise<any> {
+  console.log('[Supabase] Fetching SYSTEM_APP_CONFIG...');
   const { data, error } = await supabase.from('checklist_templates').select('template').eq('key', 'SYSTEM_APP_CONFIG').single();
   if (error) {
-    if (error.code !== 'PGRST116') console.error('getAppConfig error:', error);
+    if (error.code !== 'PGRST116') console.error('[Supabase] getAppConfig error:', error);
+    else console.log('[Supabase] SYSTEM_APP_CONFIG not found, using empty object');
     return {};
   }
+  console.log('[Supabase] SYSTEM_APP_CONFIG loaded successfully');
   return data.template || {};
 }
 
 export async function upsertAppConfig(config: any): Promise<void> {
+  console.log('[Supabase] Saving SYSTEM_APP_CONFIG...', { hasIcon: !!config.appIcon });
   const { error } = await supabase.from('checklist_templates').upsert({ key: 'SYSTEM_APP_CONFIG', template: config }, { onConflict: 'key' });
-  if (error) console.error('upsertAppConfig error:', error);
+  if (error) {
+    console.error('[Supabase] upsertAppConfig error:', error);
+  } else {
+    console.log('[Supabase] SYSTEM_APP_CONFIG saved successfully');
+  }
 }
 
 // ─────────────────────────────────────────────
