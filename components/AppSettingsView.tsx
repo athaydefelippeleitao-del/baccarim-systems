@@ -1,5 +1,5 @@
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { ChecklistItem, AppConfig } from '../types';
 
 interface AppSettingsViewProps {
@@ -34,6 +34,15 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
   const [categoryToDelete, setCategoryToDelete] = useState<string | null>(null);
   const [typeToDelete, setTypeToDelete] = useState<string | null>(null);
   
+  // Local state for branding to allow explicit saving
+  const [localAppIcon, setLocalAppIcon] = useState<string | undefined>(appConfig.appIcon);
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
+  useEffect(() => {
+    setLocalAppIcon(appConfig.appIcon);
+  }, [appConfig.appIcon]);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleAgencyChange = (agency: 'IAT' | 'SEMA') => {
@@ -51,13 +60,25 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        onUpdateAppConfig({
-          ...appConfig,
-          appIcon: reader.result as string
-        });
+        setLocalAppIcon(reader.result as string);
+        setSaveSuccess(false);
       };
       reader.readAsDataURL(file);
     }
+  };
+
+  const handleSaveBranding = () => {
+    setIsSaving(true);
+    onUpdateAppConfig({
+      ...appConfig,
+      appIcon: localAppIcon
+    });
+    
+    setTimeout(() => {
+      setIsSaving(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    }, 800);
   };
 
   const handleAddItem = (e: React.FormEvent) => {
@@ -205,7 +226,10 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
                  <div className="flex items-center justify-between">
                     <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-[0.2em]">Ícone do App (Capa de Download)</h3>
                     <button 
-                      onClick={() => onUpdateAppConfig({ ...appConfig, appIcon: undefined })}
+                      onClick={() => {
+                        setLocalAppIcon(undefined);
+                        setSaveSuccess(false);
+                      }}
                       className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest flex items-center space-x-2 hover:text-baccarim-blue transition-colors"
                     >
                       <i className="fas fa-undo"></i>
@@ -217,10 +241,10 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
                    onClick={() => fileInputRef.current?.click()}
                    className="relative aspect-video rounded-[2rem] border-2 border-dashed border-baccarim-border hover:border-baccarim-blue hover:bg-baccarim-blue/5 transition-all cursor-pointer group flex flex-col items-center justify-center p-8 text-center"
                  >
-                    {appConfig.appIcon ? (
+                    {localAppIcon ? (
                        <div className="space-y-4">
                           <div className="w-24 h-24 rounded-3xl overflow-hidden border-4 border-baccarim-green/20 shadow-2xl mx-auto ring-8 ring-baccarim-green/5">
-                             <img src={appConfig.appIcon} alt="App Icon" className="w-full h-full object-cover" />
+                             <img src={localAppIcon} alt="App Icon" className="w-full h-full object-cover" />
                           </div>
                           <p className="text-[10px] font-black text-baccarim-text uppercase tracking-widest opacity-60">Toque aqui para trocar a imagem</p>
                        </div>
@@ -236,6 +260,27 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
                        </div>
                     )}
                     <input ref={fileInputRef} type="file" accept="image/*" className="hidden" onChange={handleIconUpload} />
+                 </div>
+
+                 <div className="pt-4 flex items-center space-x-4">
+                    <button
+                      onClick={handleSaveBranding}
+                      disabled={isSaving || localAppIcon === appConfig.appIcon && localAppIcon !== undefined}
+                      className={`flex-1 py-5 rounded-2xl font-black uppercase text-[10px] tracking-widest transition-all flex items-center justify-center space-x-3 shadow-xl ${
+                        saveSuccess 
+                          ? 'bg-baccarim-green text-baccarim-text' 
+                          : 'bg-baccarim-blue text-baccarim-text hover:shadow-baccarim-blue/20 disabled:opacity-50 disabled:cursor-not-allowed'
+                      }`}
+                    >
+                      {isSaving ? (
+                        <i className="fas fa-circle-notch animate-spin text-sm"></i>
+                      ) : saveSuccess ? (
+                        <i className="fas fa-check text-sm"></i>
+                      ) : (
+                        <i className="fas fa-floppy-disk text-sm"></i>
+                      )}
+                      <span>{isSaving ? 'Salvando...' : saveSuccess ? 'Configuração Salva!' : 'Salvar Alterações'}</span>
+                    </button>
                  </div>
 
                  <div className="bg-baccarim-hover border border-baccarim-border p-8 rounded-[2rem] space-y-4">
@@ -264,8 +309,8 @@ const AppSettingsView: React.FC<AppSettingsViewProps> = ({
                           ))}
                           <div className="flex flex-col items-center space-y-2 group">
                              <div className="aspect-square w-full rounded-2xl overflow-hidden bg-white shadow-lg shadow-black/20 group-scale-110 transition-transform flex items-center justify-center">
-                                {appConfig.appIcon ? (
-                                   <img src={appConfig.appIcon} alt="Icon" className="w-full h-full object-cover" />
+                                {localAppIcon ? (
+                                   <img src={localAppIcon} alt="Icon" className="w-full h-full object-cover" />
                                 ) : (
                                    <div className="w-full h-full flex items-center justify-center p-2">
                                       <div className="relative w-full h-full">
