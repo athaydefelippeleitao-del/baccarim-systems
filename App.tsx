@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { MOCK_LICENSES, MOCK_NOTIFICATIONS, MOCK_PROJECTS, MOCK_MEETINGS, MOCK_VIDEOS, MOCK_CONTRACTS, CLIENTS, getChecklistTemplate, PROJECT_CATEGORIES } from './constants';
-import { EnvironmentalLicense, LicenseStatus, Notification, User, Project, Contract, Meeting, ProductionVideo, LicenseType, ChecklistItem, PhotoReport } from './types';
+import { EnvironmentalLicense, LicenseStatus, Notification, User, Project, Contract, Meeting, ProductionVideo, LicenseType, ChecklistItem, PhotoReport, AppConfig } from './types';
 import { AppLogo } from './components/AppLogo';
 import StatCard from './components/StatCard';
 import SmartAnalysis from './components/SmartAnalysis';
@@ -11,7 +11,7 @@ import ClientsView from './components/ClientsView';
 import FinanceView from './components/FinanceView';
 import LoginView from './components/LoginView';
 import ProfileView from './components/ProfileView';
-import ChecklistSettingsView from './components/ChecklistSettingsView';
+import AppSettingsView from './components/AppSettingsView';
 import NotificationsView from './components/NotificationsView';
 import UsersView from './components/UsersView';
 import MapView from './components/MapView';
@@ -61,6 +61,7 @@ const App: React.FC = () => {
   const [projectCategories, setProjectCategories] = useState<string[]>([]);
   const [presence, setPresence] = useState<any[]>([]);
   const [auditLog, setAuditLog] = useState<any[]>([]);
+  const [appConfig, setAppConfig] = useState<AppConfig>({});
 
   // Theme effect
   useEffect(() => {
@@ -91,6 +92,7 @@ const App: React.FC = () => {
           if (state.videos) setVideos(state.videos);
           if (state.projectCategories) setProjectCategories(state.projectCategories);
           if (state.auditLog) setAuditLog(state.auditLog);
+      if (state.appConfig) setAppConfig(state.appConfig);
         }
       })
       .catch(err => console.error("Error fetching initial state:", err));
@@ -128,7 +130,7 @@ const App: React.FC = () => {
         setProjectCategories(PROJECT_CATEGORIES);
       }
       if (state.auditLog) setAuditLog(state.auditLog);
-
+      if (state.appConfig) setAppConfig(state.appConfig);
       // Mark initial load as done ONLY after we have received data from server
       isInitialLoadDone.current = true;
     });
@@ -155,6 +157,7 @@ const App: React.FC = () => {
         case 'videos': setVideos(update.value); break;
         case 'projectCategories': setProjectCategories(update.value); break;
         case 'auditLog': setAuditLog(update.value); break;
+        case 'appConfig': setAppConfig(update.value); break;
       }
     });
 
@@ -213,6 +216,7 @@ const App: React.FC = () => {
   useEffect(() => { if (isInitialLoadDone.current) emitUpdate('reports', reports); }, [reports, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current && projectCategories.length > 0) emitUpdate('projectCategories', projectCategories); }, [projectCategories, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current && Object.keys(checklistTemplates).length > 0) emitUpdate('checklistTemplates', checklistTemplates); }, [checklistTemplates, emitUpdate]);
+  useEffect(() => { if (isInitialLoadDone.current) emitUpdate('appConfig', appConfig); }, [appConfig, emitUpdate]);
 
   useEffect(() => {
     // Ensure loading screen lasts at least 1.5 seconds for branding
@@ -512,7 +516,7 @@ const App: React.FC = () => {
 
       <aside className="hidden md:flex w-80 bg-baccarim-dark text-baccarim-text flex-col sticky top-0 h-screen p-8 border-r border-baccarim-border overflow-y-auto no-scrollbar">
         <div className="flex flex-col items-center mb-16 px-4">
-          <AppLogo className="w-16 h-16 mb-6" />
+          <AppLogo className="w-16 h-16 mb-6" customIcon={appConfig.appIcon} />
           <div className="text-center">
             <h1 className="text-3xl font-black text-baccarim-text tracking-tighter leading-none">Baccarim</h1>
             <div className="flex items-center justify-center space-x-2 mt-2">
@@ -633,7 +637,7 @@ const App: React.FC = () => {
         {/* Mobile Header */}
         <header className={`md:hidden fixed top-0 left-0 right-0 h-20 bg-baccarim-dark/80 backdrop-blur-xl border-b border-baccarim-border z-[100] px-6 flex items-center justify-between transition-transform duration-300 ${activeTab === 'map' ? '-translate-y-full' : 'translate-y-0'}`}>
           <div className="flex items-center space-x-4">
-            <AppLogo className="w-10 h-10" />
+            <AppLogo className="w-10 h-10" customIcon={appConfig.appIcon} />
             <div>
               <h2 className="text-lg font-black leading-none tracking-tight">
                 {activeTab === 'dashboard' && 'Dashboard'}
@@ -761,11 +765,13 @@ const App: React.FC = () => {
           />
         )}
         {activeTab === 'config' && (currentUser.role === 'admin' || currentUser.role === 'engineer') && (
-          <ChecklistSettingsView
+          <AppSettingsView
             templates={checklistTemplates}
             onUpdateTemplates={setChecklistTemplates}
             projectCategories={projectCategories}
             onUpdateProjectCategories={setProjectCategories}
+            appConfig={appConfig}
+            onUpdateAppConfig={setAppConfig}
           />
         )}
         {activeTab === 'profile' && (

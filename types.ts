@@ -283,3 +283,7 @@ export interface PresenceUser {
   role: string;
   lastSeen: string;
 }
+export interface AppConfig {
+  appIcon?: string; // base64
+  appName?: string;
+}
