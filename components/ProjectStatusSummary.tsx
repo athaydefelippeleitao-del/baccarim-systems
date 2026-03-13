@@ -32,7 +32,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       <div className="flex flex-wrap items-center gap-4 bg-baccarim-card/50 p-6 rounded-[2rem] border border-baccarim-border backdrop-blur-md">
         <div className="flex items-center space-x-3 bg-baccarim-navy/40 px-5 py-3 rounded-2xl border border-baccarim-border">
           <i className="fas fa-filter text-[10px] text-baccarim-blue"></i>
-          <span className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Filtrar por:</span>
+          <span className="text-[9px] font-black text-baccarim-text opacity-90 uppercase tracking-widest">Filtrar por:</span>
         </div>
 
         {/* Status Filter */}
@@ -97,9 +97,9 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   </div>
                   <div className="flex flex-col items-end">
                     <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm ${
-                      project.status === 'Concluído' ? 'bg-baccarim-green/20 text-baccarim-green border border-emerald-500/20' : 
-                      project.status === 'Em Execução' ? 'bg-baccarim-blue/20 text-baccarim-blue border border-baccarim-blue/20' : 
-                      'bg-baccarim-navy text-baccarim-text-muted border border-baccarim-border'
+                      project.status === 'Concluído' ? 'bg-baccarim-green text-white shadow-[0_2px_10px_rgba(0,176,142,0.3)]' : 
+                      project.status === 'Em Execução' ? 'bg-baccarim-blue text-white shadow-[0_2px_10px_rgba(63,169,245,0.3)]' : 
+                      'bg-baccarim-navy text-white'
                     }`}>
                       {project.status}
                     </span>
@@ -108,14 +108,14 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
                 <div className="mb-6">
                   <h3 className="text-xl font-black text-baccarim-text tracking-tight mb-1 group-hover:text-baccarim-blue transition-colors">{project.name}</h3>
-                  <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-[0.2em]">{project.clientName}</p>
+                  <p className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-[0.2em]">{project.clientName}</p>
                 </div>
 
                 <div className="space-y-6 flex-1">
                   {/* Progress Section */}
                   <div>
                     <div className="flex justify-between items-end mb-2">
-                      <span className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Conformidade Legal</span>
+                      <span className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-widest">Conformidade Legal</span>
                       <span className="text-xs font-black text-baccarim-blue">{project.progress}%</span>
                     </div>
                     <div className="w-full h-2 bg-baccarim-hover rounded-full overflow-hidden border border-baccarim-border">
@@ -129,14 +129,14 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   {/* Info Grid */}
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-baccarim-hover/50 p-4 rounded-2xl border border-baccarim-border group-hover:bg-baccarim-active transition-colors">
-                      <p className="text-[7px] font-black text-baccarim-text-muted uppercase tracking-widest mb-1">Fase Atual</p>
-                      <p className="text-[10px] font-black text-baccarim-text leading-tight uppercase text-baccarim-blue">{project.currentPhase || 'N/A'}</p>
+                      <p className="text-[7px] font-black text-baccarim-text opacity-60 uppercase tracking-widest mb-1">Fase Atual</p>
+                      <p className="text-[10px] font-black text-baccarim-blue leading-tight uppercase">{project.currentPhase || 'N/A'}</p>
                     </div>
                     <button 
                       onClick={() => setSelectedProjectId(project.id)}
                       className="bg-baccarim-hover/50 p-4 rounded-2xl border border-baccarim-border group-hover:bg-baccarim-blue/10 group-hover:border-baccarim-blue/40 transition-all text-left"
                     >
-                      <p className="text-[7px] font-black text-baccarim-text-muted uppercase tracking-widest mb-1">Pendências</p>
+                      <p className="text-[7px] font-black text-baccarim-text opacity-60 uppercase tracking-widest mb-1">Pendências</p>
                       <div className="flex items-center space-x-2">
                         <p className={`text-[10px] font-black leading-tight ${openNotifs.length > 0 ? 'text-rose-500' : 'text-baccarim-green'}`}>
                           {openNotifs.length} {openNotifs.length === 1 ? 'Aberta' : 'Abertas'}
@@ -158,11 +158,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                     </div>
                   ) : (
                     <div className="flex items-center space-x-3 bg-baccarim-navy/30 p-4 rounded-2xl border border-baccarim-border">
-                      <div className="w-8 h-8 rounded-xl bg-baccarim-hover flex items-center justify-center text-baccarim-text-muted">
+                      <div className="w-8 h-8 rounded-xl bg-baccarim-hover flex items-center justify-center text-baccarim-blue">
                         <i className="fas fa-clock text-xs"></i>
                       </div>
                       <div>
-                        <p className="text-[7px] font-black text-baccarim-text-muted uppercase tracking-widest leading-none mb-1">Status Legal</p>
+                        <p className="text-[7px] font-black text-baccarim-text opacity-60 uppercase tracking-widest leading-none mb-1">Status Legal</p>
                         <p className="text-[9px] font-black text-baccarim-text uppercase">Em Tramitação</p>
                       </div>
                     </div>
@@ -170,7 +170,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                 </div>
 
                 <div className="mt-8 pt-6 border-t border-baccarim-border flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-[8px] font-black text-baccarim-text-muted uppercase tracking-widest">Protocolo SEI: {project.specs.numeroProtocolo || 'N/D'}</span>
+                  <span className="text-[8px] font-black text-baccarim-text opacity-60 uppercase tracking-widest">Protocolo SEI: {project.specs.numeroProtocolo || 'N/D'}</span>
                   <i className="fas fa-arrow-right text-baccarim-blue text-xs"></i>
                 </div>
               </div>
