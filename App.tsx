@@ -19,6 +19,7 @@ import PhotoReportView from './components/PhotoReportView';
 import ServerManagementView from './components/ServerManagementView';
 import LoadingScreen from './components/LoadingScreen';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import ProjectStatusSummary from './components/ProjectStatusSummary';
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -41,6 +42,7 @@ const App: React.FC = () => {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
 
   // Refs to track last known server state to prevent sync loops
   const lastServerState = useRef<Record<string, string>>({});
@@ -669,14 +671,39 @@ const App: React.FC = () => {
 
         {activeTab === 'dashboard' && (
           <div className="space-y-12 animate-in fade-in zoom-in-95 duration-500">
-            <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-              <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
-              <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
-              <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
-              <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 flex-1">
+                <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
+                <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
+                <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
+                <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
+              </div>
+              <button 
+                onClick={() => setIsPresentationMode(!isPresentationMode)}
+                className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center space-x-3 shadow-xl ${
+                  isPresentationMode ? 'bg-baccarim-blue text-baccarim-text ring-4 ring-baccarim-blue/20' : 'bg-baccarim-card text-baccarim-text-muted hover:bg-baccarim-hover border border-baccarim-border'
+                }`}
+              >
+                <i className={`fas ${isPresentationMode ? 'fa-tv' : 'fa-chart-line'} text-sm`}></i>
+                <span>{isPresentationMode ? 'Sair da Apresentação' : 'Modo Apresentação'}</span>
+              </button>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            {isPresentationMode ? (
+              <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+                <div className="mb-10 text-center">
+                  <h2 className="text-3xl font-black text-baccarim-text tracking-tighter">Status Geral dos Empreendimentos</h2>
+                  <p className="text-xs text-baccarim-text-muted font-bold uppercase tracking-[0.3em] mt-2">Visão Executiva para Apresentação</p>
+                </div>
+                <ProjectStatusSummary
+                  projects={filteredProjects}
+                  licenses={licenses}
+                  notifications={notifications}
+                />
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
                 <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Status Ambiental</h3>
                 <div className="flex-1">
@@ -714,6 +741,8 @@ const App: React.FC = () => {
                 <button onClick={() => setActiveTab('reports')} className="mt-6 w-full py-4 bg-baccarim-blue text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all">Novo Relatório Fotográfico</button>
               </div>
             </div>
+              </>
+            )}
           </div>
         )}
 
