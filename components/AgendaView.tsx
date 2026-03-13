@@ -1,11 +1,12 @@
 
 import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { EnvironmentalLicense, Notification, LicenseStatus, Attachment, LicenseType, User } from '../types';
+import { EnvironmentalLicense, Notification, LicenseStatus, Attachment, LicenseType, User, Project } from '../types';
 import { downloadFile } from '../utils/fileUtils';
 
 interface AgendaViewProps {
   currentUser: User;
   clients: string[];
+  projects: Project[];
   licenses: EnvironmentalLicense[];
   notifications: Notification[];
   onAddNotification: (notif: Notification) => void;
@@ -25,12 +26,23 @@ type ConfirmConfig = {
 } | null;
 
 const AgendaView: React.FC<AgendaViewProps> = ({ 
-  currentUser, clients, licenses, notifications, onAddNotification, onUpdateNotification, onUpdateLicense, onDeleteNotification, onDeleteLicense 
+  currentUser, clients, projects, licenses, notifications, onAddNotification, onUpdateNotification, onUpdateLicense, onDeleteNotification, onDeleteLicense 
 }) => {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingItem, setEditingItem] = useState<{ id: string, type: 'license' | 'notification' } | null>(null);
-  const [taskForm, setTaskForm] = useState({ title: '', deadline: '', clientName: clients[0] || '', agency: 'SEMA', description: '' });
+  const [taskForm, setTaskForm] = useState({ title: '', deadline: '', clientName: clients[0] || '', projectId: '', agency: 'SEMA', description: '' });
   const [confirmConfig, setConfirmConfig] = useState<ConfirmConfig>(null);
+
+  const availableProjectsForClient = useMemo(() => {
+    return projects.filter(p => p.clientName === taskForm.clientName);
+  }, [projects, taskForm.clientName]);
+
+  // Auto-select first project when client changes in form
+  useEffect(() => {
+    if (!editingItem && availableProjectsForClient.length > 0) {
+      setTaskForm(prev => ({ ...prev, projectId: availableProjectsForClient[0].id }));
+    }
+  }, [availableProjectsForClient, editingItem]);
   
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [activeUpload, setActiveUpload] = useState<{ id: string, type: 'license' | 'notification' } | null>(null);
@@ -121,6 +133,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({
           title: n.title,
           deadline: n.deadline.split('/').reverse().join('-'),
           clientName: n.clientName,
+          projectId: n.projectId || '',
           agency: n.agency,
           description: n.description
         });
@@ -128,10 +141,14 @@ const AgendaView: React.FC<AgendaViewProps> = ({
     } else {
       const l = licenses.find(item => item.id === id);
       if (l) {
+        // Try to find the project associated with this license (often project.mainLicenseId or just match by client and name part)
+        const associatedProject = projects.find(p => p.mainLicenseId === l.id || (p.clientName === l.clientName && l.name.includes(p.name)));
+        
         setTaskForm({
           title: l.name,
           deadline: l.expiryDate === 'Pendente' ? '' : l.expiryDate.split('/').reverse().join('-'),
           clientName: l.clientName,
+          projectId: associatedProject?.id || '',
           agency: l.agency,
           description: `Licença do tipo ${l.type}. Protocolo: ${l.processNumber}`
         });
@@ -153,6 +170,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({
             title: taskForm.title,
             deadline: formattedDate,
             clientName: taskForm.clientName,
+            projectId: taskForm.projectId,
             agency: taskForm.agency,
             description: taskForm.description
           });
@@ -175,6 +193,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({
         id: `n-${Date.now()}`,
         title: taskForm.title,
         clientName: taskForm.clientName,
+        projectId: taskForm.projectId,
         description: taskForm.description,
         dateReceived: new Date().toLocaleDateString('pt-BR'),
         deadline: formattedDate,
@@ -187,7 +206,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({
     }
     setShowTaskModal(false);
     setEditingItem(null);
-    setTaskForm({ title: '', deadline: '', clientName: clients[0] || '', agency: 'SEMA', description: '' });
+    setTaskForm({ title: '', deadline: '', clientName: clients[0] || '', projectId: '', agency: 'SEMA', description: '' });
   };
 
   const generateCalendarLink = (event: any) => {
@@ -274,15 +293,34 @@ const AgendaView: React.FC<AgendaViewProps> = ({
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Parceiro Relacionado</label>
-                <select 
-                  value={taskForm.clientName} 
-                  onChange={e => setTaskForm({...taskForm, clientName: e.target.value})}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
-                >
-                  {clients.map(c => <option key={c} value={c} className="bg-baccarim-card">{c}</option>)}
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Parceiro Relacionado</label>
+                  <select 
+                    value={taskForm.clientName} 
+                    onChange={e => setTaskForm({...taskForm, clientName: e.target.value})}
+                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
+                  >
+                    {clients.map(c => <option key={c} value={c} className="bg-baccarim-card">{c}</option>)}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Empreendimento</label>
+                  <select 
+                    value={taskForm.projectId} 
+                    onChange={e => setTaskForm({...taskForm, projectId: e.target.value})}
+                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
+                  >
+                    <option value="" disabled>Selecione um projeto</option>
+                    {availableProjectsForClient.map(p => (
+                      <option key={p.id} value={p.id} className="bg-baccarim-card">{p.name}</option>
+                    ))}
+                    {availableProjectsForClient.length === 0 && (
+                      <option value="" disabled className="bg-baccarim-card italic">Nenhum projeto encontrado</option>
+                    )}
+                  </select>
+                </div>
               </div>
 
               <div className="space-y-1">
@@ -385,7 +423,17 @@ const AgendaView: React.FC<AgendaViewProps> = ({
                     
                     <h4 className="text-xl font-black text-baccarim-text mt-2 tracking-tight group-hover:text-baccarim-blue transition-colors">{event.title}</h4>
                     <p className="text-[11px] font-black text-baccarim-text-muted uppercase tracking-widest mt-1">
-                      {event.subtitle} • {event.displayDate || 'Sem Data'}
+                      {event.subtitle}
+                      {(event as any).projectId && (
+                        <>
+                          <span className="mx-2 text-baccarim-text opacity-30">•</span>
+                          <span className="text-baccarim-blue">
+                            {projects.find(p => p.id === (event as any).projectId)?.name || 'Projeto Vinc.'}
+                          </span>
+                        </>
+                      )}
+                      <span className="mx-2 text-baccarim-text opacity-30">•</span>
+                      {event.displayDate || 'Sem Data'}
                     </p>
                     
                     {event.description && (

@@ -1,18 +1,19 @@
 
 import React, { useState, useMemo } from 'react';
-import { Notification, NotificationSeverity, Attachment } from '../types';
+import { Notification, NotificationSeverity, Attachment, Project } from '../types';
 import { generateNotificationDraft } from '../services/openaiClient';
 import { downloadFile } from '../utils/fileUtils';
 
 interface NotificationsViewProps {
   notifications: Notification[];
   clients: string[];
+  projects: Project[];
   onAddNotification: (notif: Notification) => void;
   onUpdateNotification: (notif: Notification) => void;
   onDeleteNotification: (id: string) => void;
 }
 
-const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, clients, onAddNotification, onUpdateNotification, onDeleteNotification }) => {
+const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, clients, projects, onAddNotification, onUpdateNotification, onDeleteNotification }) => {
   const [filter, setFilter] = useState<'All' | 'Open' | 'Resolved'>('Open');
   const [aiLoadingId, setAiLoadingId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -22,11 +23,25 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const [newNotifForm, setNewNotifForm] = useState({
     title: '',
     clientName: clients[0] || '',
+    projectId: '',
     agency: 'SEMA',
     severity: 'Média' as NotificationSeverity,
     deadline: '',
     description: ''
   });
+
+  const availableProjectsForClient = useMemo(() => {
+    return projects.filter(p => p.clientName === newNotifForm.clientName);
+  }, [projects, newNotifForm.clientName]);
+
+  // Auto-select first project when client changes
+  React.useEffect(() => {
+    if (availableProjectsForClient.length > 0) {
+      setNewNotifForm(prev => ({ ...prev, projectId: availableProjectsForClient[0].id }));
+    } else {
+      setNewNotifForm(prev => ({ ...prev, projectId: '' }));
+    }
+  }, [availableProjectsForClient]);
 
   const filtered = useMemo(() => {
     return notifications.filter(n => filter === 'All' || n.status === filter);
@@ -84,6 +99,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       id: `n-${Date.now()}`,
       title: newNotifForm.title,
       clientName: newNotifForm.clientName,
+      projectId: newNotifForm.projectId,
       agency: newNotifForm.agency,
       severity: newNotifForm.severity,
       deadline: formattedDeadline,
@@ -98,6 +114,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     setNewNotifForm({
       title: '',
       clientName: clients[0] || '',
+      projectId: '',
       agency: 'SEMA',
       severity: 'Média',
       deadline: '',
@@ -200,7 +217,19 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors">{notif.title}</h3>
-                  <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest mt-1">{notif.clientName} • Recebida em {notif.dateReceived}</p>
+                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+                    <p className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-widest">{notif.clientName}</p>
+                    <span className="text-[9px] text-baccarim-text opacity-30">•</span>
+                    {notif.projectId && (
+                      <>
+                        <p className="text-[9px] font-black text-baccarim-blue uppercase tracking-widest">
+                          {projects.find(p => p.id === notif.projectId)?.name || 'Projeto Vinc.'}
+                        </p>
+                        <span className="text-[9px] text-baccarim-text opacity-30">•</span>
+                      </>
+                    )}
+                    <p className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-widest">Recebida em {notif.dateReceived}</p>
+                  </div>
                 </div>
                 <div className="bg-baccarim-hover p-5 rounded-2xl border border-baccarim-border">
                   <p className="text-xs text-baccarim-text-muted font-medium leading-relaxed italic">"{notif.description}"</p>
@@ -323,16 +352,36 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 />
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Cliente</label>
-                <select
-                  required
-                  value={newNotifForm.clientName}
-                  onChange={e => setNewNotifForm({ ...newNotifForm, clientName: e.target.value })}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
-                >
-                  {clients.map(c => <option key={c} value={c} className="bg-baccarim-card">{c}</option>)}
-                </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Cliente</label>
+                  <select
+                    required
+                    value={newNotifForm.clientName}
+                    onChange={e => setNewNotifForm({ ...newNotifForm, clientName: e.target.value })}
+                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
+                  >
+                    {clients.map(c => <option key={c} value={c} className="bg-baccarim-card">{c}</option>)}
+                  </select>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Empreendimento (Projeto)</label>
+                  <select
+                    required
+                    value={newNotifForm.projectId}
+                    onChange={e => setNewNotifForm({ ...newNotifForm, projectId: e.target.value })}
+                    className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-bold text-baccarim-text appearance-none"
+                  >
+                    <option value="" disabled>Selecione um projeto</option>
+                    {availableProjectsForClient.map(p => (
+                      <option key={p.id} value={p.id} className="bg-baccarim-card">{p.name}</option>
+                    ))}
+                    {availableProjectsForClient.length === 0 && (
+                      <option value="" disabled className="bg-baccarim-card italic">Nenhum projeto encontrado</option>
+                    )}
+                  </select>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
