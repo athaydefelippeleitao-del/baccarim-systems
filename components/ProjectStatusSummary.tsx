@@ -268,9 +268,21 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   )}
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-baccarim-border flex justify-between items-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span className="text-[8px] font-black text-baccarim-text opacity-60 uppercase tracking-widest">Protocolo SEI: {project.specs.numeroProtocolo || 'N/D'}</span>
-                  <i className="fas fa-arrow-right text-baccarim-blue text-xs"></i>
+                <div className="mt-8 pt-6 border-t border-baccarim-border flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex justify-between items-center text-[8px] font-black text-baccarim-text opacity-60 uppercase tracking-widest">
+                    <span>Protocolo SEI: {project.specs.numeroProtocolo || 'N/D'}</span>
+                  </div>
+                  {project.specs.dataProtocolo && (
+                    <div className="flex justify-between items-center text-[8px] font-black text-baccarim-text opacity-60 uppercase tracking-widest">
+                      <span>Data do Protocolo: {project.specs.dataProtocolo}</span>
+                      <i className="fas fa-arrow-right text-baccarim-blue text-xs"></i>
+                    </div>
+                  )}
+                  {!project.specs.dataProtocolo && (
+                    <div className="flex justify-end">
+                      <i className="fas fa-arrow-right text-baccarim-blue text-xs"></i>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -305,11 +317,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                    <i className="fas fa-times"></i>
                  </button>
               </div>
-              <div className="flex items-center space-x-4 mt-6">
+              <div className="flex flex-wrap gap-4 mt-6">
                 <div className="bg-baccarim-blue/10 px-4 py-2 rounded-xl border border-baccarim-blue/20">
                   <p className="text-[8px] font-black text-baccarim-blue uppercase tracking-widest">Protocolo SEI Principal</p>
                   <p className="text-[12px] font-black text-baccarim-text">{selectedProject.specs.numeroProtocolo || 'Não Identificado'}</p>
                 </div>
+                {selectedProject.specs.dataProtocolo && (
+                  <div className="bg-baccarim-green/10 px-4 py-2 rounded-xl border border-baccarim-green/20">
+                    <p className="text-[8px] font-black text-baccarim-green uppercase tracking-widest">Data do Protocolo</p>
+                    <p className="text-[12px] font-black text-baccarim-text">{selectedProject.specs.dataProtocolo}</p>
+                  </div>
+                )}
               </div>
             </div>
 
