@@ -226,6 +226,29 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
+  // Update favicon and manifest dynamically
+  useEffect(() => {
+    const iconUrl = appConfig.appIcon || 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png';
+    
+    // Update favicon
+    let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    link.href = iconUrl;
+
+    // Update apple-touch-icon
+    let appleLink: HTMLLinkElement | null = document.querySelector("link[rel='apple-touch-icon']");
+    if (!appleLink) {
+      appleLink = document.createElement('link');
+      appleLink.rel = 'apple-touch-icon';
+      document.head.appendChild(appleLink);
+    }
+    appleLink.href = iconUrl;
+  }, [appConfig.appIcon]);
+
   // Ordem das abas para navegação por swipe (filtrada por permissões)
   const tabOrder = useMemo(() => {
     const base = ['dashboard', 'map', 'notifications', 'clients', 'agenda', 'reports', 'finance'];

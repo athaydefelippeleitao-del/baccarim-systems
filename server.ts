@@ -148,6 +148,57 @@ async function startServer() {
     res.json(stats);
   });
 
+  app.get("/api/app-icon.png", (req, res) => {
+    const icon = state.appConfig?.appIcon;
+    if (icon && icon.startsWith('data:image')) {
+      try {
+        const parts = icon.split(';base64,');
+        const contentType = parts[0].split(':')[1];
+        const base64Data = parts[1];
+        const img = Buffer.from(base64Data, 'base64');
+        res.writeHead(200, {
+          'Content-Type': contentType,
+          'Content-Length': img.length,
+          'Cache-Control': 'no-cache'
+        });
+        res.end(img);
+        return;
+      } catch (e) {
+        console.error("Error serving app icon:", e);
+      }
+    }
+    // Fallback to default icon
+    res.redirect('https://cdn-icons-png.flaticon.com/512/2991/2991163.png');
+  });
+
+  app.get("/manifest.json", (req, res) => {
+    res.json({
+      "short_name": "Baccarim",
+      "name": "Baccarim Systems - Baccarim Engenharia",
+      "description": "Controle de licenças e notificações ambientais.",
+      "icons": [
+        {
+          "src": "/api/app-icon.png",
+          "type": "image/png",
+          "sizes": "192x192",
+          "purpose": "any maskable"
+        },
+        {
+          "src": "/api/app-icon.png",
+          "type": "image/png",
+          "sizes": "512x512",
+          "purpose": "any maskable"
+        }
+      ],
+      "start_url": "/",
+      "id": "baccarim-systems-v1",
+      "display": "standalone",
+      "theme_color": "#0f172a",
+      "background_color": "#f8fafc",
+      "scope": "/"
+    });
+  });
+
   // ──────────────────────────────────────────────────────────────────────
   // AI ROUTES (OpenAI)
   // ──────────────────────────────────────────────────────────────────────
