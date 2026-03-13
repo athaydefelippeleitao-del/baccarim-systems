@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Project, EnvironmentalLicense, Notification, LicenseStatus } from '../types';
 
 interface ProjectStatusSummaryProps {
@@ -12,6 +12,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [clientFilter, setClientFilter] = useState<string>('todos');
+  const [isExporting, setIsExporting] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedNotifs = selectedProjectId ? notifications.filter(n => n.projectId === selectedProjectId) : [];
@@ -26,10 +28,40 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     return matchStatus && matchClient;
   });
 
+  const handleExportPDF = () => {
+    if (!containerRef.current) return;
+    setIsExporting(true);
+
+    const element = containerRef.current;
+    const opt = {
+      margin: 10,
+      filename: `Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true,
+        backgroundColor: '#f8f9fa'
+      },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
+    };
+
+    // Use window.html2pdf if available or any global reference
+    const html2pdf = (window as any).html2pdf;
+    if (html2pdf) {
+      html2pdf().from(element).set(opt).save().finally(() => {
+        setIsExporting(false);
+      });
+    } else {
+      console.error('html2pdf not found');
+      setIsExporting(false);
+      alert('Erro: Biblioteca de exportação não carregada.');
+    }
+  };
+
   return (
     <div className="space-y-10">
       {/* Search & Filter Bar */}
-      <div className="flex flex-wrap items-center gap-4 bg-baccarim-card/50 p-6 rounded-[2rem] border border-baccarim-border backdrop-blur-md">
+      <div className="flex flex-wrap items-center gap-4 bg-baccarim-card/50 p-6 rounded-[2rem] border border-baccarim-border backdrop-blur-md sticky top-0 z-[50]">
         <div className="flex items-center space-x-3 bg-baccarim-navy/40 px-5 py-3 rounded-2xl border border-baccarim-border">
           <i className="fas fa-filter text-[10px] text-baccarim-blue"></i>
           <span className="text-[9px] font-black text-baccarim-text opacity-90 uppercase tracking-widest">Filtrar por:</span>
@@ -65,11 +97,24 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           <i className="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-baccarim-text-muted pointer-events-none group-hover:text-baccarim-blue transition-colors"></i>
         </div>
 
+        <button 
+          onClick={handleExportPDF}
+          disabled={isExporting}
+          className={`ml-auto flex items-center space-x-3 bg-baccarim-blue text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all transform active:scale-95 ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+        >
+          {isExporting ? (
+            <i className="fas fa-spinner fa-spin"></i>
+          ) : (
+            <i className="fas fa-file-pdf"></i>
+          )}
+          <span>{isExporting ? 'Gerando...' : 'Exportar PDF'}</span>
+        </button>
+
         {/* Active Filters Counter */}
         {(statusFilter !== 'todos' || clientFilter !== 'todos') && (
           <button 
             onClick={() => { setStatusFilter('todos'); setClientFilter('todos'); }}
-            className="ml-auto flex items-center space-x-2 text-[9px] font-black text-rose-500 hover:text-rose-400 transition-colors uppercase tracking-widest"
+            className="flex items-center space-x-2 text-[9px] font-black text-rose-500 hover:text-rose-400 transition-colors uppercase tracking-widest"
           >
             <i className="fas fa-times-circle"></i>
             <span>Limpar Filtros</span>
@@ -77,8 +122,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         )}
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {/* Grid container to be exported */}
+      <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
         {filteredProjects.map(project => {
           const projectLicenses = licenses.filter(l => l.clientName === project.clientName && l.name.includes(project.name));
           const activeLicense = projectLicenses.find(l => l.status === LicenseStatus.ACTIVE);
