@@ -216,7 +216,12 @@ const App: React.FC = () => {
   useEffect(() => { if (isInitialLoadDone.current) emitUpdate('reports', reports); }, [reports, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current && projectCategories.length > 0) emitUpdate('projectCategories', projectCategories); }, [projectCategories, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current && Object.keys(checklistTemplates).length > 0) emitUpdate('checklistTemplates', checklistTemplates); }, [checklistTemplates, emitUpdate]);
-  useEffect(() => { if (isInitialLoadDone.current) emitUpdate('appConfig', appConfig); }, [appConfig, emitUpdate]);
+  useEffect(() => { 
+    if (isInitialLoadDone.current) {
+      console.log('App: Syncing appConfig change...', { hasIcon: !!appConfig.appIcon });
+      emitUpdate('appConfig', appConfig); 
+    }
+  }, [appConfig, emitUpdate]);
 
   useEffect(() => {
     // Ensure loading screen lasts at least 1.5 seconds for branding
@@ -226,11 +231,13 @@ const App: React.FC = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Update favicon and manifest dynamically
+  // Update favicon and manifest dynamically with cache busting
   useEffect(() => {
+    const version = appConfig.appIcon ? appConfig.appIcon.length : 'default';
     const iconUrl = appConfig.appIcon || 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png';
+    const serverIconUrl = `/api/app-icon.png?v=${version}`;
     
-    // Update favicon
+    // Update favicon using the direct base64 for instant feedback, but fallback to server URL
     let link: HTMLLinkElement | null = document.querySelector("link[rel*='icon']");
     if (!link) {
       link = document.createElement('link');
@@ -239,14 +246,25 @@ const App: React.FC = () => {
     }
     link.href = iconUrl;
 
-    // Update apple-touch-icon
+    // Update apple-touch-icon (OS prefers server URLs sometimes)
     let appleLink: HTMLLinkElement | null = document.querySelector("link[rel='apple-touch-icon']");
     if (!appleLink) {
       appleLink = document.createElement('link');
       appleLink.rel = 'apple-touch-icon';
       document.head.appendChild(appleLink);
     }
-    appleLink.href = iconUrl;
+    appleLink.href = serverIconUrl;
+
+    // Update manifest link with version to force re-fetch
+    let manifestLink: HTMLLinkElement | null = document.querySelector("link[rel='manifest']");
+    if (!manifestLink) {
+      manifestLink = document.createElement('link');
+      manifestLink.rel = 'manifest';
+      document.head.appendChild(manifestLink);
+    }
+    manifestLink.href = `/manifest.json?v=${version}`;
+
+    console.log('App: Favicon and Manifest updated with version', version);
   }, [appConfig.appIcon]);
 
   // Ordem das abas para navegação por swipe (filtrada por permissões)
@@ -763,7 +781,7 @@ const App: React.FC = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2"><SmartAnalysis licenses={filteredLicenses} notifications={filteredNotifications} /></div>
               <div className="bg-baccarim-card rounded-[3rem] p-10 shadow-xl border border-baccarim-border flex flex-col items-center justify-center text-center">
-                <AppLogo className="w-16 h-16 mb-4" />
+                <AppLogo className="w-16 h-16 mb-4" customIcon={appConfig.appIcon} />
                 <h3 className="mt-4 text-lg font-black text-baccarim-text">{currentClientFocus || 'Visão Geral'}</h3>
                 <button onClick={() => setActiveTab('reports')} className="mt-6 w-full py-4 bg-baccarim-blue text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all">Novo Relatório Fotográfico</button>
               </div>

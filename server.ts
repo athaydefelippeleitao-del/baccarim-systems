@@ -352,16 +352,22 @@ async function startServer() {
         insertAuditEntry(auditEntry).catch(e => console.error("Failed to save audit entry:", e));
       }
 
-      // Debounce Supabase writes
-      if (saveTimeouts[update.key]) clearTimeout(saveTimeouts[update.key]);
-      saveTimeouts[update.key] = setTimeout(async () => {
-        try {
-          await saveKeyToSupabase(update.key, update.value);
-          console.log(`[Supabase] Saved key "${update.key}"`);
-        } catch (e) {
-          console.error(`[Supabase] Failed to save key "${update.key}":`, e);
-        }
-      }, 2000);
+      // Supabase writes (immediate for appConfig, debounced for others)
+      if (update.key === 'appConfig') {
+        saveKeyToSupabase(update.key, update.value)
+          .then(() => console.log(`[Supabase] Saved appConfig immediately`))
+          .catch(e => console.error(`[Supabase] Failed to save appConfig immediately:`, e));
+      } else {
+        if (saveTimeouts[update.key]) clearTimeout(saveTimeouts[update.key]);
+        saveTimeouts[update.key] = setTimeout(async () => {
+          try {
+            await saveKeyToSupabase(update.key, update.value);
+            console.log(`[Supabase] Saved key "${update.key}"`);
+          } catch (e) {
+            console.error(`[Supabase] Failed to save key "${update.key}":`, e);
+          }
+        }, 2000);
+      }
 
       // Broadcast update to all other clients
       socket.broadcast.emit("state:changed", update);

@@ -447,7 +447,9 @@ export async function getAppConfig(): Promise<any> {
   const { data, error } = await supabase.from('checklist_templates').select('template').eq('key', 'SYSTEM_APP_CONFIG').single();
   if (error) {
     if (error.code !== 'PGRST116') console.error('[Supabase] getAppConfig error:', error);
-    else console.log('[Supabase] SYSTEM_APP_CONFIG not found, using empty object');
+    else {
+      console.warn('[Supabase] SYSTEM_APP_CONFIG not found in checklist_templates table');
+    }
     return {};
   }
   console.log('[Supabase] SYSTEM_APP_CONFIG loaded successfully');
@@ -458,7 +460,12 @@ export async function upsertAppConfig(config: any): Promise<void> {
   console.log('[Supabase] Saving SYSTEM_APP_CONFIG...', { hasIcon: !!config.appIcon });
   const { error } = await supabase.from('checklist_templates').upsert({ key: 'SYSTEM_APP_CONFIG', template: config }, { onConflict: 'key' });
   if (error) {
-    console.error('[Supabase] upsertAppConfig error:', error);
+    console.error('[Supabase] upsertAppConfig error details:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint
+    });
   } else {
     console.log('[Supabase] SYSTEM_APP_CONFIG saved successfully');
   }
