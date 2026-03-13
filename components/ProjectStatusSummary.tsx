@@ -13,7 +13,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [clientFilter, setClientFilter] = useState<string>('todos');
   const [isExporting, setIsExporting] = useState(false);
+  const [isSlideshow, setIsSlideshow] = useState(false);
+  const [slideshowIndex, setSlideshowIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
+  const slideshowTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedNotifs = selectedProjectId ? notifications.filter(n => n.projectId === selectedProjectId) : [];
@@ -55,6 +58,45 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       console.error('html2pdf not found');
       setIsExporting(false);
       alert('Erro: Biblioteca de exportação não carregada.');
+    }
+  };
+
+  // Slideshow Logic
+  React.useEffect(() => {
+    if (isSlideshow && filteredProjects.length > 0) {
+      // Initialize slideshow with the first project
+      setSelectedProjectId(filteredProjects[0].id);
+      setSlideshowIndex(0);
+
+      const startTimer = () => {
+        slideshowTimerRef.current = setInterval(() => {
+          setSlideshowIndex(prev => {
+            const nextIndex = (prev + 1) % filteredProjects.length;
+            setSelectedProjectId(filteredProjects[nextIndex].id);
+            return nextIndex;
+          });
+        }, 10000); // 10 seconds per slide
+      };
+
+      startTimer();
+    } else {
+      if (slideshowTimerRef.current) {
+        clearInterval(slideshowTimerRef.current);
+      }
+    }
+
+    return () => {
+      if (slideshowTimerRef.current) {
+        clearInterval(slideshowTimerRef.current);
+      }
+    };
+  }, [isSlideshow, filteredProjects.length]);
+
+  const toggleSlideshow = () => {
+    setIsSlideshow(!isSlideshow);
+    if (!isSlideshow) {
+      // If turning on, reset details modal if open
+      setSelectedProjectId(null);
     }
   };
 
@@ -108,6 +150,18 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
             <i className="fas fa-file-pdf"></i>
           )}
           <span>{isExporting ? 'Gerando...' : 'Exportar PDF'}</span>
+        </button>
+
+        <button 
+          onClick={toggleSlideshow}
+          className={`flex items-center space-x-3 px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg transition-all transform active:scale-95 ${
+            isSlideshow 
+              ? 'bg-baccarim-green text-white ring-4 ring-baccarim-green/20 animate-pulse' 
+              : 'bg-baccarim-navy/60 text-baccarim-text border border-baccarim-border hover:bg-baccarim-blue hover:text-white'
+          }`}
+        >
+          <i className={`fas ${isSlideshow ? 'fa-pause' : 'fa-play'}`}></i>
+          <span>{isSlideshow ? 'Parar Slide Show' : 'Slide Show'}</span>
         </button>
 
         {/* Active Filters Counter */}
@@ -245,12 +299,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   <h2 className="text-3xl font-black text-baccarim-text tracking-tighter">{selectedProject.name}</h2>
                   <p className="text-xs font-black text-baccarim-blue uppercase tracking-[0.3em] mt-2">Detalhamento de Pendências</p>
                 </div>
-                <button 
-                  onClick={() => setSelectedProjectId(null)}
-                  className="w-12 h-12 rounded-2xl bg-baccarim-hover flex items-center justify-center text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-active transition-all"
-                >
-                  <i className="fas fa-times"></i>
-                </button>
+                <button                   onClick={() => { setSelectedProjectId(null); setIsSlideshow(false); }}
+                   className="w-12 h-12 rounded-2xl bg-baccarim-hover flex items-center justify-center text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-active transition-all"
+                 >
+                   <i className="fas fa-times"></i>
+                 </button>
               </div>
               <div className="flex items-center space-x-4 mt-6">
                 <div className="bg-baccarim-blue/10 px-4 py-2 rounded-xl border border-baccarim-blue/20">
@@ -305,12 +358,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
             {/* Footer */}
             <div className="p-8 border-t border-baccarim-border bg-baccarim-navy/10 flex justify-end">
-              <button 
-                onClick={() => setSelectedProjectId(null)}
-                className="px-10 py-4 bg-baccarim-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-baccarim-green transition-all"
-              >
-                Concluir Visão
-              </button>
+              <button                 onClick={() => { setSelectedProjectId(null); setIsSlideshow(false); }}
+                 className="px-10 py-4 bg-baccarim-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-baccarim-green transition-all"
+               >
+                 Concluir Visão
+               </button>
             </div>
           </div>
         </div>
