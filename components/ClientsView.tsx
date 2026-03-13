@@ -319,14 +319,14 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                           <button
                             type="button"
                             onClick={() => setNewProjectForm({ ...newProjectForm, checklistAgency: 'SEMA' })}
-                            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${newProjectForm.checklistAgency === 'SEMA' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+                            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${newProjectForm.checklistAgency === 'SEMA' ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
                           >
                             SEMA
                           </button>
                           <button
                             type="button"
                             onClick={() => setNewProjectForm({ ...newProjectForm, checklistAgency: 'IAT' })}
-                            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${newProjectForm.checklistAgency === 'IAT' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+                            className={`flex-1 py-3 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${newProjectForm.checklistAgency === 'IAT' ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
                           >
                             IAT
                           </button>
@@ -381,7 +381,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
             >
               <div className="flex items-start justify-between mb-8 md:mb-10 relative z-10">
                 <div className="flex items-center space-x-4 md:space-x-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-baccarim-blue/10 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-baccarim-blue font-black text-2xl md:text-3xl shadow-lg transition-all duration-500 group-hover:bg-baccarim-blue group-hover:text-baccarim-text group-hover:rotate-3">
+                  <div className="w-16 h-16 md:w-20 md:h-20 bg-baccarim-blue/10 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-baccarim-blue font-black text-2xl md:text-3xl shadow-lg transition-all duration-500 group-hover:bg-baccarim-blue group-hover:text-white group-hover:rotate-3">
                     {client.charAt(0)}
                   </div>
                   <div>
@@ -409,7 +409,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
               <div className="mt-auto pt-6 md:pt-8 border-t border-baccarim-border relative z-10">
                 <div className="flex items-center justify-between text-baccarim-text group-hover:text-baccarim-blue transition-all duration-500">
                   <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest">Ver Empreendimentos</span>
-                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-baccarim-border-hover flex items-center justify-center group-hover:bg-baccarim-blue group-hover:text-baccarim-text group-hover:border-baccarim-blue transition-all duration-500">
+                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-baccarim-border-hover flex items-center justify-center group-hover:bg-baccarim-blue group-hover:text-white group-hover:border-baccarim-blue transition-all duration-500">
                     <i className="fas fa-arrow-right text-[10px]"></i>
                   </div>
                 </div>

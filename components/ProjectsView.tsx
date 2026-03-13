@@ -419,7 +419,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
               onClick={() => setExpandedProjectId(isExpanded ? null : project.id)}
             >
               <div className="flex items-center space-x-5">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-baccarim-text text-lg shadow-lg ${isExpanded ? 'bg-baccarim-blue' : 'bg-baccarim-navy'}`}>
+                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-lg shadow-lg ${isExpanded ? 'bg-baccarim-blue' : 'bg-baccarim-navy'}`}>
                   <i className="fas fa-building"></i>
                 </div>
                 <div>

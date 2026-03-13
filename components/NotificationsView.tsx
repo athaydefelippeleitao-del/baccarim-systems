@@ -165,7 +165,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-hover'}`}
+                className={`px-6 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${filter === f ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-hover'}`}
               >
                 {f === 'All' ? 'Todas' : f === 'Open' ? 'Pendentes' : 'Resolvidas'}
               </button>
@@ -213,7 +213,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               <div className="flex-1 space-y-4">
                 <div className="flex items-center space-x-3">
                   <span className="bg-baccarim-hover px-3 py-1 rounded-lg text-[8px] font-black uppercase text-baccarim-text-muted">{notif.agency}</span>
-                  <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase text-baccarim-text ${getSeverityColor(notif.severity)}`}>Severidade {notif.severity}</span>
+                  <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase text-white ${getSeverityColor(notif.severity)}`}>Severidade {notif.severity}</span>
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors">{notif.title}</h3>

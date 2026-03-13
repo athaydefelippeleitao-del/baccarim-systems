@@ -352,7 +352,7 @@ const AgendaView: React.FC<AgendaViewProps> = ({
           <p className="text-baccarim-text-muted font-medium">Controle de prazos e múltiplos anexos por processo.</p>
         </div>
         <div className="flex items-center gap-4">
-          <button onClick={() => { setEditingItem(null); setShowTaskModal(true); }} className="bg-baccarim-blue text-baccarim-text px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-green transition-all">
+          <button onClick={() => { setEditingItem(null); setShowTaskModal(true); }} className="bg-baccarim-blue text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-green transition-all">
              + NOVO PRAZO
           </button>
         </div>

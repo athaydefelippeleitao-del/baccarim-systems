@@ -307,7 +307,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
             <div className="p-8 border-t border-baccarim-border bg-baccarim-navy/10 flex justify-end">
               <button 
                 onClick={() => setSelectedProjectId(null)}
-                className="px-10 py-4 bg-baccarim-blue text-baccarim-text rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-baccarim-green transition-all"
+                className="px-10 py-4 bg-baccarim-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-baccarim-green transition-all"
               >
                 Concluir Visão
               </button>

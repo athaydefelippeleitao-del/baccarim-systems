@@ -56,7 +56,7 @@ const UsersView: React.FC<UsersViewProps> = ({ users, clients, onAddUser, onDele
         </div>
         <button 
           onClick={() => setShowAddModal(true)}
-          className="px-8 py-4 bg-baccarim-blue text-baccarim-text rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:-translate-y-1 transition-all"
+          className="px-8 py-4 bg-baccarim-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:-translate-y-1 transition-all"
         >
           <i className="fas fa-user-plus mr-2"></i> Nova Conta
         </button>
@@ -68,7 +68,7 @@ const UsersView: React.FC<UsersViewProps> = ({ users, clients, onAddUser, onDele
             <div className={`absolute left-0 top-0 bottom-0 w-2 ${user.role === 'admin' ? 'bg-baccarim-blue' : 'bg-baccarim-green'}`}></div>
             
             <div className="flex items-start justify-between mb-6">
-              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-baccarim-text text-xl shadow-lg ${user.role === 'admin' ? 'bg-baccarim-navy' : 'bg-baccarim-green'}`}>
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-white text-xl shadow-lg ${user.role === 'admin' ? 'bg-baccarim-navy' : 'bg-baccarim-green'}`}>
                 <i className={`fas ${user.role === 'admin' ? 'fa-shield-halved' : 'fa-building-user'}`}></i>
               </div>
               <div className="flex space-x-2">
@@ -81,7 +81,7 @@ const UsersView: React.FC<UsersViewProps> = ({ users, clients, onAddUser, onDele
                 </button>
                 <button 
                   onClick={() => setUserToDelete(user.id)}
-                  className="w-10 h-10 rounded-xl bg-baccarim-rose/10 text-baccarim-rose hover:bg-baccarim-rose hover:text-baccarim-text flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+                  className="w-10 h-10 rounded-xl bg-baccarim-rose/10 text-baccarim-rose hover:bg-baccarim-rose hover:text-white flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
                   title="Excluir"
                 >
                   <i className="fas fa-trash-can"></i>
@@ -129,7 +129,7 @@ const UsersView: React.FC<UsersViewProps> = ({ users, clients, onAddUser, onDele
             <p className="text-xs text-baccarim-text-muted mb-8">Este usuário perderá o acesso imediato ao sistema.</p>
             <div className="grid grid-cols-2 gap-4">
               <button onClick={() => setUserToDelete(null)} className="py-4 bg-baccarim-hover text-baccarim-text-muted rounded-2xl font-black uppercase text-[10px] tracking-widest">Cancelar</button>
-              <button onClick={() => confirmDelete(userToDelete)} className="py-4 bg-baccarim-rose text-baccarim-text rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-baccarim-rose/20">Excluir</button>
+              <button onClick={() => confirmDelete(userToDelete)} className="py-4 bg-baccarim-rose text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-xl shadow-baccarim-rose/20">Excluir</button>
             </div>
           </div>
         </div>
@@ -223,7 +223,7 @@ const UsersView: React.FC<UsersViewProps> = ({ users, clients, onAddUser, onDele
               )}
 
               <div className="flex gap-4 pt-6">
-                <button type="submit" className="flex-1 bg-baccarim-blue text-baccarim-text py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all">Criar Conta</button>
+                <button type="submit" className="flex-1 bg-baccarim-blue text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all">Criar Conta</button>
                 <button type="button" onClick={() => setShowAddModal(false)} className="px-8 bg-baccarim-hover text-baccarim-text-muted py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-baccarim-active transition-all">Cancelar</button>
               </div>
             </form>

@@ -123,25 +123,25 @@ const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, prese
           <div className="flex bg-baccarim-card p-1 rounded-2xl border border-baccarim-border">
             <button 
               onClick={() => setActiveSubTab('stats')}
-              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'stats' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'stats' ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
             >
               Estatísticas
             </button>
             <button 
               onClick={() => setActiveSubTab('logs')}
-              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'logs' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'logs' ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
             >
               Logs de Alterações
             </button>
             <button 
               onClick={() => setActiveSubTab('presence')}
-              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'presence' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'presence' ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
             >
               Usuários Online ({presence.length})
             </button>
             <button 
               onClick={() => setActiveSubTab('backup')}
-              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'backup' ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+              className={`px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${activeSubTab === 'backup' ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
             >
               Backup & Restauração
             </button>
@@ -349,7 +349,7 @@ const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, prese
                     alert('Erro ao exportar backup. O arquivo pode ser muito grande para o navegador.');
                   }
                 }}
-                className="w-full py-5 bg-baccarim-blue text-baccarim-text rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all flex items-center justify-center space-x-3"
+                className="w-full py-5 bg-baccarim-blue text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all flex items-center justify-center space-x-3"
               >
                 <i className="fas fa-file-zipper"></i>
                 <span>Fazer Download do Backup (ZIP)</span>
