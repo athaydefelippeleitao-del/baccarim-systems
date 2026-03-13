@@ -84,7 +84,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
   return (
     <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
       {showToast && (
-        <div className="fixed top-10 right-10 z-[200] bg-baccarim-green text-baccarim-text px-6 py-3 rounded-2xl shadow-2xl animate-in slide-in-from-right-8">
+        <div className="fixed top-10 right-10 z-[200] bg-baccarim-green text-white px-6 py-3 rounded-2xl shadow-2xl animate-in slide-in-from-right-8">
           <div className="flex items-center space-x-3">
             <i className="fas fa-check-circle"></i>
             <span className="text-[10px] font-black uppercase tracking-widest">Perfil Atualizado com Sucesso</span>
@@ -93,7 +93,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
       )}
 
       {/* Header do Perfil */}
-      <div className="bg-gradient-to-r from-baccarim-navy to-baccarim-blue rounded-[3rem] p-10 md:p-14 text-baccarim-text shadow-2xl relative overflow-hidden border border-baccarim-border-hover">
+      <div className="bg-gradient-to-r from-baccarim-navy to-baccarim-blue rounded-[3rem] p-10 md:p-14 text-white shadow-2xl relative overflow-hidden border border-baccarim-border-hover">
         <div className="absolute top-0 right-0 w-64 h-64 bg-baccarim-hover rounded-full -mr-20 -mt-20 blur-3xl"></div>
         <div className="relative z-10 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-10">
           <div className="w-24 h-24 md:w-32 md:h-32 bg-baccarim-card rounded-[2rem] flex items-center justify-center text-[#002D62] text-3xl md:text-5xl font-black shadow-2xl">
@@ -168,7 +168,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
               <button 
                 type="submit" 
                 disabled={isSaving}
-                className="w-full md:w-auto px-12 py-4 bg-baccarim-blue text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all disabled:opacity-50"
+                className="w-full md:w-auto px-12 py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all disabled:opacity-50"
               >
                 {isSaving ? 'Salvando...' : 'Salvar Alterações'}
               </button>
@@ -297,7 +297,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
                 <button 
                   onClick={handleExportZip}
                   disabled={isSaving}
-                  className="w-full py-4 bg-baccarim-blue text-baccarim-text rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-green transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                  className="w-full py-4 bg-baccarim-blue text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-green transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {isSaving ? (
                     <div className="w-3 h-3 border-2 border-baccarim-border/20 border-t-white rounded-full animate-spin"></div>

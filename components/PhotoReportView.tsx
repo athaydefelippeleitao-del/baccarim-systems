@@ -508,7 +508,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                               <p className="text-[8px] font-black text-baccarim-text-muted uppercase tracking-widest">{p.clientName}</p>
                               <h5 className={`text-sm font-black truncate ${isSelected ? 'text-baccarim-blue' : 'text-baccarim-navy'}`}>{p.name}</h5>
                             </div>
-                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-baccarim-blue border-baccarim-blue text-baccarim-text' : 'border-slate-200 text-transparent'}`}>
+                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${isSelected ? 'bg-baccarim-blue border-baccarim-blue text-white' : 'border-slate-200 text-transparent'}`}>
                               <i className="fas fa-check text-[10px]"></i>
                             </div>
                           </div>

@@ -537,7 +537,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     {/* I - IDENTIFICAÇÃO DO REQUERENTE */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 border-b border-baccarim-border pb-3">
-                        <span className="text-[10px] font-black bg-baccarim-blue text-baccarim-text px-2 py-0.5 rounded">I</span>
+                        <span className="text-[10px] font-black bg-baccarim-blue text-white px-2 py-0.5 rounded">I</span>
                         <h5 className="text-[11px] font-black text-baccarim-text uppercase tracking-widest">Identificação do Requerente</h5>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -591,7 +591,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     {/* II - CARACTERÍSTICAS DO EMPREENDIMENTO */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 border-b border-baccarim-border pb-3">
-                        <span className="text-[10px] font-black bg-baccarim-blue text-baccarim-text px-2 py-0.5 rounded">II</span>
+                        <span className="text-[10px] font-black bg-baccarim-blue text-white px-2 py-0.5 rounded">II</span>
                         <h5 className="text-[11px] font-black text-baccarim-text uppercase tracking-widest">Características do Empreendimento</h5>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -655,7 +655,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     {/* III - DADOS TÉCNICOS ADICIONAIS */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 border-b border-baccarim-border pb-3">
-                        <span className="text-[10px] font-black bg-baccarim-blue text-baccarim-text px-2 py-0.5 rounded">III</span>
+                        <span className="text-[10px] font-black bg-baccarim-blue text-white px-2 py-0.5 rounded">III</span>
                         <h5 className="text-[11px] font-black text-baccarim-text uppercase tracking-widest">Dados Técnicos Adicionais</h5>
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -702,7 +702,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     <div className="space-y-6">
                       <div className="flex items-center justify-between border-b border-baccarim-border pb-3">
                         <div className="flex items-center gap-3">
-                          <span className="text-[10px] font-black bg-baccarim-blue text-baccarim-text px-2 py-0.5 rounded">IV</span>
+                          <span className="text-[10px] font-black bg-baccarim-blue text-white px-2 py-0.5 rounded">IV</span>
                           <h5 className="text-[11px] font-black text-baccarim-text uppercase tracking-widest">Campos Personalizados</h5>
                         </div>
                         {isEditing && (
@@ -825,7 +825,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                                 <button
                                   key={cat}
                                   onClick={() => setNewItem({ ...newItem, category: cat })}
-                                  className={`p-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newItem.category === cat ? 'bg-baccarim-blue border-baccarim-blue text-baccarim-text' : 'bg-baccarim-hover border-baccarim-border text-baccarim-text-muted hover:border-baccarim-blue'
+                                  className={`p-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newItem.category === cat ? 'bg-baccarim-blue border-baccarim-blue text-white' : 'bg-baccarim-hover border-baccarim-border text-baccarim-text-muted hover:border-baccarim-blue'
                                     }`}
                                 >
                                   {cat}
@@ -835,7 +835,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                           </div>
                           <button
                             onClick={() => handleAddNewItem(project)}
-                            className="w-full bg-baccarim-navy text-baccarim-text p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-baccarim-blue transition-all mt-4"
+                            className="w-full bg-baccarim-navy text-white p-5 rounded-2xl font-black uppercase tracking-[0.2em] shadow-xl hover:bg-baccarim-blue transition-all mt-4"
                           >
                             Adicionar ao Checklist
                           </button>
@@ -846,7 +846,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
                   <div className="bg-baccarim-hover p-6 rounded-[2rem] border border-baccarim-border flex flex-col md:flex-row items-center justify-between gap-6">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-xl bg-baccarim-navy flex items-center justify-center text-baccarim-text shadow-lg">
+                      <div className="w-10 h-10 rounded-xl bg-baccarim-navy flex items-center justify-center text-white shadow-lg">
                         <i className="fas fa-layer-group"></i>
                       </div>
                       <div>
@@ -861,7 +861,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     <div className="flex flex-col md:flex-row gap-4 items-center">
                       <button
                         onClick={(e) => { e.stopPropagation(); setIsAddingItem(project.id); }}
-                        className="px-6 py-3 bg-baccarim-blue text-baccarim-text rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-navy transition-all flex items-center space-x-2"
+                        className="px-6 py-3 bg-baccarim-blue text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-navy transition-all flex items-center space-x-2"
                       >
                         <i className="fas fa-plus"></i>
                         <span>Novo Item</span>
@@ -873,7 +873,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             <button
                               key={agency}
                               onClick={() => handleSwitchAgency(project, agency as 'IAT' | 'SEMA')}
-                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-baccarim-blue text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
+                              className={`px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-baccarim-blue text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
                                 }`}
                             >
                               {agency}
@@ -892,7 +892,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               <button
                                 key={phaseKey}
                                 onClick={() => handleSwitchPhase(project, phaseName)}
-                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-baccarim-green text-baccarim-text shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
+                                className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${isActive ? 'bg-baccarim-green text-white shadow-md' : 'text-baccarim-text-muted hover:bg-baccarim-hover'
                                   }`}
                               >
                                 {phaseName}
@@ -960,7 +960,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             <div key={item.id} className={`bg-baccarim-hover rounded-[2rem] border p-5 shadow-sm transition-all ${item.isCompleted ? 'border-emerald-500/20 bg-baccarim-green/5' : 'border-baccarim-border'}`}>
                               <div className="flex items-start justify-between mb-4 group/item">
                                 <div className="flex items-start space-x-3">
-                                  <button onClick={() => toggleChecklistItem(project, item.id)} className={`mt-0.5 w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-all ${item.isCompleted ? 'bg-baccarim-green border-baccarim-green text-baccarim-text' : 'border-baccarim-border-hover bg-baccarim-hover'}`}><i className="fas fa-check text-[10px]"></i></button>
+                                  <button onClick={() => toggleChecklistItem(project, item.id)} className={`mt-0.5 w-5 h-5 rounded-lg border flex items-center justify-center shrink-0 transition-all ${item.isCompleted ? 'bg-baccarim-green border-baccarim-green text-white' : 'border-baccarim-border-hover bg-baccarim-hover'}`}><i className="fas fa-check text-[10px]"></i></button>
                                   <span className={`text-[11px] font-bold leading-tight ${item.isCompleted ? 'text-emerald-400 opacity-60' : 'text-slate-300'}`}>{item.label}</span>
                                 </div>
                                 <button
@@ -994,7 +994,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     <div className="w-48 h-1.5 bg-baccarim-hover rounded-full overflow-hidden"><div className="h-full bg-baccarim-green" style={{ width: `${project.progress}%` }}></div></div>
                     <span className="text-xs font-black text-baccarim-text">{project.progress}%</span>
                   </div>
-                  <button onClick={() => setExpandedProjectId(null)} className="px-12 py-4 bg-baccarim-navy text-baccarim-text rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-blue transition-all">Salvar e Fechar</button>
+                  <button onClick={() => setExpandedProjectId(null)} className="px-12 py-4 bg-baccarim-navy text-white rounded-2xl text-[9px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-blue transition-all">Salvar e Fechar</button>
                 </div>
 
               </div>
