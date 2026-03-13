@@ -440,11 +440,28 @@ export async function upsertChecklistTemplates(templates: Record<string, any[]>)
 }
 
 // ─────────────────────────────────────────────
+// APP CONFIG
+// ─────────────────────────────────────────────
+export async function getAppConfig(): Promise<any> {
+  const { data, error } = await supabase.from('checklist_templates').select('template').eq('key', 'SYSTEM_APP_CONFIG').single();
+  if (error) {
+    if (error.code !== 'PGRST116') console.error('getAppConfig error:', error);
+    return {};
+  }
+  return data.template || {};
+}
+
+export async function upsertAppConfig(config: any): Promise<void> {
+  const { error } = await supabase.from('checklist_templates').upsert({ key: 'SYSTEM_APP_CONFIG', template: config }, { onConflict: 'key' });
+  if (error) console.error('upsertAppConfig error:', error);
+}
+
+// ─────────────────────────────────────────────
 // LOAD ALL STATE FROM SUPABASE
 // ─────────────────────────────────────────────
 export async function loadStateFromSupabase() {
   console.log('[Supabase] Loading state from database...');
-  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates] =
+  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig] =
     await Promise.all([
       getUsers(),
       getClients(),
@@ -457,10 +474,11 @@ export async function loadStateFromSupabase() {
       getReports(),
       getAuditLog(),
       getChecklistTemplates(),
+      getAppConfig(),
     ]);
 
   console.log(`[Supabase] Loaded: ${projects.length} projects, ${licenses.length} licenses, ${users.length} users`);
-  return { users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates };
+  return { users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig };
 }
 
 // ─────────────────────────────────────────────
@@ -479,6 +497,7 @@ export async function saveKeyToSupabase(key: string, value: any): Promise<void> 
     case 'reports': return upsertReports(value);
     case 'auditLog': return; // audit log is written entry-by-entry
     case 'checklistTemplates': return upsertChecklistTemplates(value);
+    case 'appConfig': return upsertAppConfig(value);
     default:
       console.warn(`[Supabase] Unknown key "${key}" - not persisted`);
   }

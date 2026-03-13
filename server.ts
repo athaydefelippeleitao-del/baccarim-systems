@@ -59,7 +59,8 @@ function getDefaultState() {
     users: [
       { id: '1', name: 'Admin Baccarim', email: 'admin@baccarim.com.br', role: 'admin', password: 'admin123', createdAt: 'Jan 2026' },
       { id: '2', name: 'A.yoshii', email: 'ayos@baccarim.com.br', role: 'client', clientNames: ['A.yoshii'], password: 'ayos123', createdAt: 'Jan 2026' }
-    ]
+    ],
+    appConfig: {}
   };
 }
 
@@ -94,6 +95,7 @@ async function loadState() {
     }
 
     console.log("[Supabase] State loaded successfully.");
+    if (!dbState.appConfig) dbState.appConfig = {};
     return dbState;
   } catch (e) {
     console.error("[Supabase] Error loading state, falling back to default state:", e);
