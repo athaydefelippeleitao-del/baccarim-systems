@@ -43,6 +43,7 @@ const App: React.FC = () => {
   const [isConnected, setIsConnected] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // Refs to track last known server state to prevent sync loops
   const lastServerState = useRef<Record<string, string>>({});
@@ -230,6 +231,26 @@ const App: React.FC = () => {
     }, 1500);
     return () => clearTimeout(timer);
   }, []);
+
+  // Handle PWA Install Prompt
+  useEffect(() => {
+    const handleBeforeInstallPrompt = (e: any) => {
+      e.preventDefault();
+      setDeferredPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt);
+  }, []);
+
+  const handleInstallClick = async () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        setDeferredPrompt(null);
+      }
+    }
+  };
 
   // Update favicon and manifest dynamically with cache busting
   useEffect(() => {
@@ -733,6 +754,27 @@ const App: React.FC = () => {
                 <span>{isPresentationMode ? 'Sair da Apresentação' : 'Modo Apresentação'}</span>
               </button>
             </div>
+
+            {deferredPrompt && !isPresentationMode && (
+              <div className="bg-gradient-to-r from-baccarim-blue to-baccarim-green rounded-[2.5rem] p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-6 border border-white/20">
+                <div className="flex items-center space-x-6">
+                  <div className="w-16 h-16 bg-white rounded-2xl p-2 shadow-inner">
+                    <img src={appConfig.appIcon || 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png'} alt="App Icon" className="w-full h-full object-cover rounded-xl" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-black text-white leading-none mb-1">Baixe nosso Aplicativo!</h3>
+                    <p className="text-sm font-bold text-white/80">Instale a Baccarim Systems no seu dispositivo para acesso rápido e offline.</p>
+                  </div>
+                </div>
+                <button 
+                  onClick={handleInstallClick}
+                  className="w-full md:w-auto px-8 py-4 bg-white text-baccarim-blue rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-zinc-100 transition-all shadow-xl whitespace-nowrap"
+                >
+                  <i className="fas fa-download mr-2"></i>
+                  Instalar App
+                </button>
+              </div>
+            )}
 
             {isPresentationMode ? (
               <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">

@@ -5,6 +5,7 @@ import ProjectProcessReportView from './ProjectProcessReportView';
 import { utmToDecimal } from '../utils/geoUtils';
 import { downloadFile } from '../utils/fileUtils';
 import { exportProjectDocumentsAsZip } from '../utils/zipUtils';
+import ProjectExtensionReportView from './ProjectExtensionReportView';
 
 interface ProjectsViewProps {
   projects: Project[];
@@ -46,24 +47,27 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   const [tempProjectName, setTempProjectName] = useState('');
   const [isAddingCustomSpec, setIsAddingCustomSpec] = useState<string | null>(null);
   const [newCustomSpec, setNewCustomSpec] = useState({ label: '', value: '' });
+  const [extensionProject, setExtensionProject] = useState<Project | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDilacaoPrazo = (project: Project) => {
+    setExtensionProject(project);
+    
+    // Optionally auto-create the notification tracker when the user opens the dialog:
     const newNotif: Notification = {
       id: `notif-${Date.now()}`,
       title: `Dilação de Prazo: ${project.name}`,
       clientName: project.clientName,
       projectId: project.id,
-      description: `Solicitação de dilação de prazo para o empreendimento ${project.name}. Favor verificar documentação e prazos vigentes.`,
+      description: `Processo de solicitação de dilação de prazo gerado para ${project.name}.`,
       dateReceived: new Date().toISOString().split('T')[0],
-      deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 15 days from now
+      deadline: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       status: 'Open',
       agency: project.checklistAgency || 'SEMA',
       severity: 'Média',
       attachedFiles: []
     };
     onAddNotification(newNotif);
-    alert(`Solicitação de Dilação de Prazo criada para ${project.name}. Verifique na aba de Notificações.`);
   };
 
   const resizeImage = (base64Str: string, maxWidth = 1280, maxHeight = 1280): Promise<string> => {
@@ -392,6 +396,13 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
           licenses={licenses}
           notifications={notifications}
           onClose={() => setReportProject(null)}
+        />
+      )}
+
+      {extensionProject && (
+        <ProjectExtensionReportView
+          project={extensionProject}
+          onClose={() => setExtensionProject(null)}
         />
       )}
 
