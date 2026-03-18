@@ -38,7 +38,7 @@ const ProjectProcessReportView: React.FC<ProjectProcessReportViewProps> = ({ pro
 
   const BaccarimLogo = () => (
     <div className="flex items-center space-x-2">
-      <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-8 h-8 object-contain" />
+      <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="w-8 h-8 object-contain" />
       <span className="text-xl font-black text-baccarim-navy tracking-tighter">Baccarim Systems</span>
     </div>
   );

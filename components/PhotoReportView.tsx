@@ -413,13 +413,13 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
   const BaccarimLogo = ({ className = "" }: { className?: string }) => (
     <div className={`flex flex-col items-end ${className}`}>
-      <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-16 h-16 object-contain" />
+      <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="w-16 h-16 object-contain" />
     </div>
   );
 
   const WatermarkLogo = () => (
     <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] overflow-hidden">
-      <img src="/logo_baccarim.png" alt="Baccarim Logo Watermark" className="w-[150mm] h-[150mm] object-contain transform rotate-12" />
+      <img src="/logo_baccarim.jpg" alt="Baccarim Logo Watermark" className="w-[150mm] h-[150mm] object-contain transform rotate-12" />
     </div>
   );
 
@@ -724,7 +724,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               {/* Middle Section - Baccarim Branding */}
               <div className="text-center w-full space-y-16 relative z-10">
                 <div className="space-y-6 flex flex-col items-center">
-                  <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-32 h-32 mb-4 object-contain" />
+                  <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="w-32 h-32 mb-4 object-contain" />
                   <h1 className="text-[42px] font-black text-[#002D62] leading-[1.1] tracking-tighter uppercase">Baccarim<br />Engenharia de<br />Loteamentos</h1>
                 </div>
 
@@ -778,7 +778,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                     <p className="text-[16px] font-black text-[#002D62] text-center">Contratada</p>
                     <div className="space-y-6 text-center flex flex-col items-center">
                       <div className="text-left flex flex-col items-center">
-                        <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-16 h-16 object-contain mb-4" />
+                        <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="w-16 h-16 object-contain mb-4" />
                         <h4 className="text-[24px] font-black text-[#002D62] leading-tight uppercase text-center">Baccarim<br />Engenharia de<br />Loteamentos</h4>
                       </div>
                       <p className="text-[14px] font-bold text-[#002D62] leading-relaxed">
