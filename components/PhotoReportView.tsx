@@ -413,21 +413,13 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
   const BaccarimLogo = ({ className = "" }: { className?: string }) => (
     <div className={`flex flex-col items-end ${className}`}>
-      <div className="w-10 h-10 grid grid-cols-2 gap-1">
-        <div className="bg-[#00B08E] row-span-2 rounded-sm transform skew-y-[-12deg]"></div>
-        <div className="bg-[#002D62] rounded-sm transform skew-y-[12deg]"></div>
-        <div className="bg-[#3FA9F5] rounded-sm transform skew-y-[12deg]"></div>
-      </div>
+      <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-16 h-16 object-contain" />
     </div>
   );
 
   const WatermarkLogo = () => (
-    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03] overflow-hidden">
-      <div className="w-[150mm] h-[150mm] grid grid-cols-2 gap-4 transform rotate-12">
-        <div className="bg-[#00B08E] row-span-2 rounded-[2rem] transform skew-y-[-12deg]"></div>
-        <div className="bg-[#002D62] rounded-[2rem] transform skew-y-[12deg]"></div>
-        <div className="bg-[#3FA9F5] rounded-[2rem] transform skew-y-[12deg]"></div>
-      </div>
+    <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.05] overflow-hidden">
+      <img src="/logo_baccarim.png" alt="Baccarim Logo Watermark" className="w-[150mm] h-[150mm] object-contain transform rotate-12" />
     </div>
   );
 
@@ -732,11 +724,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               {/* Middle Section - Baccarim Branding */}
               <div className="text-center w-full space-y-16 relative z-10">
                 <div className="space-y-6 flex flex-col items-center">
-                  <div className="w-24 h-24 grid grid-cols-2 gap-2 mb-4">
-                    <div className="bg-[#00B08E] row-span-2 rounded-md transform skew-y-[-12deg]"></div>
-                    <div className="bg-[#002D62] rounded-md transform skew-y-[12deg]"></div>
-                    <div className="bg-[#3FA9F5] rounded-md transform skew-y-[12deg]"></div>
-                  </div>
+                  <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-32 h-32 mb-4 object-contain" />
                   <h1 className="text-[42px] font-black text-[#002D62] leading-[1.1] tracking-tighter uppercase">Baccarim<br />Engenharia de<br />Loteamentos</h1>
                 </div>
 
@@ -789,8 +777,9 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                   <div className="space-y-12">
                     <p className="text-[16px] font-black text-[#002D62] text-center">Contratada</p>
                     <div className="space-y-6 text-center flex flex-col items-center">
-                      <div className="text-left">
-                        <h4 className="text-[24px] font-black text-[#002D62] leading-tight uppercase">Baccarim<br />Engenharia de<br />Loteamentos</h4>
+                      <div className="text-left flex flex-col items-center">
+                        <img src="/logo_baccarim.png" alt="Baccarim Logo" className="w-16 h-16 object-contain mb-4" />
+                        <h4 className="text-[24px] font-black text-[#002D62] leading-tight uppercase text-center">Baccarim<br />Engenharia de<br />Loteamentos</h4>
                       </div>
                       <p className="text-[14px] font-bold text-[#002D62] leading-relaxed">
                         {selectedReport.respAddress} – {selectedReport.respCity}
