@@ -35,14 +35,8 @@ const LoadingScreen: React.FC = () => {
              {/* Glowing Aura */}
              <div className="absolute inset-0 bg-baccarim-blue/20 blur-3xl rounded-full animate-pulse"></div>
              
-             {/* Geometric Blocks */}
-             <div className="absolute inset-0 grid grid-cols-2 gap-3 animate-in zoom-in duration-1000">
-                <div className="bg-baccarim-green rounded-2xl transform -skew-y-12 shadow-[0_0_40px_rgba(0,176,142,0.5)] animate-float-slow"></div>
-                <div className="space-y-3">
-                   <div className="h-1/2 bg-baccarim-navy/10 border border-baccarim-border rounded-2xl transform skew-y-12 shadow-xl animate-float-slow" style={{ animationDelay: '0.5s' }}></div>
-                   <div className="h-1/2 bg-baccarim-blue rounded-2xl transform skew-y-12 shadow-[0_0_40px_rgba(63,169,245,0.5)] animate-float-slow" style={{ animationDelay: '1s' }}></div>
-                </div>
-             </div>
+             {/* Custom Logo Image */}
+             <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="absolute inset-0 w-full h-full object-contain animate-in zoom-in duration-1000 rounded-2xl" />
           </div>
           
           <div className="text-center space-y-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-500 fill-mode-both">
