@@ -80,8 +80,11 @@ export async function getProjects(): Promise<Project[]> {
 export async function upsertProjects(projects: Project[]): Promise<void> {
   if (!projects.length) return;
   const rows = projects.map(mapProjectToDb);
-  const { error } = await supabase.from('projects').upsert(rows, { onConflict: 'id' });
-  if (error) console.error('upsertProjects error:', error);
+  for (let i = 0; i < rows.length; i += 5) {
+    const chunk = rows.slice(i, i + 5);
+    const { error } = await supabase.from('projects').upsert(chunk, { onConflict: 'id' });
+    if (error) console.error('upsertProjects error on chunk:', error);
+  }
 }
 
 function mapProjectFromDb(row: any): Project {
@@ -133,8 +136,11 @@ export async function getLicenses(): Promise<EnvironmentalLicense[]> {
 export async function upsertLicenses(licenses: EnvironmentalLicense[]): Promise<void> {
   if (!licenses.length) return;
   const rows = licenses.map(mapLicenseToDb);
-  const { error } = await supabase.from('licenses').upsert(rows, { onConflict: 'id' });
-  if (error) console.error('upsertLicenses error:', error);
+  for (let i = 0; i < rows.length; i += 5) {
+    const chunk = rows.slice(i, i + 5);
+    const { error } = await supabase.from('licenses').upsert(chunk, { onConflict: 'id' });
+    if (error) console.error('upsertLicenses error on chunk:', error);
+  }
 }
 
 function mapLicenseFromDb(row: any): EnvironmentalLicense {
@@ -196,8 +202,11 @@ export async function getNotifications(): Promise<Notification[]> {
 export async function upsertNotifications(notifications: Notification[]): Promise<void> {
   if (!notifications.length) return;
   const rows = notifications.map(mapNotificationToDb);
-  const { error } = await supabase.from('notifications').upsert(rows, { onConflict: 'id' });
-  if (error) console.error('upsertNotifications error:', error);
+  for (let i = 0; i < rows.length; i += 5) {
+    const chunk = rows.slice(i, i + 5);
+    const { error } = await supabase.from('notifications').upsert(chunk, { onConflict: 'id' });
+    if (error) console.error('upsertNotifications error on chunk:', error);
+  }
 }
 
 function mapNotificationFromDb(row: any): Notification {
@@ -247,8 +256,11 @@ export async function getContracts(): Promise<Contract[]> {
 export async function upsertContracts(contracts: Contract[]): Promise<void> {
   if (!contracts.length) return;
   const rows = contracts.map(mapContractToDb);
-  const { error } = await supabase.from('contracts').upsert(rows, { onConflict: 'id' });
-  if (error) console.error('upsertContracts error:', error);
+  for (let i = 0; i < rows.length; i += 5) {
+    const chunk = rows.slice(i, i + 5);
+    const { error } = await supabase.from('contracts').upsert(chunk, { onConflict: 'id' });
+    if (error) console.error('upsertContracts error on chunk:', error);
+  }
 }
 
 function mapContractFromDb(row: any): Contract {
@@ -360,8 +372,11 @@ export async function getReports(): Promise<PhotoReport[]> {
 export async function upsertReports(reports: PhotoReport[]): Promise<void> {
   if (!reports.length) return;
   const rows = reports.map(mapReportToDb);
-  const { error } = await supabase.from('reports').upsert(rows, { onConflict: 'id' });
-  if (error) console.error('upsertReports error:', error);
+  for (let i = 0; i < rows.length; i += 2) {
+    const chunk = rows.slice(i, i + 2);
+    const { error } = await supabase.from('reports').upsert(chunk, { onConflict: 'id' });
+    if (error) console.error('upsertReports error on chunk:', error);
+  }
 }
 
 function mapReportFromDb(row: any): PhotoReport {

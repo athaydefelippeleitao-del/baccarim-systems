@@ -272,19 +272,17 @@ async function startServer() {
         auditLog: newState.auditLog || []
       };
 
-      // Persist to Supabase
-      await Promise.all([
-        saveKeyToSupabase('users', state.users),
-        saveKeyToSupabase('clients', state.clients),
-        saveKeyToSupabase('projects', state.projects),
-        saveKeyToSupabase('licenses', state.licenses),
-        saveKeyToSupabase('notifications', state.notifications),
-        saveKeyToSupabase('contracts', state.contracts),
-        saveKeyToSupabase('meetings', state.meetings),
-        saveKeyToSupabase('videos', state.videos),
-        saveKeyToSupabase('reports', state.reports),
-        saveKeyToSupabase('checklistTemplates', state.checklistTemplates),
-      ]);
+      // Persist to Supabase Sequentially to avoid overwhelming DB connection
+      await saveKeyToSupabase('users', state.users);
+      await saveKeyToSupabase('clients', state.clients);
+      await saveKeyToSupabase('checklistTemplates', state.checklistTemplates);
+      await saveKeyToSupabase('projects', state.projects);
+      await saveKeyToSupabase('licenses', state.licenses);
+      await saveKeyToSupabase('notifications', state.notifications);
+      await saveKeyToSupabase('contracts', state.contracts);
+      await saveKeyToSupabase('meetings', state.meetings);
+      await saveKeyToSupabase('videos', state.videos);
+      await saveKeyToSupabase('reports', state.reports);
 
       console.log("State restored to Supabase after restore.");
 
