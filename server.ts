@@ -272,25 +272,30 @@ async function startServer() {
         auditLog: newState.auditLog || []
       };
 
-      // Persist to Supabase Sequentially to avoid overwhelming DB connection
-      await saveKeyToSupabase('users', state.users);
-      await saveKeyToSupabase('clients', state.clients);
-      await saveKeyToSupabase('checklistTemplates', state.checklistTemplates);
-      await saveKeyToSupabase('projects', state.projects);
-      await saveKeyToSupabase('licenses', state.licenses);
-      await saveKeyToSupabase('notifications', state.notifications);
-      await saveKeyToSupabase('contracts', state.contracts);
-      await saveKeyToSupabase('meetings', state.meetings);
-      await saveKeyToSupabase('videos', state.videos);
-      await saveKeyToSupabase('reports', state.reports);
-
-      console.log("State restored to Supabase after restore.");
-
       // Broadcast to all clients to force update
       io.emit("state:init", state);
       console.log("Broadcasted state:init to all clients.");
 
-      res.json({ success: true, message: "Backup restaurado com sucesso" });
+      res.json({ success: true, message: "Backup restaurado localmente! Sincronizando com a nuvem em segundo plano." });
+
+      // Persist to Supabase Sequentially in background to avoid overwhelming DB connection and locking requests
+      (async () => {
+        try {
+          await saveKeyToSupabase('users', state.users);
+          await saveKeyToSupabase('clients', state.clients);
+          await saveKeyToSupabase('checklistTemplates', state.checklistTemplates);
+          await saveKeyToSupabase('projects', state.projects);
+          await saveKeyToSupabase('licenses', state.licenses);
+          await saveKeyToSupabase('notifications', state.notifications);
+          await saveKeyToSupabase('contracts', state.contracts);
+          await saveKeyToSupabase('meetings', state.meetings);
+          await saveKeyToSupabase('videos', state.videos);
+          await saveKeyToSupabase('reports', state.reports);
+          console.log("State restored to Supabase in background.");
+        } catch (e) {
+          console.error("Error during background restore sync:", e);
+        }
+      })();
     } catch (e) {
       console.error("Error restoring backup:", e);
       res.status(500).json({ error: "Internal server error" });
