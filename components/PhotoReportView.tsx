@@ -56,6 +56,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     respCity: 'Ibiporã-Paraná',
     respCep: '86200-000',
     respPhone: '(43) 3268-0916',
+    techResponsibilityLabel: 'RESPONSÁVEL TÉCNICO DO RAS',
     technicalBasis: 'Resolução SEDEST nº 050/2022',
     ownerName: '',
     entName: '', entCpf: '', entAddress: '', entDistrict: '', entCity: 'Londrina/PR', entCep: '',
@@ -590,6 +591,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                       <div className="space-y-6 pt-4 border-t">
                         <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">2. Identificação da Empresa e Responsável</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título do Responsável (Ex: RESPONSÁVEL TÉCNICO DO RAS)</label>
+                            <input value={draftReport.techResponsibilityLabel || 'RESPONSÁVEL TÉCNICO DO RAS'} onChange={e => setDraftReport({ ...draftReport, techResponsibilityLabel: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" placeholder="Ex: RESPONSÁVEL TÉCNICO DO RAS" />
+                          </div>
                           <div className="space-y-1">
                             <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Responsável Técnico</label>
                             <input value={draftReport.respName} onChange={e => setDraftReport({ ...draftReport, respName: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" />
@@ -807,7 +812,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                 </div>
 
                 <div className="space-y-10 text-center pt-10">
-                  <p className="text-[14px] font-black text-[#002D62] uppercase tracking-widest">RESPONSÁVEL TÉCNICO DO RAS</p>
+                  <p className="text-[14px] font-black text-[#002D62] uppercase tracking-widest">{selectedReport.techResponsibilityLabel || 'RESPONSÁVEL TÉCNICO DO RAS'}</p>
                   <div className="space-y-2">
                     <p className="text-[18px] font-black text-[#002D62]">{selectedReport.respName}</p>
                     <p className="text-[14px] font-bold text-[#002D62]">{selectedReport.respRole || 'Engenheiro Civil'}</p>

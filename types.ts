@@ -262,6 +262,7 @@ export interface PhotoReport {
   respCity: string;
   respCep: string;
   respPhone: string;
+  techResponsibilityLabel?: string;
   
   photos: PhotoItem[];
 }
