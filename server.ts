@@ -23,6 +23,7 @@ import {
   upsertLicenses,
   upsertNotifications,
   upsertContracts,
+  deleteKeyFromSupabase,
 } from "./services/supabaseService";
 
 // Import OpenAI service (server-side only)
@@ -374,6 +375,42 @@ async function startServer() {
 
       // Broadcast update to all other clients
       socket.broadcast.emit("state:changed", update);
+    });
+
+    socket.on("state:delete", async (data: { key: string, id: string, user?: any }) => {
+      if (!data.key || !data.id) return;
+      console.log(`[Socket] Deleting ${data.key}:${data.id}`);
+
+      // Update local server state
+      if (Array.isArray(state[data.key])) {
+        state[data.key] = state[data.key].filter((item: any) => item.id !== data.id);
+      }
+
+      // Persist to Supabase
+      try {
+        await deleteKeyFromSupabase(data.key, data.id);
+        console.log(`[Supabase] Deleted ${data.key}:${data.id}`);
+      } catch (e) {
+        console.error(`[Supabase] Failed to delete ${data.key}:${data.id}:`, e);
+      }
+
+      // Record audit log if user info is provided
+      if (data.user) {
+        const auditEntry = {
+          id: `audit-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
+          userId: data.user.id,
+          userName: data.user.name,
+          action: 'DELETE',
+          details: `Excluiu ${data.key}: ${data.id}`,
+          timestamp: new Date().toISOString()
+        };
+        state.auditLog = [auditEntry, ...(state.auditLog || [])].slice(0, 100);
+        io.emit("state:changed", { key: 'auditLog', value: state.auditLog });
+        insertAuditEntry(auditEntry).catch(e => console.error("Failed to save audit entry:", e));
+      }
+
+      // Broadcast the deletion to all other clients
+      socket.broadcast.emit("state:deleted", { key: data.key, id: data.id });
     });
 
     socket.on("disconnect", () => {

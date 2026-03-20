@@ -162,6 +162,20 @@ const App: React.FC = () => {
       }
     });
 
+    newSocket.on('state:deleted', (data: { key: string, id: string }) => {
+      console.log(`Deleção recebida do servidor: ${data.key}:${data.id}`);
+      switch (data.key) {
+        case 'users': setUsers(prev => prev.filter(u => u.id !== data.id)); break;
+        case 'projects': setProjects(prev => prev.filter(p => p.id !== data.id)); break;
+        case 'licenses': setLicenses(prev => prev.filter(l => l.id !== data.id)); break;
+        case 'notifications': setNotifications(prev => prev.filter(n => n.id !== data.id)); break;
+        case 'contracts': setContracts(prev => prev.filter(c => c.id !== data.id)); break;
+        case 'reports': setReports(prev => prev.filter(r => r.id !== data.id)); break;
+        case 'meetings': setMeetings(prev => prev.filter(m => m.id !== data.id)); break;
+        case 'videos': setVideos(prev => prev.filter(v => v.id !== data.id)); break;
+      }
+    });
+
     return () => {
       newSocket.disconnect();
     };
@@ -191,6 +205,12 @@ const App: React.FC = () => {
       // Reset syncing indicator after a short delay
       setTimeout(() => setIsSyncing(false), 1000);
     }, 500); // 500ms debounce
+  }, [socket, isConnected, currentUser]);
+
+  const emitDelete = useCallback((key: string, id: string) => {
+    if (!socket || !isConnected) return;
+    console.log(`Emitting delete for ${key}:${id}`);
+    socket.emit('state:delete', { key, id, user: currentUser });
   }, [socket, isConnected, currentUser]);
 
   const isInitialLoadDone = useRef(false);
@@ -382,10 +402,12 @@ const App: React.FC = () => {
 
   const handleDeleteReport = (id: string) => {
     setReports(prev => prev.filter(r => r.id !== id));
+    emitDelete('reports', id);
   };
 
   const handleDeleteContract = (id: string) => {
     setContracts(prev => prev.filter(c => c.id !== id));
+    emitDelete('contracts', id);
   };
 
   const handleAddNotification = (newNotif: Notification) => {
@@ -394,11 +416,13 @@ const App: React.FC = () => {
 
   const handleDeleteNotification = useCallback((id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
-  }, []);
+    emitDelete('notifications', id);
+  }, [emitDelete]);
 
   const handleDeleteLicense = useCallback((id: string) => {
     setLicenses(prev => prev.filter(l => l.id !== id));
-  }, []);
+    emitDelete('licenses', id);
+  }, [emitDelete]);
 
   const handleAddClient = (clientName: string) => {
     if (!clients.includes(clientName)) {
@@ -426,9 +450,25 @@ const App: React.FC = () => {
 
   const handleDeleteProject = (projectId: string) => {
     if (window.confirm('Excluir este empreendimento?')) {
+      // Find dependent items to delete them too
+      const projectLicenses = licenses.filter(l => l.id.includes(projectId));
+      const projectNotifications = notifications.filter(n => n.projectId === projectId);
+      const projectReports = reports.filter(r => r.projectId === projectId);
+      const projectContracts = contracts.filter(c => c.projectId === projectId);
+
+      // Locally filter
       setProjects(prev => prev.filter(p => p.id !== projectId));
       setLicenses(prev => prev.filter(l => !l.id.includes(projectId)));
       setNotifications(prev => prev.filter(n => n.projectId !== projectId));
+      setReports(prev => prev.filter(r => r.projectId !== projectId));
+      setContracts(prev => prev.filter(c => c.projectId !== projectId));
+
+      // Emit deletions
+      emitDelete('projects', projectId);
+      projectLicenses.forEach(l => emitDelete('licenses', l.id));
+      projectNotifications.forEach(n => emitDelete('notifications', n.id));
+      projectReports.forEach(r => emitDelete('reports', r.id));
+      projectContracts.forEach(c => emitDelete('contracts', c.id));
     }
   };
 
@@ -835,7 +875,12 @@ const App: React.FC = () => {
 
         {activeTab === 'map' && <MapView projects={filteredProjects} onSelectProject={() => setActiveTab('clients')} />}
         {activeTab === 'notifications' && <NotificationsView notifications={filteredNotifications} clients={filteredClientsList} projects={filteredProjects} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onDeleteNotification={handleDeleteNotification} />}
-        {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onDeleteProject={handleDeleteProject} onSelectClient={(n) => setAdminClientFilter(n)} onDeleteClient={(client) => setClients(prev => prev.filter(c => c !== client))} onAddNotification={handleAddNotification} />}
+        {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onDeleteProject={handleDeleteProject} onSelectClient={(n) => setAdminClientFilter(n)} onDeleteClient={(client) => {
+          if (window.confirm(`Excluir o cliente ${client} e todos os seus dados?`)) {
+            setClients(prev => prev.filter(c => c !== client));
+            emitDelete('clients', client);
+          }
+        }} onAddNotification={handleAddNotification} />}
         {activeTab === 'agenda' && <AgendaView currentUser={currentUser} clients={filteredClientsList} projects={filteredProjects} licenses={filteredLicenses} notifications={filteredNotifications} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onUpdateLicense={handleUpdateLicense} onDeleteNotification={handleDeleteNotification} onDeleteLicense={handleDeleteLicense} />}
         {activeTab === 'finance' && <FinanceView clients={filteredClientsList} contracts={filteredContracts} onUpdateContract={handleUpdateContract} onDeleteContract={handleDeleteContract} />}
         {activeTab === 'reports' && <PhotoReportView projects={filteredProjects} reports={filteredReports} onUpdateReport={handleUpdateReport} onDeleteReport={handleDeleteReport} />}
@@ -844,7 +889,10 @@ const App: React.FC = () => {
             users={users}
             clients={clients}
             onAddUser={(newUser) => setUsers(prev => [...prev, newUser])}
-            onDeleteUser={(id) => setUsers(prev => prev.filter(u => u.id !== id))}
+            onDeleteUser={(id) => {
+              setUsers(prev => prev.filter(u => u.id !== id));
+              emitDelete('users', id);
+            }}
           />
         )}
         {activeTab === 'config' && (currentUser.role === 'admin' || currentUser.role === 'engineer') && (

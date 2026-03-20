@@ -22,6 +22,11 @@ export async function upsertUsers(users: any[]): Promise<void> {
   if (error) console.error('upsertUsers error:', error);
 }
 
+export async function deleteUser(id: string): Promise<void> {
+  const { error } = await supabase.from('users').delete().eq('id', id);
+  if (error) console.error('deleteUser error:', error);
+}
+
 function mapUserFromDb(row: any): any {
   return {
     id: row.id,
@@ -68,6 +73,11 @@ export async function upsertClients(clients: string[]): Promise<void> {
   if (error) console.error('upsertClients error:', error);
 }
 
+export async function deleteClient(name: string): Promise<void> {
+  const { error } = await supabase.from('clients').delete().eq('name', name);
+  if (error) console.error('deleteClient error:', error);
+}
+
 // ─────────────────────────────────────────────
 // PROJECTS
 // ─────────────────────────────────────────────
@@ -85,6 +95,11 @@ export async function upsertProjects(projects: Project[]): Promise<void> {
     const { error } = await supabase.from('projects').upsert(chunk, { onConflict: 'id' });
     if (error) console.error('upsertProjects error on chunk:', error);
   }
+}
+
+export async function deleteProject(id: string): Promise<void> {
+  const { error } = await supabase.from('projects').delete().eq('id', id);
+  if (error) console.error('deleteProject error:', error);
 }
 
 function mapProjectFromDb(row: any): Project {
@@ -141,6 +156,11 @@ export async function upsertLicenses(licenses: EnvironmentalLicense[]): Promise<
     const { error } = await supabase.from('licenses').upsert(chunk, { onConflict: 'id' });
     if (error) console.error('upsertLicenses error on chunk:', error);
   }
+}
+
+export async function deleteLicense(id: string): Promise<void> {
+  const { error } = await supabase.from('licenses').delete().eq('id', id);
+  if (error) console.error('deleteLicense error:', error);
 }
 
 function mapLicenseFromDb(row: any): EnvironmentalLicense {
@@ -209,6 +229,11 @@ export async function upsertNotifications(notifications: Notification[]): Promis
   }
 }
 
+export async function deleteNotification(id: string): Promise<void> {
+  const { error } = await supabase.from('notifications').delete().eq('id', id);
+  if (error) console.error('deleteNotification error:', error);
+}
+
 function mapNotificationFromDb(row: any): Notification {
   return {
     id: row.id,
@@ -263,6 +288,11 @@ export async function upsertContracts(contracts: Contract[]): Promise<void> {
   }
 }
 
+export async function deleteContract(id: string): Promise<void> {
+  const { error } = await supabase.from('contracts').delete().eq('id', id);
+  if (error) console.error('deleteContract error:', error);
+}
+
 function mapContractFromDb(row: any): Contract {
   return {
     id: row.id,
@@ -312,6 +342,11 @@ export async function upsertMeetings(meetings: Meeting[]): Promise<void> {
   if (error) console.error('upsertMeetings error:', error);
 }
 
+export async function deleteMeeting(id: string): Promise<void> {
+  const { error } = await supabase.from('meetings').delete().eq('id', id);
+  if (error) console.error('deleteMeeting error:', error);
+}
+
 function mapMeetingFromDb(row: any): Meeting {
   return {
     id: row.id,
@@ -352,6 +387,11 @@ export async function upsertVideos(videos: ProductionVideo[]): Promise<void> {
   if (error) console.error('upsertVideos error:', error);
 }
 
+export async function deleteVideo(id: string): Promise<void> {
+  const { error } = await supabase.from('videos').delete().eq('id', id);
+  if (error) console.error('deleteVideo error:', error);
+}
+
 function mapVideoFromDb(row: any): ProductionVideo {
   return { id: row.id, title: row.title, status: row.status, deadline: row.deadline || '' };
 }
@@ -377,6 +417,11 @@ export async function upsertReports(reports: PhotoReport[]): Promise<void> {
     const { error } = await supabase.from('reports').upsert(chunk, { onConflict: 'id' });
     if (error) console.error('upsertReports error on chunk:', error);
   }
+}
+
+export async function deleteReport(id: string): Promise<void> {
+  const { error } = await supabase.from('reports').delete().eq('id', id);
+  if (error) console.error('deleteReport error:', error);
 }
 
 function mapReportFromDb(row: any): PhotoReport {
@@ -530,5 +575,21 @@ export async function saveKeyToSupabase(key: string, value: any): Promise<void> 
     case 'appConfig': return upsertAppConfig(value);
     default:
       console.warn(`[Supabase] Unknown key "${key}" - not persisted`);
+  }
+}
+
+export async function deleteKeyFromSupabase(key: string, id: string): Promise<void> {
+  switch (key) {
+    case 'users': return deleteUser(id);
+    case 'clients': return deleteClient(id);
+    case 'projects': return deleteProject(id);
+    case 'licenses': return deleteLicense(id);
+    case 'notifications': return deleteNotification(id);
+    case 'contracts': return deleteContract(id);
+    case 'meetings': return deleteMeeting(id);
+    case 'videos': return deleteVideo(id);
+    case 'reports': return deleteReport(id);
+    default:
+      console.warn(`[Supabase] Unknown key "${key}" for deletion`);
   }
 }
