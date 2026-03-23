@@ -37,6 +37,7 @@ export interface User {
   createdAt?: string;
   lastLogin?: string;
   googleTokens?: any;
+  pushSubscriptions?: any[];
 }
 
 export interface EnvironmentalLicense {

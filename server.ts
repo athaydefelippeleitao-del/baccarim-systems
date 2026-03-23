@@ -7,6 +7,16 @@ import { createServer as createViteServer } from "vite";
 import fs from "fs";
 import path from "path";
 import cors from "cors";
+import webpush from "web-push";
+
+const publicVapidKey = process.env.VAPID_PUBLIC_KEY || 'BFpvQ56vvUjnZVB-BsjsLtJyObMMGnuR672bTBIDQl9laRUDtx8-2IfrKONOoq1PUtqxkh-x-i4bV8Va8B5ua-o';
+const privateVapidKey = process.env.VAPID_PRIVATE_KEY || 'advlt-nPUC15acNjt5CkepA7gRH5feo5xBwf_dl8Rcg';
+
+webpush.setVapidDetails(
+  'mailto:contato@baccarim.com.br',
+  publicVapidKey,
+  privateVapidKey
+);
 
 // Import mock data for initial state (first-time seed)
 import { MOCK_PROJECTS, MOCK_LICENSES, MOCK_NOTIFICATIONS, MOCK_CONTRACTS, CLIENTS, getChecklistTemplate } from "./constants";
@@ -302,6 +312,76 @@ async function startServer() {
       res.status(500).json({ error: "Internal server error" });
     }
   });
+
+  // ──────────────────────────────────────────────────────────────────────
+  // PUSH NOTIFICATIONS
+  // ──────────────────────────────────────────────────────────────────────
+  app.get("/api/vapidPublicKey", (req, res) => {
+    res.send(publicVapidKey);
+  });
+
+  app.post("/api/push/subscribe", async (req, res) => {
+    try {
+      const { userId, subscription } = req.body;
+      const user = state.users.find((u: any) => u.id === userId);
+      if (user) {
+        if (!user.pushSubscriptions) user.pushSubscriptions = [];
+        // Avoid duplicate subscriptions
+        const exists = user.pushSubscriptions.find((s: any) => s.endpoint === subscription.endpoint);
+        if (!exists) {
+          user.pushSubscriptions.push(subscription);
+          // Broadcast and save
+          io.emit("state:changed", { key: 'users', value: state.users });
+          await saveKeyToSupabase('users', state.users);
+        }
+      }
+      res.status(201).json({});
+    } catch (error) {
+      console.error("Subscription error:", error);
+      res.status(500).json({ error: "Failed to subscribe" });
+    }
+  });
+
+  // Daily Check for Deadlines exactly 1 week away
+  setInterval(() => {
+    try {
+      if (!state.notifications || state.notifications.length === 0) return;
+      
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const targetDate = new Date(today);
+      targetDate.setDate(targetDate.getDate() + 7);
+      
+      const targetDateStr = targetDate.toLocaleDateString('pt-BR'); // "dd/mm/yyyy"
+
+      state.notifications.forEach((notif: any) => {
+        if (notif.status === 'Open' && notif.deadline === targetDateStr) {
+          // Find target users
+          const usersToNotify = state.users.filter((u: any) => 
+            u.role === 'admin' || u.role === 'engineer' || (u.clientNames && u.clientNames.includes(notif.clientName))
+          );
+
+          const payload = JSON.stringify({
+            title: 'Prazo Fatal em 1 Semana!',
+            body: `A exigência "${notif.title}" (${notif.clientName}) vence no dia ${notif.deadline}.`,
+            url: '/'
+          });
+
+          usersToNotify.forEach((user: any) => {
+            if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
+              user.pushSubscriptions.forEach((sub: any) => {
+                webpush.sendNotification(sub, payload).catch(err => {
+                  console.error('Error sending push notification to user', user.name, err);
+                });
+              });
+            }
+          });
+        }
+      });
+    } catch (e) {
+      console.error("Error running push notification job:", e);
+    }
+  }, 1000 * 60 * 60); // Run every hour
 
   const saveTimeouts: Record<string, NodeJS.Timeout> = {};
   const presence: Record<string, any> = {};
