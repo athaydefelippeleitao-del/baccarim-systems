@@ -90,6 +90,9 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
 
     const specs = {
       ...newProjectForm.specs,
+      razaoSocial: newProjectForm.razaoSocial,
+      cnpjCpf: newProjectForm.cnpj,
+      projectAddress: newProjectForm.location,
       lat: newProjectForm.specs.lat ? parseFloat(newProjectForm.specs.lat) : undefined,
       lng: newProjectForm.specs.lng ? parseFloat(newProjectForm.specs.lng) : undefined,
       zone: newProjectForm.specs.zone ? parseFloat(newProjectForm.specs.zone as any) : 22,
