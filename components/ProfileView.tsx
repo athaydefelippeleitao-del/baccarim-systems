@@ -20,6 +20,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
   });
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
+  const [pushStatus, setPushStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
   const [isLightMode, setIsLightMode] = useState(() => {
     return document.body.classList.contains('light-theme');
@@ -78,6 +79,62 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
       console.error("Erro ao exportar ZIP:", error);
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleEnablePush = async () => {
+    if ('serviceWorker' in navigator && 'PushManager' in window && window.isSecureContext) {
+      setPushStatus('loading');
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const permission = await window.Notification.requestPermission();
+        if (permission !== 'granted') {
+          setPushStatus('error');
+          return;
+        }
+
+        const existingSub = await registration.pushManager.getSubscription();
+        if (existingSub) {
+          await fetch('/api/push/subscribe', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId: user.id, subscription: existingSub })
+          });
+          setPushStatus('success');
+          return;
+        }
+
+        const response = await fetch('/api/vapidPublicKey');
+        const vapidPublicKey = await response.text();
+
+        function urlBase64ToUint8Array(base64String: string) {
+          const padding = '='.repeat((4 - base64String.length % 4) % 4);
+          const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+          const rawData = window.atob(base64);
+          const outputArray = new Uint8Array(rawData.length);
+          for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+          return outputArray;
+        }
+
+        const subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+        });
+
+        await fetch('/api/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, subscription })
+        });
+        
+        setPushStatus('success');
+      } catch (err) {
+        console.error('Error setting up push notifications:', err);
+        setPushStatus('error');
+      }
+    } else {
+      setPushStatus('error');
+      alert('Seu navegador não suporta notificações push neste contexto. Experimente usar o Chrome ou adicionar o app à tela inicial no iPhone.');
     }
   };
 
@@ -213,6 +270,31 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
                   className={`w-12 h-6 rounded-full transition-all relative ${formData.compactView ? 'bg-baccarim-green' : 'bg-baccarim-hover'}`}
                 >
                   <div className={`absolute top-1 w-4 h-4 bg-baccarim-card rounded-full transition-all ${formData.compactView ? 'left-7' : 'left-1'}`}></div>
+                </button>
+              </div>
+
+              <div className="flex items-center justify-between p-4 bg-baccarim-hover rounded-2xl border border-baccarim-border">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 rounded-xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center">
+                    <i className="fas fa-mobile-screen-button"></i>
+                  </div>
+                  <div>
+                    <p className="text-xs font-black text-baccarim-text">Avisos no Celular</p>
+                    <p className="text-[9px] text-baccarim-text-muted font-bold uppercase tracking-widest">Receber Push de Prazos</p>
+                  </div>
+                </div>
+                <button 
+                  type="button"
+                  onClick={handleEnablePush}
+                  disabled={pushStatus === 'loading' || pushStatus === 'success'}
+                  className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                    pushStatus === 'success' ? 'bg-baccarim-green/20 text-baccarim-green border border-baccarim-green/30' : 
+                    pushStatus === 'error' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
+                    pushStatus === 'loading' ? 'bg-baccarim-hover text-baccarim-text-muted cursor-wait border border-baccarim-border' :
+                    'bg-baccarim-blue text-white hover:bg-baccarim-green shadow-xl shadow-baccarim-blue/20'
+                  }`}
+                >
+                  {pushStatus === 'success' ? 'Ativado ✓' : pushStatus === 'error' ? 'Erro / Bloqueado' : pushStatus === 'loading' ? 'Ativando...' : 'Habilitar'}
                 </button>
               </div>
 
