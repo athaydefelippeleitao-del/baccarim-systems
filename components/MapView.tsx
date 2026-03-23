@@ -4,12 +4,13 @@ import { Project } from '../types';
 
 interface MapViewProps {
   projects: Project[];
+  clients: string[];
   onSelectProject: (projectId: string) => void;
 }
 
 declare const L: any;
 
-const MapView: React.FC<MapViewProps> = ({ projects, onSelectProject }) => {
+const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const layersRef = useRef<Record<string, any>>({});
@@ -19,6 +20,11 @@ const MapView: React.FC<MapViewProps> = ({ projects, onSelectProject }) => {
   const [visibleProjectIds, setVisibleProjectIds] = useState<Set<string>>(new Set(projects.map(p => p.id)));
   const [showControls, setShowControls] = useState(window.innerWidth > 768);
   const [mapMode, setMapMode] = useState<'streets' | 'satellite'>('streets');
+  const [selectedClient, setSelectedClient] = useState<string | null>(null);
+
+  const filteredProjectsByClient = selectedClient 
+    ? projects.filter(p => p.clientName === selectedClient)
+    : projects;
 
   // Verificar se o Leaflet carregou (caso o script demore)
   useEffect(() => {
@@ -132,7 +138,7 @@ const MapView: React.FC<MapViewProps> = ({ projects, onSelectProject }) => {
       delete markersRef.current[id];
     });
 
-    projects.forEach(project => {
+    filteredProjectsByClient.forEach(project => {
       if (project.specs.lat && project.specs.lng && visibleProjectIds.has(project.id)) {
         const markerColor = project.status === 'Concluído' ? '#00B08E' : project.status === 'Em Execução' ? '#3FA9F5' : '#002D62';
         
@@ -248,11 +254,26 @@ const MapView: React.FC<MapViewProps> = ({ projects, onSelectProject }) => {
           <i className={`fas ${showControls ? 'fa-times' : 'fa-layer-group'}`}></i>
         </button>
 
+        {/* Filtro de Clientes */}
+        <div className="absolute top-4 left-20 z-[10] hidden md:flex items-center space-x-2 bg-baccarim-card/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-xl border border-slate-100">
+          <i className="fas fa-filter text-[10px] text-baccarim-blue"></i>
+          <select 
+            value={selectedClient || ''} 
+            onChange={(e) => setSelectedClient(e.target.value || null)}
+            className="bg-transparent text-[10px] font-black uppercase text-baccarim-navy outline-none cursor-pointer"
+          >
+            <option value="">Todos os Clientes</option>
+            {clients.map(client => (
+              <option key={client} value={client}>{client}</option>
+            ))}
+          </select>
+        </div>
+
         {showControls && (
-          <div className="absolute top-16 md:top-4 left-20 z-[10] w-64 max-h-[80%] bg-baccarim-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-100 overflow-y-auto p-4 custom-scrollbar">
+          <div className="absolute top-16 md:top-16 left-20 z-[10] w-64 max-h-[80%] bg-baccarim-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-100 overflow-y-auto p-4 custom-scrollbar">
             <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest mb-3 px-2">Lista de Projetos</p>
             <div className="space-y-1">
-              {projects.map(p => (
+              {filteredProjectsByClient.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-baccarim-hover transition-colors cursor-pointer" onClick={() => toggleProjectVisibility(p.id)}>
                    <div className="flex items-center space-x-3 min-w-0">
                       <div className={`w-2 h-2 rounded-full ${visibleProjectIds.has(p.id) ? 'bg-baccarim-blue' : 'bg-slate-300'}`}></div>

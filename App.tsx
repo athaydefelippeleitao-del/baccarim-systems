@@ -497,6 +497,12 @@ const App: React.FC = () => {
     return projects.filter(p => currentClientFocus.includes(p.clientName));
   }, [currentClientFocus, projects]);
 
+  const projectsForMap = useMemo(() => {
+    if (!currentUser) return [];
+    if (currentUser.role === 'admin' || currentUser.role === 'engineer') return projects;
+    return projects.filter(p => currentUser.clientNames?.includes(p.clientName));
+  }, [currentUser, projects]);
+
   const filteredContracts = useMemo(() => {
     if (!currentClientFocus) return contracts;
     return contracts.filter(c => currentClientFocus.includes(c.clientName));
@@ -875,7 +881,19 @@ const App: React.FC = () => {
           </div>
         )}
 
-        {activeTab === 'map' && <MapView projects={filteredProjects} onSelectProject={() => setActiveTab('clients')} />}
+        {activeTab === 'map' && (
+          <MapView 
+            projects={projectsForMap} 
+            clients={filteredClientsList}
+            onSelectProject={(id) => {
+              const proj = projects.find(p => p.id === id);
+              if (proj) {
+                setAdminClientFilter(proj.clientName);
+                setActiveTab('clients');
+              }
+            }} 
+          />
+        )}
         {activeTab === 'notifications' && <NotificationsView notifications={filteredNotifications} clients={filteredClientsList} projects={filteredProjects} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onDeleteNotification={handleDeleteNotification} />}
         {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onDeleteProject={handleDeleteProject} onSelectClient={(n) => setAdminClientFilter(n)} onDeleteClient={(client) => {
           if (window.confirm(`Excluir o cliente ${client} e todos os seus dados?`)) {
