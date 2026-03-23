@@ -86,15 +86,30 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
     if ('serviceWorker' in navigator && 'PushManager' in window && window.isSecureContext) {
       setPushStatus('loading');
       try {
-        const registration = await navigator.serviceWorker.ready;
-        const permission = await window.Notification.requestPermission();
+        console.log('Registering SW...');
+        const registration = await navigator.serviceWorker.register('/sw.js');
+        console.log('SW Registered!', registration);
+
+        let permission = window.Notification.permission;
+        if (permission === 'default') {
+          permission = await new Promise((resolve) => {
+            const promise = window.Notification.requestPermission(resolve);
+            if (promise) {
+              promise.then(resolve);
+            }
+          });
+        }
+        
         if (permission !== 'granted') {
+          console.warn('Permission not granted:', permission);
           setPushStatus('error');
           return;
         }
 
+        console.log('Checking subscription...');
         const existingSub = await registration.pushManager.getSubscription();
         if (existingSub) {
+          console.log('Existing sub found, sending to server...');
           await fetch('/api/push/subscribe', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -104,6 +119,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
           return;
         }
 
+        console.log('Fetching VAPID key...');
         const response = await fetch('/api/vapidPublicKey');
         const vapidPublicKey = await response.text();
 
@@ -116,11 +132,13 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
           return outputArray;
         }
 
+        console.log('Subscribing to push manager...');
         const subscription = await registration.pushManager.subscribe({
           userVisibleOnly: true,
           applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
         });
 
+        console.log('Sending subscription to server...');
         await fetch('/api/push/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -133,8 +151,9 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
         setPushStatus('error');
       }
     } else {
+      console.warn('Push not supported by browser/context');
       setPushStatus('error');
-      alert('Seu navegador não suporta notificações push neste contexto. Experimente usar o Chrome ou adicionar o app à tela inicial no iPhone.');
+      alert('Seu navegador não suporta notificações push neste contexto.');
     }
   };
 
