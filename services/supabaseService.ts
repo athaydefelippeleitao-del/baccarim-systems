@@ -27,7 +27,7 @@ export async function deleteUser(id: string): Promise<void> {
   if (error) console.error('deleteUser error:', error);
 }
 
-function mapUserFromDb(row: any): any {
+export function mapUserFromDb(row: any): any {
   return {
     id: row.id,
     name: row.name,
@@ -102,7 +102,7 @@ export async function deleteProject(id: string): Promise<void> {
   if (error) console.error('deleteProject error:', error);
 }
 
-function mapProjectFromDb(row: any): Project {
+export function mapProjectFromDb(row: any): Project {
   return {
     id: row.id,
     name: row.name,
@@ -163,7 +163,7 @@ export async function deleteLicense(id: string): Promise<void> {
   if (error) console.error('deleteLicense error:', error);
 }
 
-function mapLicenseFromDb(row: any): EnvironmentalLicense {
+export function mapLicenseFromDb(row: any): EnvironmentalLicense {
   return {
     id: row.id,
     name: row.name,
@@ -234,7 +234,7 @@ export async function deleteNotification(id: string): Promise<void> {
   if (error) console.error('deleteNotification error:', error);
 }
 
-function mapNotificationFromDb(row: any): Notification {
+export function mapNotificationFromDb(row: any): Notification {
   return {
     id: row.id,
     title: row.title,
@@ -293,7 +293,7 @@ export async function deleteContract(id: string): Promise<void> {
   if (error) console.error('deleteContract error:', error);
 }
 
-function mapContractFromDb(row: any): Contract {
+export function mapContractFromDb(row: any): Contract {
   return {
     id: row.id,
     clientName: row.client_name,

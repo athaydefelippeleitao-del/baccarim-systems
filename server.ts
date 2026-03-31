@@ -470,8 +470,12 @@ async function startServer() {
         }, 2000);
       }
 
-      // Broadcast update to all other clients
-      socket.broadcast.emit("state:changed", update);
+      // Broadcast update to all other clients (Skip tables handled by Supabase Realtime)
+      const realtimeTables = ['projects', 'licenses', 'notifications'];
+      if (!realtimeTables.includes(update.key)) {
+        socket.broadcast.emit("state:changed", update);
+      }
+
     });
 
     socket.on("state:delete", async (data: { key: string, id: string, user?: any }) => {
@@ -506,8 +510,12 @@ async function startServer() {
         insertAuditEntry(auditEntry).catch(e => console.error("Failed to save audit entry:", e));
       }
 
-      // Broadcast the deletion to all other clients
-      socket.broadcast.emit("state:deleted", { key: data.key, id: data.id });
+      // Broadcast the deletion to all other clients (Skip tables handled by Supabase Realtime)
+      const realtimeTables = ['projects', 'licenses', 'notifications'];
+      if (!realtimeTables.includes(data.key)) {
+        socket.broadcast.emit("state:deleted", { key: data.key, id: data.id });
+      }
+
     });
 
     socket.on("disconnect", () => {

@@ -20,6 +20,8 @@ import ServerManagementView from './components/ServerManagementView';
 import LoadingScreen from './components/LoadingScreen';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import ProjectStatusSummary from './components/ProjectStatusSummary';
+import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb } from './services/supabaseService';
+
 
 const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
@@ -176,9 +178,70 @@ const App: React.FC = () => {
       }
     });
 
+    // ──────────────────────────────────────────────────────────────────────
+    // SUPABASE REALTIME SUBSCRIPTIONS
+    // ──────────────────────────────────────────────────────────────────────
+    const projectsChannel = supabase.channel('public:projects')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, (payload) => {
+        console.log('[Realtime] Project change detected:', payload.eventType);
+        if (payload.eventType === 'INSERT') {
+          const newProject = mapProjectFromDb(payload.new);
+          setProjects(prev => {
+            if (prev.some(p => p.id === newProject.id)) return prev;
+            return [newProject, ...prev];
+          });
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedProject = mapProjectFromDb(payload.new);
+          setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
+        } else if (payload.eventType === 'DELETE') {
+          setProjects(prev => prev.filter(p => p.id === payload.old.id));
+        }
+      })
+      .subscribe();
+
+    const licensesChannel = supabase.channel('public:licenses')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'licenses' }, (payload) => {
+        console.log('[Realtime] License change detected:', payload.eventType);
+        if (payload.eventType === 'INSERT') {
+          const newLicense = mapLicenseFromDb(payload.new);
+          setLicenses(prev => {
+            if (prev.some(l => l.id === newLicense.id)) return prev;
+            return [newLicense, ...prev];
+          });
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedLicense = mapLicenseFromDb(payload.new);
+          setLicenses(prev => prev.map(l => l.id === updatedLicense.id ? updatedLicense : l));
+        } else if (payload.eventType === 'DELETE') {
+          setLicenses(prev => prev.filter(l => l.id === payload.old.id));
+        }
+      })
+      .subscribe();
+
+    const notificationsChannel = supabase.channel('public:notifications')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'notifications' }, (payload) => {
+        console.log('[Realtime] Notification change detected:', payload.eventType);
+        if (payload.eventType === 'INSERT') {
+          const newNotif = mapNotificationFromDb(payload.new);
+          setNotifications(prev => {
+            if (prev.some(n => n.id === newNotif.id)) return prev;
+            return [newNotif, ...prev];
+          });
+        } else if (payload.eventType === 'UPDATE') {
+          const updatedNotif = mapNotificationFromDb(payload.new);
+          setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
+        } else if (payload.eventType === 'DELETE') {
+          setNotifications(prev => prev.filter(n => n.id === payload.old.id));
+        }
+      })
+      .subscribe();
+
     return () => {
       newSocket.disconnect();
+      supabase.removeChannel(projectsChannel);
+      supabase.removeChannel(licensesChannel);
+      supabase.removeChannel(notificationsChannel);
     };
+
   }, []);
 
   // Helper to emit updates only if state is different from last server state
