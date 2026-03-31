@@ -95,9 +95,11 @@ const App: React.FC = () => {
           if (state.videos) setVideos(state.videos);
           if (state.projectCategories) setProjectCategories(state.projectCategories);
           if (state.auditLog) setAuditLog(state.auditLog);
-      if (state.appConfig) setAppConfig(state.appConfig);
+          if (state.appConfig) setAppConfig(state.appConfig);
+          isInitialLoadDone.current = true;
         }
       })
+
       .catch(err => console.error("Error fetching initial state:", err));
 
     const newSocket = io();
@@ -434,8 +436,8 @@ const App: React.FC = () => {
     setLoginError(undefined);
 
     const foundUser = users.find(u => {
-      const emailLower = u.email.toLowerCase();
-      const nameLower = u.name.toLowerCase();
+      const emailLower = (u.email || '').toLowerCase().trim();
+      const nameLower = (u.name || '').toLowerCase().trim();
       const emailPrefix = emailLower.split('@')[0];
 
       const loginMatches = (
@@ -444,8 +446,9 @@ const App: React.FC = () => {
         emailPrefix === loginLower
       );
 
-      return loginMatches && u.password === pass;
+      return loginMatches && (u.password === pass);
     });
+
 
     if (foundUser) {
       const { password, ...userData } = foundUser;
