@@ -342,6 +342,29 @@ async function startServer() {
     }
   });
 
+  // Helper to send push notifications to relevant users
+  function sendPushToRelevantUsers(notif: any, titleOverride?: string) {
+    const usersToNotify = state.users.filter((u: any) => 
+      u.role === 'admin' || u.role === 'engineer' || (u.clientNames && u.clientNames.includes(notif.clientName))
+    );
+
+    const payload = JSON.stringify({
+      title: titleOverride || 'Aviso de Notificação',
+      body: `"${notif.title}" (${notif.clientName}) - Prazo: ${notif.deadline}`,
+      url: '/notifications'
+    });
+
+    usersToNotify.forEach((user: any) => {
+      if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
+        user.pushSubscriptions.forEach((sub: any) => {
+          webpush.sendNotification(sub, payload).catch(err => {
+            console.error('Error sending push notification to user', user.name, err);
+          });
+        });
+      }
+    });
+  }
+
   // Daily Check for Deadlines exactly 1 week away
   setInterval(() => {
     try {
@@ -356,26 +379,7 @@ async function startServer() {
 
       state.notifications.forEach((notif: any) => {
         if (notif.status === 'Open' && notif.deadline === targetDateStr) {
-          // Find target users
-          const usersToNotify = state.users.filter((u: any) => 
-            u.role === 'admin' || u.role === 'engineer' || (u.clientNames && u.clientNames.includes(notif.clientName))
-          );
-
-          const payload = JSON.stringify({
-            title: 'Prazo Fatal em 1 Semana!',
-            body: `A exigência "${notif.title}" (${notif.clientName}) vence no dia ${notif.deadline}.`,
-            url: '/'
-          });
-
-          usersToNotify.forEach((user: any) => {
-            if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
-              user.pushSubscriptions.forEach((sub: any) => {
-                webpush.sendNotification(sub, payload).catch(err => {
-                  console.error('Error sending push notification to user', user.name, err);
-                });
-              });
-            }
-          });
+          sendPushToRelevantUsers(notif, 'Prazo Fatal em 1 Semana!');
         }
       });
     } catch (e) {
@@ -417,6 +421,19 @@ async function startServer() {
       } else {
         console.log("State update received for key:", update.key);
       }
+      if (update.key === 'notifications' && Array.isArray(update.value)) {
+        const oldNotifs = state.notifications || [];
+        const newNotifs = update.value;
+        if (newNotifs.length > oldNotifs.length) {
+          // Identify newly added notification(s)
+          const addedNotifs = newNotifs.filter((n: any) => !oldNotifs.some((old: any) => old.id === n.id));
+          addedNotifs.forEach((notif: any) => {
+            console.log(`[Push] New notification detected: ${notif.title}. Triggering immediate push.`);
+            sendPushToRelevantUsers(notif, 'Nova Notificação Registrada');
+          });
+        }
+      }
+
       state[update.key] = update.value;
 
       // Record audit log if user info is provided
