@@ -648,15 +648,19 @@ const App: React.FC = () => {
   }, [filteredProjects]);
 
   const stats = useMemo(() => {
-    const openNotifs = filteredNotifications.filter(n => n.status === 'Open');
+    const iatNotifs = filteredNotifications.filter(n => n.agency === 'IAT' && n.status === 'Open').length;
+    const semaNotifs = filteredNotifications.filter(n => n.agency === 'SEMA' && n.status === 'Open').length;
     const liInProgress = filteredLicenses.filter(l => l.type === LicenseType.LI && l.status === LicenseStatus.ACTIVE).length;
     return {
       total: filteredLicenses.length,
       liActive: liInProgress,
+      iatNotifs,
+      semaNotifs,
       expired: filteredLicenses.filter(l => l.status === LicenseStatus.EXPIRED).length,
-      notifs: openNotifs.length
+      notifs: filteredNotifications.filter(n => n.status === 'Open').length
     };
   }, [filteredLicenses, filteredNotifications]);
+
 
   // Lógica de Swipe para trocar abas
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -912,9 +916,10 @@ const App: React.FC = () => {
                 ) : (
                   <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 flex-1">
                     <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
-                    <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
-                    <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
+                    <StatCard title="Pendências IAT" value={stats.iatNotifs} icon="fa-envelope-open-text" color="bg-baccarim-blue" />
+                    <StatCard title="Pendências SEMA" value={stats.semaNotifs} icon="fa-building-shield" color="bg-baccarim-green" />
                     <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
+
                   </div>
                 )}
               </div>
@@ -935,9 +940,10 @@ const App: React.FC = () => {
             {(currentUser.role === 'admin' || currentUser.role === 'engineer') && (
               <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 animate-in slide-in-from-top-4 duration-500">
                 <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
-                <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
-                <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
+                <StatCard title="Pendências IAT" value={stats.iatNotifs} icon="fa-envelope-open-text" color="bg-baccarim-blue" />
+                <StatCard title="Pendências SEMA" value={stats.semaNotifs} icon="fa-building-shield" color="bg-baccarim-green" />
                 <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
+
               </div>
             )}
 
