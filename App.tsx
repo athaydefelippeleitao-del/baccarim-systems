@@ -786,22 +786,57 @@ const App: React.FC = () => {
         {activeTab === 'dashboard' && (
           <div className="space-y-12 animate-in fade-in zoom-in-95 duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 flex-1">
+              <div className="flex-1">
+                {(currentUser.role === 'admin' || currentUser.role === 'engineer') ? (
+                  <div className="relative group max-w-sm">
+                    <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-baccarim-blue">
+                      <i className="fas fa-building-user text-xs"></i>
+                    </div>
+                    <select
+                      value={adminClientFilter || ''}
+                      onChange={(e) => setAdminClientFilter(e.target.value || null)}
+                      className="w-full pl-12 pr-10 py-4 bg-baccarim-card border border-baccarim-border rounded-2xl text-[10px] font-black uppercase tracking-widest text-baccarim-text outline-none focus:ring-4 focus:ring-baccarim-blue/10 focus:border-baccarim-blue transition-all appearance-none cursor-pointer group-hover:border-baccarim-border-hover shadow-xl"
+                    >
+                      <option value="" className="bg-baccarim-dark">Todos os Clientes (Visão Global)</option>
+                      {[...clients].sort((a, b) => a.localeCompare(b)).map(client => (
+                        <option key={client} value={client} className="bg-baccarim-dark">{client}</option>
+                      ))}
+                    </select>
+                    <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-baccarim-text-muted">
+                      <i className="fas fa-chevron-down text-[10px]"></i>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 flex-1">
+                    <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
+                    <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
+                    <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
+                    <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
+                  </div>
+                )}
+              </div>
+              
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={() => setIsPresentationMode(!isPresentationMode)}
+                  className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center space-x-3 shadow-xl ${
+                    isPresentationMode ? 'bg-baccarim-blue text-baccarim-text ring-4 ring-baccarim-blue/20' : 'bg-baccarim-card text-baccarim-text-muted hover:bg-baccarim-hover border border-baccarim-border'
+                  }`}
+                >
+                  <i className={`fas ${isPresentationMode ? 'fa-tv' : 'fa-chart-line'} text-sm`}></i>
+                  <span>{isPresentationMode ? 'Sair da Apresentação' : 'Modo Apresentação'}</span>
+                </button>
+              </div>
+            </div>
+
+            {(currentUser.role === 'admin' || currentUser.role === 'engineer') && (
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 animate-in slide-in-from-top-4 duration-500">
                 <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
                 <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
                 <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
                 <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
               </div>
-              <button 
-                onClick={() => setIsPresentationMode(!isPresentationMode)}
-                className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center space-x-3 shadow-xl ${
-                  isPresentationMode ? 'bg-baccarim-blue text-baccarim-text ring-4 ring-baccarim-blue/20' : 'bg-baccarim-card text-baccarim-text-muted hover:bg-baccarim-hover border border-baccarim-border'
-                }`}
-              >
-                <i className={`fas ${isPresentationMode ? 'fa-tv' : 'fa-chart-line'} text-sm`}></i>
-                <span>{isPresentationMode ? 'Sair da Apresentação' : 'Modo Apresentação'}</span>
-              </button>
-            </div>
+            )}
 
             {deferredPrompt && !isPresentationMode && (
               <div className="bg-gradient-to-r from-baccarim-blue to-baccarim-green rounded-[2.5rem] p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-6 border border-white/20">
