@@ -4,6 +4,7 @@ import { io, Socket } from 'socket.io-client';
 import { MOCK_LICENSES, MOCK_NOTIFICATIONS, MOCK_PROJECTS, MOCK_MEETINGS, MOCK_VIDEOS, MOCK_CONTRACTS, CLIENTS, getChecklistTemplate, PROJECT_CATEGORIES } from './constants';
 import { EnvironmentalLicense, LicenseStatus, Notification, User, Project, Contract, Meeting, ProductionVideo, LicenseType, ChecklistItem, PhotoReport, AppConfig } from './types';
 import { AppLogo } from './components/AppLogo';
+import StatCard from './components/StatCard';
 import SmartAnalysis from './components/SmartAnalysis';
 import AgendaView from './components/AgendaView';
 import ClientsView from './components/ClientsView';
@@ -785,6 +786,12 @@ const App: React.FC = () => {
         {activeTab === 'dashboard' && (
           <div className="space-y-12 animate-in fade-in zoom-in-95 duration-500">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 flex-1">
+                <StatCard title="Licenças Ativas" value={stats.total} icon="fa-file-shield" color="bg-baccarim-navy" />
+                <StatCard title="LIs em Curso" value={stats.liActive} icon="fa-helmet-safety" color="bg-baccarim-blue" />
+                <StatCard title="Pendências SEMA" value={stats.notifs} icon="fa-envelope-open-text" color="bg-baccarim-green" />
+                <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
+              </div>
               <button 
                 onClick={() => setIsPresentationMode(!isPresentationMode)}
                 className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center space-x-3 shadow-xl ${
