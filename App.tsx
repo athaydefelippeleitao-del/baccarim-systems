@@ -192,10 +192,20 @@ const App: React.FC = () => {
           });
         } else if (payload.eventType === 'UPDATE') {
           const updatedProject = mapProjectFromDb(payload.new);
-          setProjects(prev => prev.map(p => p.id === updatedProject.id ? updatedProject : p));
+          setProjects((prev: Project[]) => {
+            const newState = prev.map(p => p.id === updatedProject.id ? updatedProject : p);
+            lastServerState.current['projects'] = JSON.stringify(newState);
+            return newState;
+          });
         } else if (payload.eventType === 'DELETE') {
-          setProjects(prev => prev.filter(p => p.id === payload.old.id));
+          setProjects((prev: Project[]) => {
+            const newState = prev.filter(p => p.id === payload.old.id);
+            lastServerState.current['projects'] = JSON.stringify(newState);
+            return newState;
+          });
         }
+
+
       })
       .subscribe();
 
@@ -210,10 +220,20 @@ const App: React.FC = () => {
           });
         } else if (payload.eventType === 'UPDATE') {
           const updatedLicense = mapLicenseFromDb(payload.new);
-          setLicenses(prev => prev.map(l => l.id === updatedLicense.id ? updatedLicense : l));
+          setLicenses((prev: EnvironmentalLicense[]) => {
+            const newState = prev.map(l => l.id === updatedLicense.id ? updatedLicense : l);
+            lastServerState.current['licenses'] = JSON.stringify(newState);
+            return newState;
+          });
         } else if (payload.eventType === 'DELETE') {
-          setLicenses(prev => prev.filter(l => l.id === payload.old.id));
+          setLicenses((prev: EnvironmentalLicense[]) => {
+            const newState = prev.filter(l => l.id === payload.old.id);
+            lastServerState.current['licenses'] = JSON.stringify(newState);
+            return newState;
+          });
         }
+
+
       })
       .subscribe();
 
@@ -228,10 +248,20 @@ const App: React.FC = () => {
           });
         } else if (payload.eventType === 'UPDATE') {
           const updatedNotif = mapNotificationFromDb(payload.new);
-          setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
+          setNotifications((prev: Notification[]) => {
+            const newState = prev.map(n => n.id === updatedNotif.id ? updatedNotif : n);
+            lastServerState.current['notifications'] = JSON.stringify(newState);
+            return newState;
+          });
         } else if (payload.eventType === 'DELETE') {
-          setNotifications(prev => prev.filter(n => n.id === payload.old.id));
+          setNotifications((prev: Notification[]) => {
+            const newState = prev.filter(n => n.id === payload.old.id);
+            lastServerState.current['notifications'] = JSON.stringify(newState);
+            return newState;
+          });
         }
+
+
       })
       .subscribe();
 
@@ -242,13 +272,22 @@ const App: React.FC = () => {
       supabase.removeChannel(notificationsChannel);
     };
 
-  }, []);
+  }, [currentUser]); // Run only on login/logout
+
 
   // Helper to emit updates only if state is different from last server state
   const syncTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
 
+  const socketRef = useRef<Socket | null>(null);
+  const isConnectedRef = useRef(false);
+
+  useEffect(() => {
+    socketRef.current = socket;
+    isConnectedRef.current = isConnected;
+  }, [socket, isConnected]);
+
   const emitUpdate = useCallback((key: string, value: any) => {
-    if (!socket || !isConnected) return;
+    if (!socketRef.current || !isConnectedRef.current) return;
 
     // Clear existing timeout for this key
     if (syncTimeoutRef.current[key]) {
@@ -263,18 +302,19 @@ const App: React.FC = () => {
       console.log(`Syncing ${key} to server...`);
       setIsSyncing(true);
       lastServerState.current[key] = stringified;
-      socket.emit('state:update', { key, value, user: currentUser });
+      socketRef.current?.emit('state:update', { key, value, user: currentUser });
 
       // Reset syncing indicator after a short delay
       setTimeout(() => setIsSyncing(false), 1000);
     }, 500); // 500ms debounce
-  }, [socket, isConnected, currentUser]);
+  }, [currentUser]); // Depend only on currentUser identity
 
   const emitDelete = useCallback((key: string, id: string) => {
-    if (!socket || !isConnected) return;
+    if (!socketRef.current || !isConnectedRef.current) return;
     console.log(`Emitting delete for ${key}:${id}`);
-    socket.emit('state:delete', { key, id, user: currentUser });
-  }, [socket, isConnected, currentUser]);
+    socketRef.current?.emit('state:delete', { key, id, user: currentUser });
+  }, [currentUser]);
+
 
   const isInitialLoadDone = useRef(false);
 
