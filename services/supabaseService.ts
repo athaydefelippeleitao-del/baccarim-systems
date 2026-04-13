@@ -535,11 +535,35 @@ export async function upsertAppConfig(config: any): Promise<void> {
 }
 
 // ─────────────────────────────────────────────
+// CLIENT LOGOS
+// ─────────────────────────────────────────────
+export async function getClientLogos(): Promise<Record<string, string>> {
+  console.log('[Supabase] Fetching CLIENT_LOGOS...');
+  const { data, error } = await supabase.from('checklist_templates').select('template').eq('key', 'CLIENT_LOGOS').single();
+  if (error) {
+    if (error.code !== 'PGRST116') console.error('[Supabase] getClientLogos error:', error);
+    return {};
+  }
+  console.log('[Supabase] CLIENT_LOGOS loaded successfully');
+  return data.template || {};
+}
+
+export async function upsertClientLogos(logos: Record<string, string>): Promise<void> {
+  console.log('[Supabase] Saving CLIENT_LOGOS...', { count: Object.keys(logos).length });
+  const { error } = await supabase.from('checklist_templates').upsert({ key: 'CLIENT_LOGOS', template: logos }, { onConflict: 'key' });
+  if (error) {
+    console.error('[Supabase] upsertClientLogos error:', error);
+  } else {
+    console.log('[Supabase] CLIENT_LOGOS saved successfully');
+  }
+}
+
+// ─────────────────────────────────────────────
 // LOAD ALL STATE FROM SUPABASE
 // ─────────────────────────────────────────────
 export async function loadStateFromSupabase() {
   console.log('[Supabase] Loading state from database...');
-  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig] =
+  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos] =
     await Promise.all([
       getUsers(),
       getClients(),
@@ -553,10 +577,11 @@ export async function loadStateFromSupabase() {
       getAuditLog(),
       getChecklistTemplates(),
       getAppConfig(),
+      getClientLogos(),
     ]);
 
   console.log(`[Supabase] Loaded: ${projects.length} projects, ${licenses.length} licenses, ${users.length} users`);
-  return { users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig };
+  return { users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos };
 }
 
 // ─────────────────────────────────────────────
@@ -576,6 +601,7 @@ export async function saveKeyToSupabase(key: string, value: any): Promise<void> 
     case 'auditLog': return; // audit log is written entry-by-entry
     case 'checklistTemplates': return upsertChecklistTemplates(value);
     case 'appConfig': return upsertAppConfig(value);
+    case 'clientLogos': return upsertClientLogos(value);
     default:
       console.warn(`[Supabase] Unknown key "${key}" - not persisted`);
   }
