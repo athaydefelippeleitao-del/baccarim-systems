@@ -65,6 +65,7 @@ const App: React.FC = () => {
   const [presence, setPresence] = useState<any[]>([]);
   const [auditLog, setAuditLog] = useState<any[]>([]);
   const [appConfig, setAppConfig] = useState<AppConfig>({});
+  const [clientLogos, setClientLogos] = useState<Record<string, string>>({});
 
   // Track which collections have been successfully loaded from the server
   // to prevent syncing an empty local state back to the server.
@@ -126,6 +127,7 @@ const App: React.FC = () => {
       }
       if (Array.isArray(state.auditLog)) setAuditLog(state.auditLog);
       if (state.appConfig && typeof state.appConfig === 'object') setAppConfig(state.appConfig);
+      if (state.clientLogos && typeof state.clientLogos === 'object') setClientLogos(state.clientLogos);
       
       console.log("State initialization complete. Loaded keys:", Array.from(loadedKeysRef.current));
       isInitialLoadDone.current = true;
@@ -155,6 +157,7 @@ const App: React.FC = () => {
         case 'projectCategories': setProjectCategories(update.value); break;
         case 'auditLog': setAuditLog(update.value); break;
         case 'appConfig': setAppConfig(update.value); break;
+        case 'clientLogos': setClientLogos(update.value); break;
       }
     });
 
@@ -340,6 +343,7 @@ const App: React.FC = () => {
       emitUpdate('appConfig', appConfig); 
     }
   }, [appConfig, emitUpdate]);
+  useEffect(() => { if (isInitialLoadDone.current) emitUpdate('clientLogos', clientLogos); }, [clientLogos, emitUpdate]);
 
   useEffect(() => {
     // Ensure loading screen lasts at least 1.5 seconds for branding
@@ -513,6 +517,11 @@ const App: React.FC = () => {
   const handleAddNotification = (newNotif: Notification) => {
     setNotifications(prev => [newNotif, ...prev]);
   };
+
+
+  const handleUpdateClientLogo = useCallback((clientName: string, logoBase64: string) => {
+    setClientLogos(prev => ({ ...prev, [clientName]: logoBase64 }));
+  }, []);
 
   const handleDeleteNotification = useCallback((id: string) => {
     setNotifications(prev => prev.filter(n => n.id !== id));
@@ -1039,7 +1048,7 @@ const App: React.FC = () => {
             setClients(prev => prev.filter(c => c !== client));
             emitDelete('clients', client);
           }
-        }} onAddNotification={handleAddNotification} />}
+        }} onAddNotification={handleAddNotification} clientLogos={clientLogos} onUpdateClientLogo={handleUpdateClientLogo} />}
         {activeTab === 'agenda' && <AgendaView currentUser={currentUser} clients={filteredClientsList} projects={filteredProjects} licenses={filteredLicenses} notifications={filteredNotifications} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onUpdateLicense={handleUpdateLicense} onDeleteNotification={handleDeleteNotification} onDeleteLicense={handleDeleteLicense} />}
         {activeTab === 'finance' && <FinanceView clients={filteredClientsList} contracts={filteredContracts} onUpdateContract={handleUpdateContract} onDeleteContract={handleDeleteContract} />}
         {activeTab === 'reports' && <PhotoReportView projects={filteredProjects} reports={filteredReports} onUpdateReport={handleUpdateReport} onDeleteReport={handleDeleteReport} />}

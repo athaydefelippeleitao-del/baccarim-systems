@@ -19,9 +19,11 @@ interface ClientsViewProps {
   onSelectClient: (clientName: string) => void;
   onDeleteClient: (clientName: string) => void;
   onAddNotification: (notification: Notification) => void;
+  clientLogos: Record<string, string>;
+  onUpdateClientLogo: (clientName: string, logoBase64: string) => void;
 }
 
-const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, notifications, projects, checklistTemplates, projectCategories, onUpdateProject, onAddProject, onAddClient, onDeleteProject, onSelectClient, onDeleteClient, onAddNotification }) => {
+const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, notifications, projects, checklistTemplates, projectCategories, onUpdateProject, onAddProject, onAddClient, onDeleteProject, onSelectClient, onDeleteClient, onAddNotification, clientLogos, onUpdateClientLogo }) => {
   const [selectedClientForProjects, setSelectedClientForProjects] = useState<string | null>(null);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
@@ -33,6 +35,19 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
       setSelectedClientForProjects(clients[0]);
     }
   }, [userRole, clients]);
+
+  const handleLogoUpload = (clientName: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target?.result as string;
+      if (base64) onUpdateClientLogo(clientName, base64);
+    };
+    reader.readAsDataURL(file);
+    // Reset input so same file can be selected again
+    e.target.value = '';
+  };
 
   const [newProjectForm, setNewProjectForm] = useState({
     name: '',
@@ -384,8 +399,37 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
             >
               <div className="flex items-start justify-between mb-8 md:mb-10 relative z-10">
                 <div className="flex items-center space-x-4 md:space-x-6">
-                  <div className="w-16 h-16 md:w-20 md:h-20 bg-baccarim-blue/10 rounded-2xl md:rounded-[2rem] flex items-center justify-center text-baccarim-blue font-black text-2xl md:text-3xl shadow-lg transition-all duration-500 group-hover:bg-baccarim-blue group-hover:text-white group-hover:rotate-3">
-                    {client.charAt(0)}
+                  {/* Logo / Avatar with upload on hover */}
+                  <div className="relative group/logo">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id={`logo-upload-${client}`}
+                      className="hidden"
+                      onChange={(e) => handleLogoUpload(client, e)}
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <label
+                      htmlFor={`logo-upload-${client}`}
+                      onClick={(e) => e.stopPropagation()}
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center overflow-hidden cursor-pointer shadow-lg transition-all duration-500 group-hover:rotate-3 relative"
+                    >
+                      {clientLogos[client] ? (
+                        <img
+                          src={clientLogos[client]}
+                          alt={`Logo ${client}`}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-baccarim-blue/10 flex items-center justify-center text-baccarim-blue font-black text-2xl md:text-3xl group-hover:bg-baccarim-blue group-hover:text-white transition-all duration-500">
+                          {client.charAt(0)}
+                        </div>
+                      )}
+                      {/* Upload overlay */}
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-2xl md:rounded-[2rem]">
+                        <i className="fas fa-camera text-white text-sm"></i>
+                      </div>
+                    </label>
                   </div>
                   <div>
                     <h3 className="text-xl md:text-2xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors duration-500">{client}</h3>
