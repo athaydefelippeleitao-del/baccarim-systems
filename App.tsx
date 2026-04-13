@@ -66,6 +66,10 @@ const App: React.FC = () => {
   const [auditLog, setAuditLog] = useState<any[]>([]);
   const [appConfig, setAppConfig] = useState<AppConfig>({});
 
+  // Track which collections have been successfully loaded from the server
+  // to prevent syncing an empty local state back to the server.
+  const loadedKeysRef = useRef<Set<string>>(new Set());
+
   // Theme effect
   useEffect(() => {
     if (theme === 'light') {
@@ -78,30 +82,6 @@ const App: React.FC = () => {
 
   // Socket connection and initial sync
   useEffect(() => {
-    // Fetch initial state as a faster fallback
-    fetch(`/api/state?t=${Date.now()}`, { cache: 'no-store' })
-      .then(res => res.json())
-      .then(state => {
-        if (!isInitialLoadDone.current) {
-          if (state.users) setUsers(state.users);
-          if (state.clients) setClients(state.clients);
-          if (state.projects) setProjects(state.projects);
-          if (state.licenses) setLicenses(state.licenses);
-          if (state.notifications) setNotifications(state.notifications);
-          if (state.contracts) setContracts(state.contracts);
-          if (state.reports) setReports(state.reports);
-          if (state.checklistTemplates) setChecklistTemplates(state.checklistTemplates);
-          if (state.meetings) setMeetings(state.meetings);
-          if (state.videos) setVideos(state.videos);
-          if (state.projectCategories) setProjectCategories(state.projectCategories);
-          if (state.auditLog) setAuditLog(state.auditLog);
-          if (state.appConfig) setAppConfig(state.appConfig);
-          isInitialLoadDone.current = true;
-        }
-      })
-
-      .catch(err => console.error("Error fetching initial state:", err));
-
     const newSocket = io();
     setSocket(newSocket);
 
@@ -117,6 +97,7 @@ const App: React.FC = () => {
 
       Object.keys(state).forEach(key => {
         lastServerState.current[key] = JSON.stringify(state[key]);
+        loadedKeysRef.current.add(key);
       });
 
       if (state.users) setUsers(state.users);
@@ -136,7 +117,8 @@ const App: React.FC = () => {
       }
       if (state.auditLog) setAuditLog(state.auditLog);
       if (state.appConfig) setAppConfig(state.appConfig);
-      // Mark initial load as done ONLY after we have received data from server
+      
+      console.log("State initialization complete. Loaded keys:", Array.from(loadedKeysRef.current));
       isInitialLoadDone.current = true;
     });
 
@@ -148,6 +130,7 @@ const App: React.FC = () => {
       }
 
       lastServerState.current[update.key] = JSON.stringify(update.value);
+      loadedKeysRef.current.add(update.key);
 
       switch (update.key) {
         case 'users': setUsers(update.value); break;
@@ -298,6 +281,13 @@ const App: React.FC = () => {
 
     // Debounce the sync to prevent hammering the server and sync loops
     syncTimeoutRef.current[key] = setTimeout(() => {
+      // CRITICAL: Do not sync back if we haven't successfully loaded this key from the server yet.
+      // This prevents wiping the server state with empty local state during initialization.
+      if (!loadedKeysRef.current.has(key)) {
+        console.warn(`Attempted to sync ${key} before it was loaded. Sync blocked.`);
+        return;
+      }
+
       const stringified = JSON.stringify(value);
       if (lastServerState.current[key] === stringified) return;
 

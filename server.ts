@@ -434,6 +434,14 @@ async function startServer() {
         }
       }
 
+      // ─── SYNC PROTECTION ───
+      // Prevent a client from wiping out a collection if the server has data.
+      // Legitimate deletions should use 'state:delete'.
+      if (Array.isArray(update.value) && update.value.length === 0 && Array.isArray(state[update.key]) && state[update.key].length > 0) {
+        console.warn(`[Protection] Ignored state:update for "${update.key}" because it would wipe out ${state[update.key].length} items. Possible sync-wipe race condition.`);
+        return;
+      }
+
       state[update.key] = update.value;
 
       // Record audit log if user info is provided
