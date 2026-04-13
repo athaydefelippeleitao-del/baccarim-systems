@@ -692,7 +692,7 @@ const App: React.FC = () => {
   };
 
   if (isLoading) return <LoadingScreen />;
-  if (!currentUser) return <LoginView onLogin={handleLogin} error={loginError} />;
+  if (!currentUser) return <LoginView onLogin={handleLogin} error={loginError} appIcon={appConfig.appIcon} />;
 
   return (
     <div className="min-h-screen bg-baccarim-dark flex flex-col md:flex-row font-sans relative overflow-x-hidden text-baccarim-text">

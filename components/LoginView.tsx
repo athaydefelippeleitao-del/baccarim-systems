@@ -5,12 +5,14 @@ import { AppLogo } from './AppLogo';
 interface LoginViewProps {
   onLogin: (user: string, pass: string) => void;
   error?: string;
+  appIcon?: string;
 }
 
-const LoginView: React.FC<LoginViewProps> = ({ onLogin, error }) => {
+const LoginView: React.FC<LoginViewProps> = ({ onLogin, error, appIcon }) => {
   const [user, setUser] = useState('');
   const [pass, setPass] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [iconError, setIconError] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,14 +34,26 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, error }) => {
                 {/* Glowing Aura */}
                 <div className="absolute inset-0 bg-gradient-to-tr from-baccarim-green/20 to-baccarim-blue/20 blur-2xl rounded-full animate-pulse"></div>
 
-                {/* Geometric Blocks - Exact replica of Loading Screen style but scaled */}
-                <div className="absolute inset-0 grid grid-cols-2 gap-2">
-                  <div className="bg-baccarim-green rounded-xl transform -skew-y-12 shadow-[0_0_25px_rgba(0,176,142,0.4)] animate-float-slow"></div>
-                  <div className="space-y-2">
-                    <div className="h-1/2 bg-baccarim-navy rounded-xl transform skew-y-12 shadow-[0_0_25px_rgba(0,45,98,0.2)] animate-float-slow" style={{ animationDelay: '0.5s' }}></div>
-                    <div className="h-1/2 bg-baccarim-blue rounded-xl transform skew-y-12 shadow-[0_0_25px_rgba(63,169,245,0.4)] animate-float-slow" style={{ animationDelay: '1s' }}></div>
+                {(appIcon && !iconError) ? (
+                  /* Custom uploaded logo */
+                  <div className="absolute inset-0 rounded-[30%] overflow-hidden shadow-2xl border border-white/10">
+                    <img
+                      src={appIcon}
+                      alt="App Logo"
+                      className="w-full h-full object-cover"
+                      onError={() => setIconError(true)}
+                    />
                   </div>
-                </div>
+                ) : (
+                  /* Geometric Blocks fallback */
+                  <div className="absolute inset-0 grid grid-cols-2 gap-2">
+                    <div className="bg-baccarim-green rounded-xl transform -skew-y-12 shadow-[0_0_25px_rgba(0,176,142,0.4)] animate-float-slow"></div>
+                    <div className="space-y-2">
+                      <div className="h-1/2 bg-baccarim-navy rounded-xl transform skew-y-12 shadow-[0_0_25px_rgba(0,45,98,0.2)] animate-float-slow" style={{ animationDelay: '0.5s' }}></div>
+                      <div className="h-1/2 bg-baccarim-blue rounded-xl transform skew-y-12 shadow-[0_0_25px_rgba(63,169,245,0.4)] animate-float-slow" style={{ animationDelay: '1s' }}></div>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 
