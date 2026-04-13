@@ -549,9 +549,18 @@ async function startServer() {
       console.error("Failed to start Vite server:", e);
     }
   } else {
-    app.use(express.static(path.resolve(process.cwd(), "dist")));
+    const distPath = path.resolve(process.cwd(), "dist");
+    console.log(`[Server] Static assets directory: ${distPath}`);
+    if (!fs.existsSync(distPath)) {
+      console.error(`[Server] ERROR: dist directory does not exist! Build might have failed.`);
+    } else {
+      const indexPath = path.resolve(distPath, "index.html");
+      console.log(`[Server] index.html exists: ${fs.existsSync(indexPath)}`);
+    }
+
+    app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.resolve(process.cwd(), "dist", "index.html"));
+      res.sendFile(path.resolve(distPath, "index.html"));
     });
   }
 

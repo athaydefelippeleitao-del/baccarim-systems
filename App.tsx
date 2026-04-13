@@ -70,7 +70,7 @@ const App: React.FC = () => {
   // to prevent syncing an empty local state back to the server.
   const loadedKeysRef = useRef<Set<string>>(new Set());
   const isInitialLoadDone = useRef(false);
-  const syncTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const syncTimeoutRef = useRef<Record<string, any>>({});
   const socketRef = useRef<Socket | null>(null);
   const isConnectedRef = useRef(false);
 
