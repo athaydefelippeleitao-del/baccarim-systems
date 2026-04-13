@@ -95,6 +95,11 @@ const App: React.FC = () => {
 
     newSocket.on('state:init', (state: any) => {
       console.log("Initial state received from server");
+      if (!state || typeof state !== 'object') {
+        console.error("Invalid state received from server, skipping init.");
+        isInitialLoadDone.current = true;
+        return;
+      }
       // Clear all pending syncs to prevent overwriting the new state with old local data
       Object.values(syncTimeoutRef.current).forEach(timeout => clearTimeout(timeout));
       syncTimeoutRef.current = {};
@@ -104,23 +109,23 @@ const App: React.FC = () => {
         loadedKeysRef.current.add(key);
       });
 
-      if (state.users) setUsers(state.users);
-      if (state.clients) setClients(state.clients);
-      if (state.projects) setProjects(state.projects);
-      if (state.licenses) setLicenses(state.licenses);
-      if (state.notifications) setNotifications(state.notifications);
-      if (state.contracts) setContracts(state.contracts);
-      if (state.reports) setReports(state.reports);
-      if (state.checklistTemplates) setChecklistTemplates(state.checklistTemplates);
-      if (state.meetings) setMeetings(state.meetings);
-      if (state.videos) setVideos(state.videos);
-      if (state.projectCategories && state.projectCategories.length > 0) {
+      if (Array.isArray(state.users) && state.users.length > 0) setUsers(state.users);
+      if (Array.isArray(state.clients) && state.clients.length > 0) setClients(state.clients);
+      if (Array.isArray(state.projects) && state.projects.length > 0) setProjects(state.projects);
+      if (Array.isArray(state.licenses) && state.licenses.length > 0) setLicenses(state.licenses);
+      if (Array.isArray(state.notifications) && state.notifications.length > 0) setNotifications(state.notifications);
+      if (Array.isArray(state.contracts) && state.contracts.length > 0) setContracts(state.contracts);
+      if (Array.isArray(state.reports) && state.reports.length > 0) setReports(state.reports);
+      if (state.checklistTemplates && typeof state.checklistTemplates === 'object') setChecklistTemplates(state.checklistTemplates);
+      if (Array.isArray(state.meetings) && state.meetings.length > 0) setMeetings(state.meetings);
+      if (Array.isArray(state.videos) && state.videos.length > 0) setVideos(state.videos);
+      if (Array.isArray(state.projectCategories) && state.projectCategories.length > 0) {
         setProjectCategories(state.projectCategories);
       } else {
         setProjectCategories(PROJECT_CATEGORIES);
       }
-      if (state.auditLog) setAuditLog(state.auditLog);
-      if (state.appConfig) setAppConfig(state.appConfig);
+      if (Array.isArray(state.auditLog)) setAuditLog(state.auditLog);
+      if (state.appConfig && typeof state.appConfig === 'object') setAppConfig(state.appConfig);
       
       console.log("State initialization complete. Loaded keys:", Array.from(loadedKeysRef.current));
       isInitialLoadDone.current = true;

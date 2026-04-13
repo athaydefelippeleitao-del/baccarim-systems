@@ -556,10 +556,29 @@ async function startServer() {
     } else {
       const indexPath = path.resolve(distPath, "index.html");
       console.log(`[Server] index.html exists: ${fs.existsSync(indexPath)}`);
+      const assetsPath = path.resolve(distPath, "assets");
+      if (fs.existsSync(assetsPath)) {
+        const assetFiles = fs.readdirSync(assetsPath);
+        console.log(`[Server] Assets in dist/assets (${assetFiles.length} files):`, assetFiles.join(', '));
+      } else {
+        console.error(`[Server] ERROR: dist/assets directory does not exist!`);
+      }
     }
 
-    app.use(express.static(distPath));
+    // Serve static files but do NOT cache index.html so browsers always get the latest build
+    app.use(express.static(distPath, {
+      setHeaders: (res, filePath) => {
+        if (filePath.endsWith('index.html')) {
+          res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+          res.setHeader('Pragma', 'no-cache');
+          res.setHeader('Expires', '0');
+        }
+      }
+    }));
     app.get("*", (req, res) => {
+      res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+      res.setHeader('Pragma', 'no-cache');
+      res.setHeader('Expires', '0');
       res.sendFile(path.resolve(distPath, "index.html"));
     });
   }
