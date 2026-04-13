@@ -69,6 +69,10 @@ const App: React.FC = () => {
   // Track which collections have been successfully loaded from the server
   // to prevent syncing an empty local state back to the server.
   const loadedKeysRef = useRef<Set<string>>(new Set());
+  const isInitialLoadDone = useRef(false);
+  const syncTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
+  const socketRef = useRef<Socket | null>(null);
+  const isConnectedRef = useRef(false);
 
   // Theme effect
   useEffect(() => {
@@ -260,12 +264,6 @@ const App: React.FC = () => {
   }, [currentUser]); // Run only on login/logout
 
 
-  // Helper to emit updates only if state is different from last server state
-  const syncTimeoutRef = useRef<Record<string, NodeJS.Timeout>>({});
-
-  const socketRef = useRef<Socket | null>(null);
-  const isConnectedRef = useRef(false);
-
   useEffect(() => {
     socketRef.current = socket;
     isConnectedRef.current = isConnected;
@@ -308,7 +306,6 @@ const App: React.FC = () => {
   }, [currentUser]);
 
 
-  const isInitialLoadDone = useRef(false);
 
   // Join presence when logged in
   useEffect(() => {
