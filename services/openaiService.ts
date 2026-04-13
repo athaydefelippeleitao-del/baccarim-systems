@@ -3,7 +3,7 @@ import { EnvironmentalLicense, Notification } from "../types";
 import { utmToDecimal } from "../utils/geoUtils";
 
 function getAI() {
-    const apiKey = process.env.OPENAI_API_KEY || (process.env as any).API_KEY;
+    const apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY || (process.env as any).API_KEY;
     if (!apiKey) throw new Error("OPENAI_API_KEY não configurada no servidor");
     return new OpenAI({ apiKey });
 }
