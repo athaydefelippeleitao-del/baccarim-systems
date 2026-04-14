@@ -9,8 +9,10 @@ interface ProjectExtensionReportViewProps {
 
 const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({ project, appConfig, onClose }) => {
   const reportRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
   const [showSignature, setShowSignature] = useState(true);
+  const [localSignatureImage, setLocalSignatureImage] = useState<string | undefined>(appConfig?.signatureImage);
 
   // Initial content based on the project and the reference image (Sans-Serif style)
   const getInitialContent = () => {
@@ -80,6 +82,19 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
   const handleReset = () => {
     if (confirm('Deseja resetar o texto para o modelo original?')) {
       setContent(getInitialContent());
+      setLocalSignatureImage(appConfig?.signatureImage);
+    }
+  };
+
+  const handleSignatureUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setLocalSignatureImage(reader.result as string);
+        setShowSignature(true);
+      };
+      reader.readAsDataURL(file);
     }
   };
 
@@ -103,24 +118,41 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
             </p>
           </div>
 
-          <div className="flex items-center justify-between p-3 bg-baccarim-hover rounded-xl border border-baccarim-border">
-            <span className="text-xs font-bold text-baccarim-text">Embutir Assinatura</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-baccarim-hover rounded-xl border border-baccarim-border">
+              <span className="text-xs font-bold text-baccarim-text">Exibir Assinatura</span>
+              <button 
+                onClick={() => setShowSignature(!showSignature)}
+                className={`w-10 h-6 rounded-full transition-all relative ${showSignature ? 'bg-baccarim-blue' : 'bg-baccarim-border'}`}
+              >
+                <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${showSignature ? 'left-5' : 'left-1'}`}></div>
+              </button>
+            </div>
+
+            <input 
+              type="file" 
+              accept="image/*" 
+              className="hidden" 
+              ref={fileInputRef} 
+              onChange={handleSignatureUpload} 
+            />
+            
             <button 
-              onClick={() => setShowSignature(!showSignature)}
-              className={`w-10 h-6 rounded-full transition-all relative ${showSignature ? 'bg-baccarim-blue' : 'bg-baccarim-border'}`}
+              onClick={() => fileInputRef.current?.click()} 
+              className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-blue/10 text-baccarim-blue rounded-xl hover:bg-baccarim-blue/20 transition-all border border-baccarim-blue/20"
             >
-              <div className={`absolute top-1 w-4 h-4 bg-white rounded-full transition-all ${showSignature ? 'left-5' : 'left-1'}`}></div>
+              <i className="fas fa-upload mr-2"></i> Anexar Assinatura Mão
             </button>
           </div>
 
-          <button onClick={handleReset} className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-hover text-baccarim-text-muted rounded-xl hover:text-baccarim-text border border-baccarim-border transition-all">
+          <button onClick={handleReset} className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-hover text-baccarim-text-muted rounded-xl hover:text-baccarim-text border border-baccarim-border transition-all mt-4">
             <i className="fas fa-undo mr-2"></i> Resetar para o Padrão
           </button>
 
           <button
             onClick={handleGeneratePDF}
             disabled={isGenerating}
-            className="w-full py-4 bg-baccarim-blue text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl flex items-center justify-center space-x-2 hover:bg-baccarim-green transition-all disabled:opacity-50"
+            className="w-full py-4 bg-baccarim-blue text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl flex items-center justify-center space-x-2 hover:bg-baccarim-green transition-all disabled:opacity-50 mt-6"
           >
             {isGenerating ? <i className="fas fa-circle-notch animate-spin"></i> : <i className="fas fa-print"></i>}
             <span>{isGenerating ? 'Gerando...' : 'Gerar PDF'}</span>
@@ -149,8 +181,8 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
             <div className="mt-4 flex flex-col items-start w-fit">
               <div className="relative mb-0 h-24 flex items-center justify-start">
                 <div className="absolute left-0 bottom-4 w-48 h-12 flex items-center justify-center overflow-hidden">
-                  {appConfig?.signatureImage ? (
-                    <img src={appConfig.signatureImage} alt="Assinatura" className="max-h-full object-contain" />
+                  {localSignatureImage ? (
+                    <img src={localSignatureImage} alt="Assinatura" className="max-h-full object-contain" />
                   ) : (
                     <div className="text-baccarim-blue italic text-3xl opacity-60" style={{ fontFamily: '"Brush Script MT", cursive' }}>
                       AB Junior
