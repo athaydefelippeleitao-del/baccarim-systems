@@ -202,7 +202,7 @@ const App: React.FC = () => {
           });
         } else if (payload.eventType === 'DELETE') {
           setProjects((prev: Project[]) => {
-            const newState = prev.filter(p => p.id === payload.old.id);
+            const newState = prev.filter(p => p.id !== payload.old.id);
             lastServerState.current['projects'] = JSON.stringify(newState);
             return newState;
           });
@@ -230,7 +230,7 @@ const App: React.FC = () => {
           });
         } else if (payload.eventType === 'DELETE') {
           setLicenses((prev: EnvironmentalLicense[]) => {
-            const newState = prev.filter(l => l.id === payload.old.id);
+            const newState = prev.filter(l => l.id !== payload.old.id);
             lastServerState.current['licenses'] = JSON.stringify(newState);
             return newState;
           });
@@ -258,7 +258,7 @@ const App: React.FC = () => {
           });
         } else if (payload.eventType === 'DELETE') {
           setNotifications((prev: Notification[]) => {
-            const newState = prev.filter(n => n.id === payload.old.id);
+            const newState = prev.filter(n => n.id !== payload.old.id);
             lastServerState.current['notifications'] = JSON.stringify(newState);
             return newState;
           });
