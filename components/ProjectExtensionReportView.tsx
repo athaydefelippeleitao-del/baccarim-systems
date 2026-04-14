@@ -81,10 +81,10 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
     if (!reportRef.current) return;
     setIsGenerating(true);
     const opt = {
-      margin: 15,
+      margin: 10,
       filename: `OFICIO_DILACAO_${project.name.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, letterRendering: true, windowWidth: 794 },
+      html2canvas: { scale: 3, useCORS: true, letterRendering: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
@@ -217,9 +217,11 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
       </div>
 
       {/* A4 Paper View */}
-      <div className="bg-white w-full max-w-[210mm] min-h-[297mm] shadow-[0_40px_100px_rgba(0,0,0,0.4)] text-black relative flex flex-col print:shadow-none print:m-0 shrink-0">
+      <div 
+        ref={reportRef}
+        className="bg-white w-full max-w-[210mm] min-h-[297mm] shadow-[0_40px_100px_rgba(0,0,0,0.4)] text-black relative flex flex-col print:shadow-none print:m-0 shrink-0"
+      >
         <div 
-          ref={reportRef} 
           className="px-[20mm] py-[25mm] flex-1 flex flex-col bg-white overflow-hidden"
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
