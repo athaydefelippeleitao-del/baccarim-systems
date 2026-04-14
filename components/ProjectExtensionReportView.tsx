@@ -27,7 +27,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
   const [extensionDays, setExtensionDays] = useState('60');
   const [extensionReason, setExtensionReason] = useState('a necessidade de maior prazo para o envio da complementação solicitada');
 
-  // Generate HTML content based on states
+  // Generate HTML content
   const getInitialContent = (days: string, reason: string) => {
     const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
     const processNumber = project.specs?.numeroProtocolo || '19.023.064622/2025-92';
@@ -39,33 +39,33 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
     const diasExtensoText = DIAS_EXTENSO[days] || '';
 
     return `
-      <div style="text-align: right; margin-bottom: 50px; font-size: 11pt;">Londrina, ${today}.</div>
+      <div style="text-align: right; margin-bottom: 25px; font-size: 11pt;">Londrina, ${today}.</div>
       
-      <div style="margin-bottom: 50px; font-size: 11pt; line-height: 1.2;">
-        <p style="font-weight: bold; margin-bottom: 10px;">À</p>
+      <div style="margin-bottom: 25px; font-size: 11pt; line-height: 1.2;">
+        <p style="font-weight: bold; margin-bottom: 5px;">À</p>
         <p style="font-weight: bold; margin-bottom: 0;">Prefeitura Municipal de Londrina</p>
         <p style="font-weight: bold; margin-bottom: 0;">SEMA - Secretaria Municipal Do Ambiente de Londrina</p>
       </div>
 
-      <div style="margin-bottom: 50px; font-size: 11pt; line-height: 1.4; text-align: justify;">
+      <div style="margin-bottom: 30px; font-size: 11pt; line-height: 1.3; text-align: justify;">
         <p><strong>Ref.:</strong> Processo SEI ${processNumber} | Solicitação de prorrogação de prazo (${days} dias) para envio de complementação solicitada através da Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026.</p>
       </div>
 
-      <div style="text-align: justify; line-height: 1.6; font-size: 11pt;">
-        <p style="text-indent: 60px; margin-bottom: 25px;">
+      <div style="text-align: justify; line-height: 1.4; font-size: 11pt;">
+        <p style="text-indent: 50px; margin-bottom: 15px;">
           A empresa <strong>${razaoSocial}</strong>, pessoa jurídica inscrita no CNPJ sob o nº ${cnpj}, vem por meio deste, e através de seu outorgado <strong>${responsavel}</strong>, engenheiro civil, portador do CPF sob o nº ${cpfResponsavel}, prestar os esclarecimentos solicitados através da notificação supracitada.
         </p>
 
-        <p style="text-indent: 60px; margin-bottom: 25px;">
+        <p style="text-indent: 50px; margin-bottom: 15px;">
           Em atenção à Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026, e considerando ${reason}, gostaríamos de formalizar nossa solicitação de prorrogação de <strong>${days} ${diasExtensoText} dias do prazo</strong> originalmente estabelecido.
         </p>
 
-        <p style="text-indent: 60px; margin-bottom: 25px;">
+        <p style="text-indent: 50px; margin-bottom: 15px;">
           Reiteramos nossos protestos de estima e consideração e aguardamos a sua compreensão.
         </p>
       </div>
 
-      <div style="margin-top: 50px; margin-bottom: 20px; font-size: 11pt;">
+      <div style="margin-top: 30px; margin-bottom: 15px; font-size: 11pt;">
         <p>Atenciosamente,</p>
       </div>
     `;
@@ -81,10 +81,10 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
     if (!reportRef.current) return;
     setIsGenerating(true);
     const opt = {
-      margin: 20,
+      margin: 15,
       filename: `OFICIO_DILACAO_${project.name.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+      html2canvas: { scale: 3, useCORS: true, letterRendering: true, windowWidth: 794 },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
 
@@ -220,14 +220,13 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
       <div className="bg-white w-full max-w-[210mm] min-h-[297mm] shadow-[0_40px_100px_rgba(0,0,0,0.4)] text-black relative flex flex-col print:shadow-none print:m-0 shrink-0">
         <div 
           ref={reportRef} 
-          className="px-[30mm] py-[35mm] flex-1 flex flex-col bg-white overflow-hidden"
+          className="px-[20mm] py-[25mm] flex-1 flex flex-col bg-white overflow-hidden"
           style={{ fontFamily: 'Arial, Helvetica, sans-serif' }}
         >
           {/* Editable Document Body */}
           <div 
             contentEditable 
             suppressContentEditableWarning
-            onInput={(e) => setContent(e.currentTarget.innerHTML)}
             dangerouslySetInnerHTML={{ __html: content }}
             className="outline-none focus:ring-0"
           />
@@ -235,12 +234,12 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
           {/* Signature Area (Properly Aligned & Embedded) */}
           {showSignature && (
             <div className="mt-4 flex flex-col items-start w-fit">
-              <div className="relative mb-0 h-24 flex items-center justify-start">
-                <div className="absolute left-0 bottom-4 w-48 h-12 flex items-center justify-center overflow-hidden">
+              <div className="relative mb-0 h-16 flex items-center justify-start">
+                <div className="absolute left-0 bottom-2 w-48 h-12 flex items-center justify-start overflow-hidden">
                   {localSignatureImage ? (
                     <img src={localSignatureImage} alt="Assinatura" className="max-h-full object-contain" />
                   ) : (
-                    <div className="text-baccarim-blue italic text-3xl opacity-60" style={{ fontFamily: '"Brush Script MT", cursive' }}>
+                    <div className="text-baccarim-blue italic text-3xl opacity-60 ml-2" style={{ fontFamily: '"Brush Script MT", cursive' }}>
                       AB Junior
                     </div>
                   )}
