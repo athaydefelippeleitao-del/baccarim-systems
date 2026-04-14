@@ -272,7 +272,16 @@ async function startServer() {
 
       console.log("Restoring state. Keys in backup:", Object.keys(newState));
 
-      // Fully replace state with backup content to ensure it matches exactly
+      // Fully replace state with backup content to ensure it matches exactly, 
+      // BUT keep branding (appConfig and logos) if they are missing in the backup.
+      const preservedAppConfig = (newState.appConfig && Object.keys(newState.appConfig).length > 0) 
+        ? newState.appConfig 
+        : (state.appConfig || {});
+      
+      const preservedClientLogos = (newState.clientLogos && Object.keys(newState.clientLogos).length > 0) 
+        ? newState.clientLogos 
+        : (state.clientLogos || {});
+
       state = {
         ...newState,
         projects: newState.projects || [],
@@ -282,7 +291,9 @@ async function startServer() {
         users: newState.users || [],
         clients: newState.clients || [],
         checklistTemplates: newState.checklistTemplates || state.checklistTemplates,
-        auditLog: newState.auditLog || []
+        auditLog: newState.auditLog || [],
+        appConfig: preservedAppConfig,
+        clientLogos: preservedClientLogos
       };
 
       // Broadcast to all clients to force update
@@ -304,9 +315,11 @@ async function startServer() {
           await saveKeyToSupabase('meetings', state.meetings);
           await saveKeyToSupabase('videos', state.videos);
           await saveKeyToSupabase('reports', state.reports);
-          console.log("State restored to Supabase in background.");
+          await saveKeyToSupabase('appConfig', state.appConfig);
+          await saveKeyToSupabase('clientLogos', state.clientLogos);
+          console.log(`[Restore] Background sync complete. Saved logos: ${Object.keys(state.clientLogos).length}`);
         } catch (e) {
-          console.error("Error during background restore sync:", e);
+          console.error("[Restore] Error during background sync:", e);
         }
       })();
     } catch (e) {
