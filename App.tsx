@@ -127,7 +127,13 @@ const App: React.FC = () => {
       }
       if (Array.isArray(state.auditLog)) setAuditLog(state.auditLog);
       if (state.appConfig && typeof state.appConfig === 'object') setAppConfig(state.appConfig);
-      if (state.clientLogos && typeof state.clientLogos === 'object') setClientLogos(state.clientLogos);
+      if (state.clientLogos && typeof state.clientLogos === 'object') {
+        const logoKeys = Object.keys(state.clientLogos);
+        console.log(`[Socket] Received ${logoKeys.length} client logos. Keys:`, logoKeys);
+        setClientLogos(state.clientLogos);
+      } else {
+        console.warn('[Socket] No client logos received in state:init or invalid type:', typeof state.clientLogos);
+      }
       
       console.log("State initialization complete. Loaded keys:", Array.from(loadedKeysRef.current));
       isInitialLoadDone.current = true;
@@ -343,7 +349,12 @@ const App: React.FC = () => {
       emitUpdate('appConfig', appConfig); 
     }
   }, [appConfig, emitUpdate]);
-  useEffect(() => { if (isInitialLoadDone.current) emitUpdate('clientLogos', clientLogos); }, [clientLogos, emitUpdate]);
+  useEffect(() => { 
+    if (isInitialLoadDone.current) {
+      console.log(`[Sync] Emitting clientLogos update. Total logos: ${Object.keys(clientLogos).length}`);
+      emitUpdate('clientLogos', clientLogos); 
+    }
+  }, [clientLogos, emitUpdate]);
 
   useEffect(() => {
     // Ensure loading screen lasts at least 1.5 seconds for branding

@@ -437,14 +437,21 @@ async function startServer() {
       }
 
       // ─── SYNC PROTECTION ───
-      // Prevent a client from wiping out a collection if the server has data.
-      // Legitimate deletions should use 'state:delete'.
       const isPlainObject = (val: any) => val && typeof val === 'object' && !Array.isArray(val);
       const isEmptyObject = (val: any) => isPlainObject(val) && Object.keys(val).length === 0;
       const isNotEmptyObject = (val: any) => isPlainObject(val) && Object.keys(val).length > 0;
 
+      if (update.key === 'clientLogos') {
+        process.stdout.write(`[Sync] clientLogos update. Current: ${Object.keys(state.clientLogos || {}).length} keys. Incoming: ${Object.keys(update.value || {}).length} keys.\n`);
+      }
+
       if (Array.isArray(update.value) && update.value.length === 0 && Array.isArray(state[update.key]) && state[update.key].length > 0) {
         console.warn(`[Protection] Ignored state:update for "${update.key}" because it would wipe out ${state[update.key].length} items. Possible sync-wipe race condition.`);
+        return;
+      }
+
+      if (update.key === 'clientLogos' && isEmptyObject(update.value) && isNotEmptyObject(state[update.key])) {
+        console.warn(`[Protection] CRITICAL: Ignored empty clientLogos update. Server has ${Object.keys(state[update.key]).length} logos.`);
         return;
       }
 
