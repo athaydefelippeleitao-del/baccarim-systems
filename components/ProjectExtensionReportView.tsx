@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Project, AppConfig } from '../types';
 
 interface ProjectExtensionReportViewProps {
@@ -7,6 +7,15 @@ interface ProjectExtensionReportViewProps {
   onClose: () => void;
 }
 
+const DIAS_EXTENSO: Record<string, string> = {
+  '15': '(quinze)',
+  '30': '(trinta)',
+  '45': '(quarenta e cinco)',
+  '60': '(sessenta)',
+  '90': '(noventa)',
+  '120': '(cento e vinte)'
+};
+
 const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({ project, appConfig, onClose }) => {
   const reportRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -14,14 +23,20 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
   const [showSignature, setShowSignature] = useState(true);
   const [localSignatureImage, setLocalSignatureImage] = useState<string | undefined>(appConfig?.signatureImage);
 
-  // Initial content based on the project and the reference image (Sans-Serif style)
-  const getInitialContent = () => {
+  // States for easily alterable fields
+  const [extensionDays, setExtensionDays] = useState('60');
+  const [extensionReason, setExtensionReason] = useState('a necessidade de maior prazo para o envio da complementação solicitada');
+
+  // Generate HTML content based on states
+  const getInitialContent = (days: string, reason: string) => {
     const today = new Date().toLocaleDateString('pt-BR', { day: 'numeric', month: 'long', year: 'numeric' });
     const processNumber = project.specs?.numeroProtocolo || '19.023.064622/2025-92';
     const razaoSocial = project.specs?.razaoSocial || project.clientName || 'BRAGA CRUZ BUSINESS LOTEAMENTOS LTDA';
     const cnpj = project.specs?.cnpjCpf || '32.128.269/0001-44';
     const responsavel = project.specs?.responsavelLegal || 'ALBERTO BACCARIM JUNIOR';
     const cpfResponsavel = project.specs?.cpfResponsavel || '055.589.279-41';
+
+    const diasExtensoText = DIAS_EXTENSO[days] || '';
 
     return `
       <div style="text-align: right; margin-bottom: 50px; font-size: 11pt;">Londrina, ${today}.</div>
@@ -33,7 +48,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
       </div>
 
       <div style="margin-bottom: 50px; font-size: 11pt; line-height: 1.4; text-align: justify;">
-        <p><strong>Ref.:</strong> Processo SEI ${processNumber} | Solicitação de prorrogação de prazo (60 dias) para envio de complementação solicitada através da Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026.</p>
+        <p><strong>Ref.:</strong> Processo SEI ${processNumber} | Solicitação de prorrogação de prazo (${days} dias) para envio de complementação solicitada através da Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026.</p>
       </div>
 
       <div style="text-align: justify; line-height: 1.6; font-size: 11pt;">
@@ -42,7 +57,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
         </p>
 
         <p style="text-indent: 60px; margin-bottom: 25px;">
-          Em atenção à Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026, e considerando a necessidade de maior prazo para o envio da complementação solicitada, gostaríamos de formalizar nossa solicitação de prorrogação de <strong>60 (sessenta) dias do prazo</strong> originalmente estabelecido.
+          Em atenção à Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026, e considerando ${reason}, gostaríamos de formalizar nossa solicitação de prorrogação de <strong>${days} ${diasExtensoText} dias do prazo</strong> originalmente estabelecido.
         </p>
 
         <p style="text-indent: 60px; margin-bottom: 25px;">
@@ -56,7 +71,11 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
     `;
   };
 
-  const [content, setContent] = useState(getInitialContent());
+  const [content, setContent] = useState(getInitialContent(extensionDays, extensionReason));
+
+  const handleApplyChanges = () => {
+    setContent(getInitialContent(extensionDays, extensionReason));
+  };
 
   const handleGeneratePDF = async () => {
     if (!reportRef.current) return;
@@ -81,7 +100,9 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
 
   const handleReset = () => {
     if (confirm('Deseja resetar o texto para o modelo original?')) {
-      setContent(getInitialContent());
+      setExtensionDays('60');
+      setExtensionReason('a necessidade de maior prazo para o envio da complementação solicitada');
+      setContent(getInitialContent('60', 'a necessidade de maior prazo para o envio da complementação solicitada'));
       setLocalSignatureImage(appConfig?.signatureImage);
     }
   };
@@ -102,7 +123,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
     <div className="fixed inset-0 bg-baccarim-dark/95 backdrop-blur-xl z-[250] flex flex-col md:flex-row items-start justify-center overflow-y-auto p-4 md:p-10 animate-in fade-in duration-300 gap-8">
       
       {/* Settings Panel */}
-      <div className="w-full md:w-80 bg-baccarim-card rounded-[2rem] p-6 shadow-2xl border border-baccarim-border shrink-0 sticky top-10 print:hidden">
+      <div className="w-full md:w-80 bg-baccarim-card rounded-[2rem] p-6 shadow-2xl border border-baccarim-border shrink-0 sticky top-10 print:hidden flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-sm font-black text-baccarim-text uppercase tracking-widest">Editor de Ofício</h3>
           <button onClick={onClose} className="w-8 h-8 bg-baccarim-hover text-baccarim-text-muted rounded-full flex items-center justify-center hover:bg-red-500/10 hover:text-red-500 transition-all">
@@ -111,14 +132,47 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
         </div>
 
         <div className="space-y-6">
-          <div className="p-4 bg-baccarim-blue/10 border border-baccarim-blue/20 rounded-2xl">
-            <p className="text-[10px] text-baccarim-blue font-bold uppercase tracking-widest mb-1">Instrução</p>
-            <p className="text-[11px] text-baccarim-text-muted leading-relaxed">
-              Clique em qualquer parte do texto ao lado para editar. O PDF será gerado com as suas alterações.
-            </p>
+          {/* Form Fields for Dynamically Changing Text */}
+          <div className="space-y-4">
+            <div>
+              <label className="block text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-2">Prazo (Dias)</label>
+              <select 
+                value={extensionDays}
+                onChange={(e) => setExtensionDays(e.target.value)}
+                className="w-full bg-baccarim-dark border border-baccarim-border rounded-xl px-4 py-3 text-sm text-baccarim-text focus:outline-none focus:border-baccarim-blue transition-all"
+              >
+                <option value="15">15 Dias</option>
+                <option value="30">30 Dias</option>
+                <option value="45">45 Dias</option>
+                <option value="60">60 Dias</option>
+                <option value="90">90 Dias</option>
+                <option value="120">120 Dias</option>
+              </select>
+            </div>
+            
+            <div>
+              <label className="block text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-2">Motivo da Dilação</label>
+              <textarea 
+                value={extensionReason}
+                onChange={(e) => setExtensionReason(e.target.value)}
+                className="w-full bg-baccarim-dark border border-baccarim-border rounded-xl px-4 py-3 text-sm text-baccarim-text focus:outline-none focus:border-baccarim-blue transition-all min-h-[100px] resize-y"
+                placeholder="Ex: a necessidade de maior prazo..."
+              />
+            </div>
+
+            <button 
+              onClick={handleApplyChanges}
+              className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-blue text-white rounded-xl hover:bg-baccarim-green transition-all shadow-lg"
+            >
+              Aplicar Mudanças no Texto
+            </button>
           </div>
 
+          <div className="w-full h-px bg-baccarim-border"></div>
+
+          {/* Signature Configuration */}
           <div className="space-y-3">
+            <h4 className="text-[10px] text-baccarim-text-muted font-bold uppercase tracking-widest">Assinatura</h4>
             <div className="flex items-center justify-between p-3 bg-baccarim-hover rounded-xl border border-baccarim-border">
               <span className="text-xs font-bold text-baccarim-text">Exibir Assinatura</span>
               <button 
@@ -141,18 +195,20 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
               onClick={() => fileInputRef.current?.click()} 
               className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-blue/10 text-baccarim-blue rounded-xl hover:bg-baccarim-blue/20 transition-all border border-baccarim-blue/20"
             >
-              <i className="fas fa-upload mr-2"></i> Anexar Assinatura Mão
+              <i className="fas fa-upload mr-2"></i> Anexar Imagem Mão
             </button>
           </div>
 
-          <button onClick={handleReset} className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-hover text-baccarim-text-muted rounded-xl hover:text-baccarim-text border border-baccarim-border transition-all mt-4">
-            <i className="fas fa-undo mr-2"></i> Resetar para o Padrão
+          <div className="w-full h-px bg-baccarim-border"></div>
+
+          <button onClick={handleReset} className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-hover text-baccarim-text-muted rounded-xl hover:text-baccarim-text border border-baccarim-border transition-all">
+            <i className="fas fa-undo mr-2"></i> Resetar para Padrão
           </button>
 
           <button
             onClick={handleGeneratePDF}
             disabled={isGenerating}
-            className="w-full py-4 bg-baccarim-blue text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl flex items-center justify-center space-x-2 hover:bg-baccarim-green transition-all disabled:opacity-50 mt-6"
+            className="w-full py-4 bg-baccarim-blue text-white rounded-xl font-black uppercase text-[10px] tracking-widest shadow-xl flex items-center justify-center space-x-2 hover:bg-baccarim-green transition-all disabled:opacity-50"
           >
             {isGenerating ? <i className="fas fa-circle-notch animate-spin"></i> : <i className="fas fa-print"></i>}
             <span>{isGenerating ? 'Gerando...' : 'Gerar PDF'}</span>
@@ -161,7 +217,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
       </div>
 
       {/* A4 Paper View */}
-      <div className="bg-white w-full max-w-[210mm] min-h-[297mm] shadow-[0_40px_100px_rgba(0,0,0,0.4)] text-black relative flex flex-col print:shadow-none print:m-0">
+      <div className="bg-white w-full max-w-[210mm] min-h-[297mm] shadow-[0_40px_100px_rgba(0,0,0,0.4)] text-black relative flex flex-col print:shadow-none print:m-0 shrink-0">
         <div 
           ref={reportRef} 
           className="px-[30mm] py-[35mm] flex-1 flex flex-col bg-white overflow-hidden"
