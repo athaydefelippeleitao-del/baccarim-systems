@@ -288,4 +288,5 @@ export interface PresenceUser {
 export interface AppConfig {
   appIcon?: string; // base64
   appName?: string;
+  signatureImage?: string; // base64
 }
