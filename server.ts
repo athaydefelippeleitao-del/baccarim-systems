@@ -262,7 +262,7 @@ async function startServer() {
   });
 
   app.post("/api/restore", async (req, res) => {
-    console.log("Restore request received. Body size approx:", JSON.stringify(req.body).length);
+    console.log("Restore request received.");
     try {
       const newState = req.body;
       if (!newState || typeof newState !== 'object') {
@@ -274,11 +274,11 @@ async function startServer() {
 
       // Fully replace state with backup content to ensure it matches exactly, 
       // BUT keep branding (appConfig and logos) if they are missing in the backup.
-      const preservedAppConfig = (newState.appConfig && Object.keys(newState.appConfig).length > 0) 
+      const preservedAppConfig = (newState.appConfig && typeof newState.appConfig === 'object' && Object.keys(newState.appConfig).length > 0) 
         ? newState.appConfig 
         : (state.appConfig || {});
       
-      const preservedClientLogos = (newState.clientLogos && Object.keys(newState.clientLogos).length > 0) 
+      const preservedClientLogos = (newState.clientLogos && typeof newState.clientLogos === 'object' && Object.keys(newState.clientLogos).length > 0) 
         ? newState.clientLogos 
         : (state.clientLogos || {});
 
@@ -322,9 +322,9 @@ async function startServer() {
           console.error("[Restore] Error during background sync:", e);
         }
       })();
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error restoring backup:", e);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error: e.message || "Internal server error" });
     }
   });
 
