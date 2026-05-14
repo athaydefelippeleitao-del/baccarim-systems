@@ -19,6 +19,7 @@
     "file-saver": "^2.0.5",
     "google-auth-library": "^10.6.1",
     "googleapis": "^171.4.0",
+    "jspdf": "^4.2.1",
     "jszip": "^3.10.1",
     "openai": "^6.27.0",
     "react": "^19.0.0",
