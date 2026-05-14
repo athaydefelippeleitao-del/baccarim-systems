@@ -143,3 +143,33 @@ Inclua: introdução formal, medidas que serão adotadas e lista de documentos a
     }));
     return response.choices[0]?.message?.content || "Não foi possível gerar o rascunho.";
 }
+
+export async function generateAIDocument(documentType: string, projectContext: string, extraContext: string): Promise<string> {
+    const openai = getAI();
+    let typePrompt = "";
+    if (documentType === "RAP") {
+        typePrompt = "um RAP (Relatório Ambiental Prévio)";
+    } else if (documentType === "Relatório Fotográfico") {
+        typePrompt = "um Relatório Fotográfico de Vistoria";
+    } else if (documentType === "Dilação de Prazo") {
+        typePrompt = "um ofício de Dilação de Prazo";
+    } else {
+        typePrompt = "um documento técnico ambiental";
+    }
+
+    const prompt = `Você é um engenheiro ambiental sênior da Baccarim Engenharia. Sua tarefa é elaborar ${typePrompt} com base nos dados do projeto.
+
+DADOS DO PROJETO:
+${projectContext}
+
+INFORMAÇÕES ADICIONAIS / INSTRUÇÕES:
+${extraContext}
+
+Escreva o documento de forma formal, técnica e completa, utilizando formatação Markdown. Crie seções claras, como Introdução, Desenvolvimento/Corpo Técnico, e Conclusão/Fechamento conforme apropriado para o tipo de documento.`;
+
+    const response = await withRetry(() => openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [{ role: 'user', content: prompt }],
+    }));
+    return response.choices[0]?.message?.content || "Não foi possível gerar o documento.";
+}

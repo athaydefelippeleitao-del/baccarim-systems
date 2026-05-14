@@ -17,6 +17,7 @@ import UsersView from './components/UsersView';
 import MapView from './components/MapView';
 import PhotoReportView from './components/PhotoReportView';
 import ServerManagementView from './components/ServerManagementView';
+import AIDocumentsView from './components/AIDocumentsView';
 import LoadingScreen from './components/LoadingScreen';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import ProjectStatusSummary from './components/ProjectStatusSummary';
@@ -424,7 +425,7 @@ const App: React.FC = () => {
 
   // Ordem das abas para navegação por swipe (filtrada por permissões)
   const tabOrder = useMemo(() => {
-    const base = ['dashboard', 'map', 'notifications', 'clients', 'agenda', 'reports', 'finance'];
+    const base = ['dashboard', 'map', 'notifications', 'clients', 'agenda', 'reports', 'finance', 'ai-docs'];
     if (currentUser?.role === 'admin' || currentUser?.role === 'engineer') base.push('config');
     if (currentUser?.role === 'admin') {
       base.push('users');
@@ -791,6 +792,10 @@ const App: React.FC = () => {
             <i className="fas fa-file-invoice-dollar w-5"></i>
             <span className="text-sm font-bold">Financeiro</span>
           </button>
+          <button onClick={() => setActiveTab('ai-docs')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'ai-docs' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
+            <i className="fas fa-robot w-5 text-baccarim-blue"></i>
+            <span className="text-sm font-bold">Documentos IA</span>
+          </button>
           {(currentUser.role === 'admin' || currentUser.role === 'engineer') && (
             <button onClick={() => setActiveTab('config')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'config' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
               <i className="fas fa-sliders w-5"></i>
@@ -1062,6 +1067,7 @@ const App: React.FC = () => {
         }} onAddNotification={handleAddNotification} clientLogos={clientLogos} onUpdateClientLogo={handleUpdateClientLogo} />}
         {activeTab === 'agenda' && <AgendaView currentUser={currentUser} clients={filteredClientsList} projects={filteredProjects} licenses={filteredLicenses} notifications={filteredNotifications} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onUpdateLicense={handleUpdateLicense} onDeleteNotification={handleDeleteNotification} onDeleteLicense={handleDeleteLicense} />}
         {activeTab === 'finance' && <FinanceView clients={filteredClientsList} contracts={filteredContracts} onUpdateContract={handleUpdateContract} onDeleteContract={handleDeleteContract} />}
+        {activeTab === 'ai-docs' && <AIDocumentsView projects={filteredProjects} />}
         {activeTab === 'reports' && <PhotoReportView projects={filteredProjects} reports={filteredReports} onUpdateReport={handleUpdateReport} onDeleteReport={handleDeleteReport} />}
         {activeTab === 'users' && currentUser.role === 'admin' && (
           <UsersView
@@ -1142,6 +1148,10 @@ const App: React.FC = () => {
             <button onClick={() => setActiveTab('finance')} className={`flex flex-col items-center justify-center min-w-[65px] snap-center py-3 px-2 rounded-2xl transition-all duration-300 ${activeTab === 'finance' ? 'bg-baccarim-indigo text-baccarim-text shadow-xl scale-105' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
               <i className="fas fa-file-invoice-dollar text-lg"></i>
               <span className="text-[7px] font-black uppercase tracking-widest mt-1.5">Finance</span>
+            </button>
+            <button onClick={() => setActiveTab('ai-docs')} className={`flex flex-col items-center justify-center min-w-[65px] snap-center py-3 px-2 rounded-2xl transition-all duration-300 ${activeTab === 'ai-docs' ? 'bg-baccarim-blue text-baccarim-text shadow-xl scale-105' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
+              <i className="fas fa-robot text-lg"></i>
+              <span className="text-[7px] font-black uppercase tracking-widest mt-1.5">Docs IA</span>
             </button>
             {(currentUser.role === 'admin' || currentUser.role === 'engineer') && (
               <button onClick={() => setActiveTab('config')} className={`flex flex-col items-center justify-center min-w-[65px] snap-center py-3 px-2 rounded-2xl transition-all duration-300 ${activeTab === 'config' ? 'bg-baccarim-active text-baccarim-text shadow-xl scale-105' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>

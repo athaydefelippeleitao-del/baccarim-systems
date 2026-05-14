@@ -41,3 +41,12 @@ export async function generateNotificationDraft(
   const result = await post<string>('/notification-draft', { agency, description, clientName });
   return result || 'Não foi possível gerar o rascunho.';
 }
+
+export async function generateAIDocument(
+  documentType: string,
+  projectContext: string,
+  extraContext: string
+): Promise<string> {
+  const result = await post<string>('/generate-document', { documentType, projectContext, extraContext });
+  return result || 'Não foi possível gerar o documento.';
+}

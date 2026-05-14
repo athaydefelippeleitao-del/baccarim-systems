@@ -42,6 +42,7 @@ import {
   analyzeVistoriaImage,
   generateNotificationDraft,
   suggestExcelMapping,
+  generateAIDocument,
 } from "./services/openaiService";
 
 const DB_FILE = path.resolve(process.cwd(), "db.json");
@@ -258,6 +259,17 @@ async function startServer() {
     } catch (e: any) {
       console.error("OpenAI suggest-mapping error:", e);
       res.status(500).json({ error: e.message || "Erro ao sugerir mapeamento" });
+    }
+  });
+
+  app.post("/api/openai/generate-document", async (req, res) => {
+    try {
+      const { documentType, projectContext, extraContext } = req.body;
+      const result = await generateAIDocument(documentType, projectContext, extraContext);
+      res.json({ result });
+    } catch (e: any) {
+      console.error("OpenAI generate-document error:", e);
+      res.status(500).json({ error: e.message || "Erro ao gerar documento" });
     }
   });
 
