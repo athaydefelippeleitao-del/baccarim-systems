@@ -204,16 +204,9 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
           >
             <i className="fas fa-times"></i>
           </button>
-        </div>
-
         {/* Content */}
-        {previewUrl ? (
-          <div className="p-0 h-[600px] md:h-[700px] relative">
-            <iframe src={previewUrl} className="w-full h-full border-none" title="PDF Preview" />
-          </div>
-        ) : (
-          <div className="p-6 md:p-8 space-y-8">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="p-6 md:p-8 space-y-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
                 <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Data da Reunião</label>
                 <input 
@@ -265,39 +258,24 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
               />
             </div>
           </div>
-        )}
+        </div>
 
         {/* Footer Actions */}
-        <div className="bg-baccarim-hover p-6 border-t border-baccarim-border flex justify-between items-center sticky bottom-0">
-          {previewUrl ? (
-            <button 
-              onClick={() => setPreviewUrl(null)}
-              className="px-6 py-4 bg-baccarim-navy text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-blue transition-all flex items-center space-x-2"
-            >
-              <i className="fas fa-arrow-left"></i><span>Voltar e Editar</span>
-            </button>
-          ) : (
-            <div></div> // empty spacer
-          )}
-          
+        <div className="bg-baccarim-hover p-6 border-t border-baccarim-border flex justify-end items-center sticky bottom-0">
           <div className="flex gap-4">
-            {!previewUrl && (
-              <button 
-                onClick={onClose}
-                className="px-8 py-4 bg-transparent text-baccarim-text-muted rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-baccarim-text hover:bg-baccarim-active transition-all"
-              >
-                Cancelar
-              </button>
-            )}
-            {!previewUrl && (
-              <button 
-                onClick={() => generatePDF('preview')}
-                disabled={isGenerating || !participants || !agenda}
-                className="px-6 py-4 bg-baccarim-navy text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-              >
-                <i className="fas fa-eye"></i><span>Visualizar</span>
-              </button>
-            )}
+            <button 
+              onClick={onClose}
+              className="px-8 py-4 bg-transparent text-baccarim-text-muted rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-baccarim-text hover:bg-baccarim-active transition-all"
+            >
+              Cancelar
+            </button>
+            <button 
+              onClick={() => generatePDF('preview')}
+              disabled={isGenerating || !participants || !agenda}
+              className="px-6 py-4 bg-baccarim-navy text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            >
+              <i className="fas fa-eye"></i><span>Visualizar</span>
+            </button>
             <button 
               onClick={() => generatePDF('download')}
               disabled={isGenerating || !participants || !agenda}
@@ -313,6 +291,42 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
         </div>
 
       </div>
+
+      {/* FULLSCREEN PREVIEW OVERLAY */}
+      {previewUrl && (
+        <div className="fixed inset-0 bg-slate-900 z-[400] flex flex-col animate-in fade-in duration-300">
+          <div className="flex-1 w-full h-full relative">
+            <iframe src={previewUrl} className="w-full h-full border-none" title="PDF Preview Fullscreen" />
+            
+            {/* FLOATING HEADER INFO */}
+            <div className="absolute top-8 left-8 z-[410] hidden md:block pointer-events-none">
+              <div className="bg-baccarim-card/90 backdrop-blur p-4 rounded-2xl shadow-2xl border border-baccarim-border">
+                <p className="text-[10px] font-black text-baccarim-navy uppercase tracking-widest mb-1">Visualização da Ata</p>
+                <p className="text-[8px] text-baccarim-text-muted font-bold uppercase">{project.name}</p>
+              </div>
+            </div>
+
+            {/* FLOATING BUTTONS */}
+            <div className="absolute top-8 right-8 flex space-x-4 z-[410]">
+              <button 
+                onClick={() => generatePDF('download')}
+                className="w-16 h-16 bg-baccarim-blue/10 backdrop-blur-md border border-baccarim-blue/30 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:bg-baccarim-blue transition-all"
+                title="Baixar PDF"
+              >
+                <i className="fas fa-download text-xl"></i>
+              </button>
+              <button 
+                onClick={() => setPreviewUrl(null)}
+                className="w-16 h-16 bg-baccarim-card/20 backdrop-blur-md border border-white/10 text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 hover:bg-red-500 hover:border-red-500 transition-all"
+                title="Voltar e Editar"
+              >
+                <i className="fas fa-times text-xl"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 };
