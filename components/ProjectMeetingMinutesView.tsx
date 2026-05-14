@@ -14,8 +14,9 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
   const [agenda, setAgenda] = useState('');
   const [decisions, setDecisions] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
 
-  const generatePDF = async () => {
+  const generatePDF = async (action: 'download' | 'preview' = 'download') => {
     setIsGenerating(true);
     try {
       const doc = new jsPDF();
@@ -165,8 +166,14 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
         doc.text(`Página ${i} de ${totalPages}`, pageWidth - margin - 20, pageHeight - 10);
       }
 
-      const fileName = `Ata_Reuniao_${project.name.replace(/\s+/g, '_')}_${date}.pdf`;
-      doc.save(fileName);
+      if (action === 'preview') {
+        const pdfBlob = doc.output('blob');
+        const url = URL.createObjectURL(pdfBlob);
+        setPreviewUrl(url);
+      } else {
+        const fileName = `Ata_Reuniao_${project.name.replace(/\s+/g, '_')}_${date}.pdf`;
+        doc.save(fileName);
+      }
       
     } catch (error) {
       console.error("Erro ao gerar PDF da Ata:", error);
@@ -200,81 +207,109 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
         </div>
 
         {/* Content */}
-        <div className="p-6 md:p-8 space-y-8">
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {previewUrl ? (
+          <div className="p-0 h-[600px] md:h-[700px] relative">
+            <iframe src={previewUrl} className="w-full h-full border-none" title="PDF Preview" />
+          </div>
+        ) : (
+          <div className="p-6 md:p-8 space-y-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Data da Reunião</label>
+                <input 
+                  type="date" 
+                  value={date}
+                  onChange={e => setDate(e.target.value)}
+                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" 
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Hora da Reunião</label>
+                <input 
+                  type="time" 
+                  value={time}
+                  onChange={e => setTime(e.target.value)}
+                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" 
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Data da Reunião</label>
+              <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Participantes</label>
               <input 
-                type="date" 
-                value={date}
-                onChange={e => setDate(e.target.value)}
+                type="text" 
+                value={participants}
+                onChange={e => setParticipants(e.target.value)}
+                placeholder="Ex: João Silva (Cliente), Maria (Baccarim), Carlos (Engenharia)"
                 className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" 
               />
             </div>
+
             <div className="space-y-2">
-              <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Hora da Reunião</label>
-              <input 
-                type="time" 
-                value={time}
-                onChange={e => setTime(e.target.value)}
-                className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" 
+              <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Pautas e Assuntos Discutidos</label>
+              <textarea 
+                value={agenda}
+                onChange={e => setAgenda(e.target.value)}
+                placeholder="Descreva aqui tudo o que foi conversado durante a reunião..."
+                className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue min-h-[150px] resize-y custom-scrollbar" 
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Deliberações e Próximos Passos</label>
+              <textarea 
+                value={decisions}
+                onChange={e => setDecisions(e.target.value)}
+                placeholder="O que ficou decidido? Quem fará o quê?"
+                className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue min-h-[120px] resize-y custom-scrollbar" 
               />
             </div>
           </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Participantes</label>
-            <input 
-              type="text" 
-              value={participants}
-              onChange={e => setParticipants(e.target.value)}
-              placeholder="Ex: João Silva (Cliente), Maria (Baccarim), Carlos (Engenharia)"
-              className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" 
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Pautas e Assuntos Discutidos</label>
-            <textarea 
-              value={agenda}
-              onChange={e => setAgenda(e.target.value)}
-              placeholder="Descreva aqui tudo o que foi conversado durante a reunião..."
-              className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue min-h-[150px] resize-y custom-scrollbar" 
-            />
-          </div>
-
-          <div className="space-y-2">
-            <label className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Deliberações e Próximos Passos</label>
-            <textarea 
-              value={decisions}
-              onChange={e => setDecisions(e.target.value)}
-              placeholder="O que ficou decidido? Quem fará o quê?"
-              className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue min-h-[120px] resize-y custom-scrollbar" 
-            />
-          </div>
-
-        </div>
+        )}
 
         {/* Footer Actions */}
-        <div className="bg-baccarim-hover p-6 border-t border-baccarim-border flex justify-end gap-4 sticky bottom-0">
-          <button 
-            onClick={onClose}
-            className="px-8 py-4 bg-transparent text-baccarim-text-muted rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-baccarim-text hover:bg-baccarim-active transition-all"
-          >
-            Cancelar
-          </button>
-          <button 
-            onClick={generatePDF}
-            disabled={isGenerating || !participants || !agenda}
-            className="px-8 py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
-          >
-            {isGenerating ? (
-              <><i className="fas fa-spinner fa-spin"></i><span>Gerando PDF...</span></>
-            ) : (
-              <><i className="fas fa-file-pdf"></i><span>Baixar PDF</span></>
+        <div className="bg-baccarim-hover p-6 border-t border-baccarim-border flex justify-between items-center sticky bottom-0">
+          {previewUrl ? (
+            <button 
+              onClick={() => setPreviewUrl(null)}
+              className="px-6 py-4 bg-baccarim-navy text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-blue transition-all flex items-center space-x-2"
+            >
+              <i className="fas fa-arrow-left"></i><span>Voltar e Editar</span>
+            </button>
+          ) : (
+            <div></div> // empty spacer
+          )}
+          
+          <div className="flex gap-4">
+            {!previewUrl && (
+              <button 
+                onClick={onClose}
+                className="px-8 py-4 bg-transparent text-baccarim-text-muted rounded-xl text-[10px] font-black uppercase tracking-widest hover:text-baccarim-text hover:bg-baccarim-active transition-all"
+              >
+                Cancelar
+              </button>
             )}
-          </button>
+            {!previewUrl && (
+              <button 
+                onClick={() => generatePDF('preview')}
+                disabled={isGenerating || !participants || !agenda}
+                className="px-6 py-4 bg-baccarim-navy text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-blue transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              >
+                <i className="fas fa-eye"></i><span>Visualizar</span>
+              </button>
+            )}
+            <button 
+              onClick={() => generatePDF('download')}
+              disabled={isGenerating || !participants || !agenda}
+              className="px-8 py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+            >
+              {isGenerating ? (
+                <><i className="fas fa-spinner fa-spin"></i><span>Processando...</span></>
+              ) : (
+                <><i className="fas fa-download"></i><span>Baixar PDF</span></>
+              )}
+            </button>
+          </div>
         </div>
 
       </div>
