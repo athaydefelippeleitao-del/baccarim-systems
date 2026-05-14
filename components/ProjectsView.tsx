@@ -6,6 +6,7 @@ import { utmToDecimal } from '../utils/geoUtils';
 import { downloadFile } from '../utils/fileUtils';
 import { exportProjectDocumentsAsZip } from '../utils/zipUtils';
 import ProjectExtensionReportView from './ProjectExtensionReportView';
+import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
 
 interface ProjectsViewProps {
   projects: Project[];
@@ -48,6 +49,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   const [isAddingCustomSpec, setIsAddingCustomSpec] = useState<string | null>(null);
   const [newCustomSpec, setNewCustomSpec] = useState({ label: '', value: '' });
   const [extensionProject, setExtensionProject] = useState<Project | null>(null);
+  const [meetingMinutesProject, setMeetingMinutesProject] = useState<Project | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDilacaoPrazo = (project: Project) => {
@@ -406,6 +408,13 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
         />
       )}
 
+      {meetingMinutesProject && (
+        <ProjectMeetingMinutesView
+          project={meetingMinutesProject}
+          onClose={() => setMeetingMinutesProject(null)}
+        />
+      )}
+
       {confirmDialog && (
         <div className="fixed inset-0 bg-baccarim-dark/80 backdrop-blur-md z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-baccarim-card rounded-[2.5rem] w-full max-w-sm shadow-2xl p-10 text-center animate-in zoom-in-95 duration-300 border border-baccarim-border-hover">
@@ -534,6 +543,14 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       >
                         <i className="fas fa-clock-rotate-left"></i>
                         <span>Dilação de Prazo</span>
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setMeetingMinutesProject(project); }}
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-baccarim-navy text-white uppercase tracking-widest hover:bg-baccarim-blue transition-all flex items-center space-x-2"
+                        title="Gerar Ata de Reunião"
+                      >
+                        <i className="fas fa-handshake"></i>
+                        <span>Ata de Reunião</span>
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); setIsEditingSpecs(isEditing ? null : project.id); }}
