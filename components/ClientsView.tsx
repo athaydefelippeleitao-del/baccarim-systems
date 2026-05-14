@@ -21,13 +21,16 @@ interface ClientsViewProps {
   onAddNotification: (notification: Notification) => void;
   clientLogos: Record<string, string>;
   onUpdateClientLogo: (clientName: string, logoBase64: string) => void;
+  onRenameClient?: (oldName: string, newName: string) => void;
 }
 
-const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, notifications, projects, checklistTemplates, projectCategories, onUpdateProject, onAddProject, onAddClient, onDeleteProject, onSelectClient, onDeleteClient, onAddNotification, clientLogos, onUpdateClientLogo }) => {
+const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, notifications, projects, checklistTemplates, projectCategories, onUpdateProject, onAddProject, onAddClient, onDeleteProject, onSelectClient, onDeleteClient, onAddNotification, clientLogos, onUpdateClientLogo, onRenameClient }) => {
   const [selectedClientForProjects, setSelectedClientForProjects] = useState<string | null>(null);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [newClientName, setNewClientName] = useState('');
+  const [editingClient, setEditingClient] = useState<string | null>(null);
+  const [tempClientName, setTempClientName] = useState('');
 
   // Auto-seleção se houver apenas um cliente (usuário cliente)
   useEffect(() => {
@@ -431,8 +434,50 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                       </div>
                     </label>
                   </div>
-                  <div>
-                    <h3 className="text-xl md:text-2xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors duration-500">{client}</h3>
+                  <div className="flex-1 group/name relative">
+                    {editingClient === client ? (
+                      <div onClick={(e) => e.stopPropagation()}>
+                        <input
+                          autoFocus
+                          value={tempClientName}
+                          onChange={(e) => setTempClientName(e.target.value)}
+                          onBlur={() => {
+                            if (tempClientName.trim() && tempClientName !== client && onRenameClient) {
+                              onRenameClient(client, tempClientName.trim());
+                            }
+                            setEditingClient(null);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              if (tempClientName.trim() && tempClientName !== client && onRenameClient) {
+                                onRenameClient(client, tempClientName.trim());
+                              }
+                              setEditingClient(null);
+                            } else if (e.key === 'Escape') {
+                              setEditingClient(null);
+                            }
+                          }}
+                          className="bg-baccarim-navy border border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-xl md:text-2xl font-black text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue w-full max-w-[200px]"
+                        />
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2">
+                        <h3 className="text-xl md:text-2xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors duration-500">{client}</h3>
+                        {userRole !== 'client' && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingClient(client);
+                              setTempClientName(client);
+                            }}
+                            className="opacity-0 group-hover/name:opacity-100 text-baccarim-text-muted hover:text-baccarim-blue transition-all"
+                            title="Editar Nome do Cliente"
+                          >
+                            <i className="fas fa-pencil-alt text-sm"></i>
+                          </button>
+                        )}
+                      </div>
+                    )}
                     <p className="text-[9px] text-baccarim-text-muted font-black uppercase tracking-widest mt-1">Cliente Estratégico</p>
                   </div>
                 </div>

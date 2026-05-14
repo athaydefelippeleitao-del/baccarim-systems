@@ -551,6 +551,62 @@ const App: React.FC = () => {
     }
   };
 
+  const handleRenameClient = useCallback((oldName: string, newName: string) => {
+    if (!newName.trim() || newName === oldName || clients.includes(newName)) return;
+
+    // 1. Rename in clients array
+    setClients(prev => {
+      const updated = prev.filter(c => c !== oldName);
+      return [...updated, newName].sort((a, b) => a.localeCompare(b));
+    });
+
+    // 2. Rename in Projects
+    setProjects(prev => {
+      const updated = prev.map(p => p.clientName === oldName ? { ...p, clientName: newName } : p);
+      updated.filter(p => p.clientName === newName).forEach(p => emitUpdate('projects', p));
+      return updated;
+    });
+
+    // 3. Rename in Licenses
+    setLicenses(prev => {
+      const updated = prev.map(l => l.clientName === oldName ? { ...l, clientName: newName } : l);
+      updated.filter(l => l.clientName === newName).forEach(l => emitUpdate('licenses', l));
+      return updated;
+    });
+
+    // 4. Rename in Notifications
+    setNotifications(prev => {
+      const updated = prev.map(n => n.clientName === oldName ? { ...n, clientName: newName } : n);
+      updated.filter(n => n.clientName === newName).forEach(n => emitUpdate('notifications', n));
+      return updated;
+    });
+
+    // 5. Rename in Contracts
+    setContracts(prev => {
+      const updated = prev.map(c => c.clientName === oldName ? { ...c, clientName: newName } : c);
+      updated.filter(c => c.clientName === newName).forEach(c => emitUpdate('contracts', c));
+      return updated;
+    });
+
+    // 6. Rename in Reports
+    setReports(prev => {
+      const updated = prev.map(r => r.clientName === oldName ? { ...r, clientName: newName } : r);
+      updated.filter(r => r.clientName === newName).forEach(r => emitUpdate('reports', r));
+      return updated;
+    });
+
+    // 7. Move Client Logo if exists
+    setClientLogos(prev => {
+      if (prev[oldName]) {
+        const newLogos = { ...prev, [newName]: prev[oldName] };
+        delete newLogos[oldName];
+        return newLogos;
+      }
+      return prev;
+    });
+  }, [clients, emitUpdate]);
+
+
   const handleAddProject = (newProject: Project) => {
     setProjects(prev => [newProject, ...prev]);
     const newLicense: EnvironmentalLicense = {
@@ -1059,7 +1115,7 @@ const App: React.FC = () => {
           />
         )}
         {activeTab === 'notifications' && <NotificationsView notifications={filteredNotifications} clients={filteredClientsList} projects={filteredProjects} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onDeleteNotification={handleDeleteNotification} />}
-        {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onDeleteProject={handleDeleteProject} onSelectClient={(n) => setAdminClientFilter(n)} onDeleteClient={(client) => {
+        {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onRenameClient={handleRenameClient} onDeleteProject={handleDeleteProject} onSelectClient={(n) => setAdminClientFilter(n)} onDeleteClient={(client) => {
           if (window.confirm(`Excluir o cliente ${client} e todos os seus dados?`)) {
             setClients(prev => prev.filter(c => c !== client));
             emitDelete('clients', client);
