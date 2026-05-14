@@ -35,7 +35,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
   , [contracts, selectedContractId]);
 
   const totalGlobalValue = useMemo(() => 
-    contracts.filter(c => c.status === 'Active' || c.status === 'Completed')
+    contracts.filter(c => c.status === 'Active' || c.status === 'Completed' || c.status === 'Pending')
              .reduce((acc, curr) => acc + curr.totalValue, 0), 
   [contracts]);
 
@@ -195,6 +195,19 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
     updateInstallmentData(contractId, installmentId, { status: nextStatus });
   };
 
+  const toggleContractStatus = (contractId: string) => {
+    const contract = contracts.find(c => c.id === contractId);
+    if (!contract) return;
+
+    let nextStatus: Contract['status'] = 'Pending';
+    if (contract.status === 'Pending') nextStatus = 'Active';
+    else if (contract.status === 'Active') nextStatus = 'Completed';
+    else if (contract.status === 'Completed') nextStatus = 'Expired';
+    else if (contract.status === 'Expired') nextStatus = 'Pending';
+
+    onUpdateContract({ ...contract, status: nextStatus });
+  };
+
   const getStatusBadge = (status: Contract['status']) => {
     const styles = {
       Active: 'bg-emerald-100 text-emerald-700 border-emerald-200',
@@ -293,7 +306,9 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                             <span className="text-[8px] md:text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">
                               {contract.clientName}
                             </span>
-                            {getStatusBadge(contract.status)}
+                            <div onClick={(e) => { e.stopPropagation(); toggleContractStatus(contract.id); }} className="cursor-pointer hover:opacity-80 transition-opacity" title="Clique para alterar o status">
+                              {getStatusBadge(contract.status)}
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -407,7 +422,9 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
               <div>
                 <div className="flex items-center space-x-3 mb-2">
                   <span className="text-[11px] font-black text-baccarim-blue uppercase tracking-[0.3em]">GESTÃO DE RECEBÍVEIS</span>
-                  <span className="bg-baccarim-green/10 text-baccarim-green px-3 py-1 rounded-full text-[9px] font-black uppercase tracking-widest">ATIVO</span>
+                  <div onClick={(e) => { e.stopPropagation(); toggleContractStatus(selectedContract.id); }} className="cursor-pointer hover:opacity-80 transition-opacity" title="Clique para alterar o status">
+                    {getStatusBadge(selectedContract.status)}
+                  </div>
                 </div>
                 <h3 className="text-2xl md:text-3xl font-black text-baccarim-text tracking-tight">{selectedContract.title}</h3>
                 <p className="text-baccarim-text-muted text-[10px] md:text-xs mt-2 font-black uppercase tracking-widest">
