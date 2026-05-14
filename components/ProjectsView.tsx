@@ -411,6 +411,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       {meetingMinutesProject && (
         <ProjectMeetingMinutesView
           project={meetingMinutesProject}
+          onUpdateProject={onUpdateProject}
           onClose={() => setMeetingMinutesProject(null)}
         />
       )}

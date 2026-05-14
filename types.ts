@@ -195,6 +195,16 @@ export interface ProjectTechnicalSpecs {
   customSpecs?: CustomSpec[];
 }
 
+export interface ProjectMeetingMinute {
+  id: string;
+  date: string;
+  time: string;
+  participants: string;
+  agenda: string;
+  decisions: string;
+  createdAt: string;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -209,6 +219,7 @@ export interface Project {
   mainLicenseId?: string; 
   currentPhase?: string;
   checklistAgency?: 'IAT' | 'SEMA';
+  meetingMinutes?: ProjectMeetingMinute[];
 }
 
 export interface PhotoItem {
