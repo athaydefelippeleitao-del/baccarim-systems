@@ -457,7 +457,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                               setEditingClient(null);
                             }
                           }}
-                          className="bg-baccarim-navy border border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-xl md:text-2xl font-black text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue w-full max-w-[200px]"
+                          className="bg-baccarim-card border-2 border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-xl md:text-2xl font-black text-baccarim-text outline-none focus:ring-4 focus:ring-baccarim-blue/30 w-full max-w-[250px]"
                         />
                       </div>
                     ) : (

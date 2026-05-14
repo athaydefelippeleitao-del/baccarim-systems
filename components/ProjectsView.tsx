@@ -464,7 +464,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             setEditingProjectName(null);
                           }
                         }}
-                        className="bg-baccarim-navy border border-baccarim-blue p-1 rounded text-xl font-black text-baccarim-text outline-none"
+                        className="bg-baccarim-card border-2 border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-xl md:text-2xl font-black text-baccarim-text outline-none focus:ring-4 focus:ring-baccarim-blue/30 w-full max-w-[250px]"
                       />
                     </div>
                   ) : (
