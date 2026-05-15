@@ -900,6 +900,110 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={30} />
         </div>
 
+        {/* PAGE 31 - 13.3 Tráfego de máquinas + 13.4 Terraplanagem início */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.3. Tráfego de máquinas</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Na fase de implantação da edificação haverá um fluxo maior de veículos, geralmente pesados de grande porte, que irão atender aos serviços exigidos na obra, como terraplanagem, implantação de infraestrutura básica e a construção das residências, sendo que este último tem o caráter menos intenso e mais difuso ao longo dos anos.</p>
+            {['Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Baixa'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas recomendadas:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Planejar antecipadamente os transportes e trajetos, em função do porte dos equipamentos/veículos pesados e do fluxo do tráfego, para os acessos a serem utilizados de forma a possibilitar as manobras com o máximo de segurança e rapidez. Implantação de sinalização adequada e redutores de velocidade, principalmente nas proximidades de escolas, igreja e postos de saúde. No caso da necessidade de uma eventual alteração temporária do tráfego, deverá ser estabelecido contato com os órgãos responsáveis. Promover esclarecimentos através de Programa de Comunicação e Educação Ambiental, sobre as ações de mão de obra e de equipamentos de forma a minimizar perturbações no cotidiano da comunidade residente próxima ao acesso que serão utilizados. Controlar os ruídos a serem emitidos pelos equipamentos utilizados na obra, conforme especificado pelo fabricante e obedecendo às normas brasileiras. Planejar o horário de transporte do pessoal, materiais e equipamentos, evitando-se as horas de pico e noturno, para não perturbar o sossego das comunidades próximas.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.4. Impactos Resultantes De Obras De Terraplanagem</div>
+            <p style={{ textIndent: '15mm' }}>Durante as obras de implantação do empreendimento (limpeza de terreno,</p>
+          </div>
+          <Footer pageNum={31} />
+        </div>
+
+        {/* PAGE 32 - 13.4 cont. + 13.5 Impermeabilização início */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>terraplanagem, obras auxiliares, vias de acesso e áreas de apoio) ocorrerão alterações no ambiente natural e exposição do solo superficial, deixando a superfície da ADA mais vulnerável à ação erosiva das águas pluviais. Tal situação poderá favorecer o surgimento de condições propícias ao desenvolvimento de processos erosivos, em função do escoamento concentrado ou pela intensificação dos processos já existentes.</p>
+            {['Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Média'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Estudo prévio do solo e do relevo, identificando áreas mais suscetíveis à erosão. Com base nesse diagnóstico, implementar a técnica de terraplanagem em etapas, se necessário, evitando a remoção da vegetação em grandes áreas de uma só vez para preservar a cobertura do solo, que atua como uma barreira natural contra a erosão. A utilização de práticas de drenagem adequadas é outra medida importante. A instalação de sistemas de drenagem superficial e subterrânea pode ajudar a controlar e direcionar o escoamento da água da chuva, reduzindo a erosão causada pelo escoamento superficial. Além disso, a construção de terraços ou taludes em áreas inclinadas pode aumentar a retenção de água e diminuir a velocidade do escoamento, auxiliando na estabilização do solo.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.5. Impactos Decorrentes Da Impermeabilização Do Solo</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Devido à alteração do uso do solo, para a edificação, haverá menos áreas permeáveis, devido às construções civis, compactação do solo e do arruamento.</p>
+            {['Natureza: NEGATIVA','Abrangência: LOCAL','Meio: FÍSICO','Forma: DIRETA'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+          </div>
+          <Footer pageNum={32} />
+        </div>
+
+        {/* PAGE 33 - 13.5 cont. + 13.6 Patrimônio + Seção 14 início + 14.1 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            {['Magnitude: MÉDIA','Temporalidade: LONGO PRAZO','Fase de ocorrência: INSTALAÇÃO','Duração: PERMANENTE','Reversibilidade: IRREVERSÍVEL','Probabilidade: ALTA','Controle: MITIGADO.'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Projetar e dimensionar sistema de drenagem adequada de acordo com métodos conhecidos, aperfeiçoar, detalhar levantamentos topográficos.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.6. Proteção ao patrimônio histórico e paisagístico</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Não foram identificados bens tombados ou áreas com relevância histórico-cultural direta na área do empreendimento. No entanto, a paisagem local pode ser afetada pela implantação.</p>
+            {['Efeito: Negativo','Natureza: Direta','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Pequena','Abrangência: Local','Probabilidade: Baixa'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Manutenção de áreas verdes e visuais relevantes; integração da arborização ao paisagismo urbano; comunicação ao IPHAN caso haja achados arqueológicos durante as obras.</p>
+            <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '3mm' }}>14. IDENTIFICAÇÃO E AVALIAÇÃO DOS IMPACTOS DURANTE A FASE DE OCUPAÇÃO DO EMPREENDIMENTO</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '2mm', marginLeft: '6mm' }}>14.1. Mitigação dos impactos referentes ao incremento de população</div>
+          </div>
+          <Footer pageNum={33} />
+        </div>
+
+        {/* PAGE 34 - 14.1 cont. + 14.2 Demanda serviços */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A ocupação do empreendimento implicará no acréscimo populacional na região, o que pode gerar sobrecarga nas infraestruturas e serviços públicos, caso não haja planejamento adequado.</p>
+            {['Efeito: Negativo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Irreversível','Magnitude: Grande','Abrangência: Regional','Probabilidade: Alta'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Previsão de infraestrutura proporcional ao adensamento, com ampliação de sistemas de abastecimento de água, esgotamento sanitário, transporte, segurança, educação e lazer. Adoção de planejamento urbano integrado e incentivo à ocupação ordenada.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.2. Estimativa do aumento da demanda por serviços públicos de educação, saúde, segurança e transporte coletivo</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Com base na densidade populacional estimada para o uso residencial, haverá aumento da demanda por serviços públicos essenciais, exigindo expansão e adequação da rede pública municipal.</p>
+            {['Efeito: Negativo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Irreversível','Magnitude: Grande','Abrangência: Regional','Probabilidade: Alta'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm' }}>Elaboração de diagnóstico da capacidade atual dos serviços</p>
+          </div>
+          <Footer pageNum={34} />
+        </div>
+
+        {/* PAGE 35 - 14.2 cont. + 14.3 Efluentes + 14.4 Resíduos início */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '5mm' }}>públicos e planejamento para sua ampliação, incluindo parcerias com o poder público. Priorização de investimentos em transporte coletivo, postos de saúde, escolas e segurança comunitária.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.3. Tratamento E Disposição Final De Efluentes Sanitários Do Empreendimento</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Uma vez constatada a viabilidade de extensão da rede de coleta de esgoto do empreendimento à do município, o atendimento ao saneamento básico proporciona melhoria nas condições sanitárias e ambientais do entorno, evitando a contaminação do solo e dispersão de doenças.</p>
+            {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Grande','Abrangência: Regional','Probabilidade: Alta'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Realizar programas de educação ambiental voltados aos moradores, com foco no uso correto da rede de esgoto e no descarte adequado de resíduos, evitando obstruções e danos à infraestrutura sanitária. Implantar sistemas internos de reuso de águas cinzas, se possível, provenientes de chuveiros, pias e máquinas de lavar, com reaproveitamento para fins não potáveis, como irrigação de jardins e limpeza de áreas comuns. Monitorar continuamente as instalações internas do sistema de esgotamento sanitário, por meio de vistorias periódicas e adotar um plano de manutenção preventiva e corretiva. Incentivar o uso de tecnologias sustentáveis, como torneiras com aeradores, válvulas de descarga com duplo acionamento e dispositivos economizadores de água.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.4. Coleta E Destino Final De Resíduos Sólidos Urbanos</div>
+            <p style={{ textIndent: '15mm' }}>A integração à rede de coleta municipal viabiliza a gestão adequada dos resíduos,</p>
+          </div>
+          <Footer pageNum={35} />
+        </div>
+
       </div>
     </div>
   );
