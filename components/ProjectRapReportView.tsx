@@ -659,9 +659,9 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         {/* PAGE 14 - Figura 4 (temperatura Paraná) */}
         <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center', marginBottom: '3mm', height: '100mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-map"></i>
-            <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>Mapa de temperatura média anual – inserir imagem</div>
+          <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
+            <img src="/temp_parana.png" alt="Mapa de temperatura média anual" 
+              style={{ width: '100%', height: '100mm', objectFit: 'contain', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }} />
           </div>
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginBottom: '6mm', fontStyle: 'italic' }}>Figura 4 – Temperatura média do ar anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
