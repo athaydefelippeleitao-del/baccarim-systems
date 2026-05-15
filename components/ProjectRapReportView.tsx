@@ -647,9 +647,9 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         {/* PAGE 13 - Figura 3 (clima) */}
         <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center', marginBottom: '3mm', height: '85mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-chart-bar"></i>
-            <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>Gráfico do balanço pluviométrico – inserir imagem</div>
+          <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
+            <img src="/balanco_londrina.png" alt="Gráfico do balanço pluviométrico" 
+              style={{ width: '100%', height: '85mm', objectFit: 'contain', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }} />
           </div>
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginBottom: '6mm', fontStyle: 'italic' }}>Figura 3 – Gráfico do balanço pluviométrico do município (CLIMATE.DATA.ORG, 2020).</div>
           <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm' }}>A Figura 4 ilustra a distribuição da temperatura média anual no estado do Paraná, evidenciando que Londrina está inserida em uma faixa com temperaturas entre 20,1 °C e 21,0 °C, condizente com os dados do gráfico climático (Figura 25).</p>
