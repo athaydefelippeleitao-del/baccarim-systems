@@ -59,6 +59,21 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     return null;
   }, [empCoordE, empCoordN, project.specs?.zone]);
 
+  // Regional/Street map URL for location context
+  const locationMapUrl = useMemo(() => {
+    const e = parseFloat((empCoordE || '').replace(/[^\d.]/g, ''));
+    const n = parseFloat((empCoordN || '').replace(/[^\d.]/g, ''));
+    const zone = project.specs?.zone || 22;
+    if (!isNaN(e) && !isNaN(n) && e > 0 && n > 0) {
+      try {
+        const { lat, lng } = utmToDecimal(e, n, zone);
+        const delta = 0.04; // Zoom out to show city context
+        return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/export?bbox=${lng-delta},${lat-delta*0.7},${lng+delta},${lat+delta*0.7}&bboxSR=4326&layers=show&size=600,400&imageSR=4326&transparent=false&format=png32&f=image`;
+      } catch { return null; }
+    }
+    return null;
+  }, [empCoordE, empCoordN, project.specs?.zone]);
+
   const cidade = 'Londrina/PR';
 
   const handleSave = () => {
@@ -482,10 +497,18 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '5mm' }}>
             {textoLocalizacao.split('\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '3mm' }}>{p}</p>)}
           </div>
-          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', padding: '6mm', textAlign: 'center', marginBottom: '3mm', minHeight: '60mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-map"></i>
-            <div style={{ fontSize: '8pt', color: '#666' }}>Figura 1 – Mapa de localização do Município de Londrina, Paraná.</div>
-          </div>
+          {locationMapUrl ? (
+            <div style={{ marginBottom: '3mm' }}>
+              <img src={locationMapUrl} alt="Mapa de localização" crossOrigin="anonymous"
+                style={{ width: '100%', height: '70mm', objectFit: 'cover', border: '1px solid #ccc', borderRadius: '4px', display: 'block' }} />
+              <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginTop: '2mm', fontStyle: 'italic' }}>Figura 1 – Mapa de localização do Município de Londrina, Paraná.</div>
+            </div>
+          ) : (
+            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', padding: '6mm', textAlign: 'center', marginBottom: '3mm', minHeight: '60mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-map"></i>
+              <div style={{ fontSize: '8pt', color: '#666' }}>Figura 1 – Mapa de localização do Município de Londrina, Paraná.</div>
+            </div>
+          )}
           <Footer pageNum={8} />
         </div>
 
