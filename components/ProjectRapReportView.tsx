@@ -605,9 +605,102 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={15} />
         </div>
 
+        {/* PAGE 16 - 8.1.2 Hidrografia */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.2. HIDROGRAFIA</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '5mm' }}>No que diz respeito à hidrografia, Londrina está inserida na <span style={{ textDecoration: 'underline' }}>Unidade Hidrográfica</span> do Baixo Tibagi, conforme identificado no mapa das Unidades Hidrográficas do Paraná (Figura 28). Essa unidade abrange a parte inferior da bacia do rio Tibagi, importante sub-bacia do rio Paranapanema, e desempenha papel relevante na disponibilidade hídrica da região norte do estado. A bacia do Baixo Tibagi é composta por diversos afluentes que cortam o município e abastecem não apenas o consumo humano, mas também atividades agrícolas e industriais. A presença desta bacia é estratégica para a gestão de recursos hídricos e controle de impactos ambientais no território municipal.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2.5fr', gap: '4mm', marginBottom: '3mm' }}>
+            <div style={{ background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '4mm', minHeight: '40mm' }}>
+              <i style={{ fontSize: '18pt', color: '#1a3a6b' }} className="fas fa-map-marker-alt"></i>
+              <div style={{ fontSize: '7pt', color: '#666', textAlign: 'center', marginTop: '2px' }}>Localização</div>
+            </div>
+            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', minHeight: '60mm' }}>
+              <i style={{ fontSize: '22pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-water"></i>
+              <div style={{ fontSize: '8pt', color: '#555', fontStyle: 'italic', textAlign: 'center' }}>UNIDADES HIDROGRÁFICAS DO PARANÁ – inserir imagem</div>
+            </div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 6 – Unidades Hidrográficas do Paraná [Unidade Hidrográfica do Baixo do Tibagi]. Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
+          <Footer pageNum={16} />
+        </div>
+
+        {/* PAGE 17 - Unidades Aquíferas */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#1a3a6b', textIndent: '15mm', marginBottom: '5mm' }}>Referente às unidades aquíferas, Londrina está localizada na <span style={{ textDecoration: 'underline' }}>Unidade Aquífera Serra Geral Norte</span>, conforme representado na Figura 28. Essa unidade ocupa a porção nordeste do Estado do Paraná e está associada predominantemente à presença de rochas vulcânicas da Formação Serra Geral, com ampla distribuição regional.</p>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2.5fr', gap: '4mm', marginBottom: '3mm' }}>
+            <div style={{ background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '4mm', minHeight: '35mm' }}>
+              <i style={{ fontSize: '16pt', color: '#1a3a6b' }} className="fas fa-map-pin"></i>
+              <div style={{ fontSize: '7pt', color: '#666', textAlign: 'center', marginTop: '2px' }}>RAPO / Londrina</div>
+            </div>
+            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', minHeight: '70mm' }}>
+              <i style={{ fontSize: '22pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-layer-group"></i>
+              <div style={{ fontSize: '8pt', color: '#555', fontStyle: 'italic', textAlign: 'center' }}>UNIDADES AQUÍFERAS DO PARANÁ – inserir imagem</div>
+            </div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 7 – Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi). Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
+          <Footer pageNum={17} />
+        </div>
+
+        {/* PAGE 18 - Bacia Cafezal + Figura 8 satellite */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#1a3a6b', textIndent: '15mm', marginBottom: '6mm' }}>Já a bacia Municipal que abrange o local do empreendimento é a <span style={{ textDecoration: 'underline' }}>Bacia do Ribeirão do Cafezal</span>.</p>
+          {satelliteUrl ? (
+            <div style={{ marginBottom: '3mm' }}>
+              <img src={satelliteUrl} alt="Localização do empreendimento e corpos d'água" crossOrigin="anonymous"
+                style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #ccc', display: 'block' }} />
+            </div>
+          ) : (
+            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '110mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
+              <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
+            </div>
+          )}
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 8 – Localização do empreendimento e corpos d'água mais próximos. Fonte: Portal Ambiental da Prefeitura de Londrina – SIGLON.</div>
+          <Footer pageNum={18} />
+        </div>
+
+        {/* PAGE 19 - 8.1.3 Solo e Relevo + Figura 9 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.3. SOLO E RELEVO</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '4mm' }}>De acordo com o Mapa <span style={{ textDecoration: 'underline' }}>Simplificado</span> de Solos do Estado do Paraná (BHERING et al., 2007), os principais tipos de solos presentes no município de Londrina são os Latossolos, Nitossolos e Neossolos Litólicos. Conforme o Levantamento de Reconhecimento dos Solos do Estado do Paraná (Embrapa Solos, 2007), os solos predominantes na área urbana são o Latossolo (L) e a associação de Nitossolos com Neossolos Litólicos (N + RL).</p>
+          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '72mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <div style={{ fontSize: '9pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '6px' }}>MAPA SIMPLIFICADO DE SOLOS DO ESTADO DO PARANÁ</div>
+            <i style={{ fontSize: '22pt', color: '#888' }} className="fas fa-map"></i>
+            <div style={{ fontSize: '8pt', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>inserir imagem</div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic', marginBottom: '4mm' }}>Figura 9 – Mapa de Solos do Estado do Paraná. Fonte: (BHERING, et al., 2007).</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O Latossolo é um solo profundo, bem drenado, com textura argilosa a muito argilosa e coloração avermelhada. Destaca-se pela alta fertilidade, com elevados teores de nutrientes como cálcio, magnésio, potássio e fósforo. É típico de regiões tropicais, com clima quente e chuvas bem distribuídas ao longo do ano.</p>
+            <p style={{ textIndent: '15mm' }}>Os Nitossolos também são profundos, com cor escura e textura argilosa, apresentando boa fertilidade natural, especialmente em nitrogênio e fósforo. Já os Neossolos Litólicos são solos rasos, com textura arenosa e baixa fertilidade, limitando seu uso agrícola</p>
+          </div>
+          <Footer pageNum={19} />
+        </div>
+
+        {/* PAGE 20 - Continuação Solo + Seção 9 Meio Biótico + Fauna */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>sem manejo adequado.</p>
+            <p style={{ textIndent: '15mm' }}>De maneira geral, os solos da região de Londrina são considerados altamente produtivos e amplamente utilizados na agricultura.</p>
+          </div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>9. DIAGNÓSTICO DO MEIO BIÓTICO</div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>9.1. Caracterização Da Fauna</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A fauna da região de Londrina está inserida no Bioma Mata Atlântica, especificamente na Floresta Estacional Semidecidual (FES), que apresenta grande diversidade de espécies devido à sua dupla estacionalidade climática, com períodos tropicais chuvosos e subtropicais mais secos. Devido ao rápido avanço da agricultura e da urbanização, especialmente a partir do século XX, grande parte da fauna original foi afetada, restando populações reduzidas e fragmentadas em áreas remanescentes, como o Parque Estadual Mata dos Godoy, o Parque Arthur Thomas e a Reserva Indígena do Apucaraninha.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Entre os mamíferos que ainda podem ser encontrados na região destacam-se a onça-parda (Puma concolor), a jaguatirica (Leopardus pardalis), a raposa-do-campo (Cerdocyon thous) e diferentes espécies de tatu, como o tatu-galinha (Dasypus novemcinctus) e o tatu-peba (Euphractus sexcinctus). A avifauna é representada por espécies como a jacutinga (Penelope obscura), o tucano-toco (Ramphastos toco) e o papagaio-verdadeiro (Amazona aestiva). A herpetofauna inclui serpentes como a jararaca (Bothrops jararaca) e lagartos como o teiú (Tupinambis merianae). Nos cursos d'água da região ocorrem peixes nativos como a piracanjuba (Brycon orbignyanus) e o curimbatá (Prochilodus lineatus).</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Com a expansão urbana e a degradação de habitats naturais, algumas espécies adaptaram-se às áreas urbanas, como o gambá-de-orelha-branca (Didelphis albiventris), o cachorro-do-mato (Cynomys ludovicianus), o pombo-doméstico (Columbia livia) e o sabiá-do-campo (Mimus saturninus). Essas espécies convivem com a população urbana, muitas vezes utilizando áreas verdes e parques municipais como refúgio. Segundo a Prefeitura de Londrina, na cidade há três Unidades de Conservação, a Unidade de Conservação Municipal Parque Arthur Thomas, a Unidade de Conservação Parque Estadual Mata dos Godoy e a Unidade de Conservação Parque Ecológico Dr. Daisaku Ikeda.</p>
+          </div>
+          <Footer pageNum={20} />
+        </div>
+
       </div>
     </div>
   );
 };
 
 export default ProjectRapReportView;
+
