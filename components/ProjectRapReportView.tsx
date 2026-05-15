@@ -1129,6 +1129,132 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={40} />
         </div>
 
+        {/* PAGE 41 - Seção 18 Referências Bibliográficas parte 1 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>18. REFERÊNCIAS BIBLIOGRÁFICAS</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+            {[
+              { bold: 'BHERING, S. B.; SANTOS, H. G.; MANZATTO, C. V.; BOGNOLA, I.; FASOLO CARVALHO, A. P.; POTTER, O.; AGLIO, M. L. D.; SILVA, J. S.; CHAFFIN, C. E.; CARVALHO JUNIOR, W.', rest: ' Mapa de Solos do Estado do Paraná. 2007. Disponível em: <http://www.infoteca.cnptia.embrapa.br/infoteca/handle/doc/339505>. Acesso em: 15/04/2025.' },
+              { bold: 'CAMPOS, J. B.; SOUZA, M. C. Vegetação. In: VAZZOLER, A. E. A. M.; AGOSTINHO, A. A.; HAHN, N. S. (ed.). A planície de inundação do alto rio Paraná: aspectos físicos, biológicos e socioeconômicos.', rest: ' Maringá: EDUEM/Nupélia, 1997. p. 331-342.' },
+              { bold: 'CLIMA DATA.', rest: ' Dados Climáticos para cidades Mundiais. Disponível em:< https://pt.climate-data.org/>. Acesso em: 15/04/2025.' },
+              { bold: 'FUNDAÇÃO SOS MATA ATLÂNTICA;', rest: ' Instituto Nacional de Pesquisas Espaciais – INPE. Atlas dos remanescentes florestais da mata atlântica – período 2000- 2005. São Paulo, 2009' },
+              { bold: 'INFOTECA-E –', rest: ' Repositório de informação tecnológica da EMBRAPA - Mapa de Solos do Estado do Paraná. – Disponível em: <https://www.infoteca.cnptia.embrapa.br/infoteca/handle/doc/339505>. Rio de Janeiro, 2017. Acesso em: 15/03/2025.' },
+              { bold: 'Instituto Brasileiro de Geografia e Estatística – IBGE.', rest: ' Disponível em: <https://cidades.ibge.gov.br/brasil/panorama>. Acesso em: 15/03/2025.' },
+              { bold: 'Instituto de Desenvolvimento Rural do Paraná – IDPR.', rest: ' Atlas Climáticos. Disponível em: <https://www.idrparana.pr.gov.br/Pagina/Atlas-Climatico>. Acesso em 16/03/2025.' },
+              { bold: 'Instituto Paranaense de Desenvolvimento Econômico e Social - IPARDES.', rest: ' Caderno Estatístico do Município de Londrina. 2023. Disponível em:' },
+            ].map((ref, i) => (
+              <p key={i} style={{ marginBottom: '4mm', paddingLeft: '15mm', textIndent: '-15mm' }}>
+                <span style={{ fontWeight: '700' }}>{ref.bold}</span>{ref.rest}
+              </p>
+            ))}
+          </div>
+          <Footer pageNum={41} />
+        </div>
+
+        {/* PAGE 42 - Referências cont. */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+            {[
+              { bold: '', rest: '<http://www.ipardes.gov.br/cadernos/MontaCadPdf1.php?Municipio=86000&btOk=ok>. Acesso em: 15/04/2025.' },
+              { bold: 'MINISTÉRIO DO MEIO AMBIENTE.', rest: ' Mata Atlântica. – Disponível em: < https://antigo.mma.gov.br/biomas/mata-atl%C3%A2ntica_emdesenvolvimento.html>. Acesso em: 15/04/2025.' },
+              { bold: 'Secretária Municipal De Planejamento, Orçamento E Tecnologia.', rest: ' Perfil De Londrina 2023 – Ano Base 2022. Disponível em: < https://portal.londrina.pr.gov.br/perfil-de-londrina/perfil-de-londrina-2023>. Acesso em: 15/04/2025.' },
+              { bold: 'SUDERHSA.', rest: ' - Unidades Hidrográficas do Paraná – Disponível em: <http://www.iat.pr.gov.br/sites/agua-terra/arquivos_restritos/files/documento/2020-07/unidades_hidrograficas_a4.pdf>. 2007. Acesso em: 15/04/2025.' },
+              { bold: 'TOFFOLO, Adriano.', rest: ' PROPOSTA PARA CONEXÃO DE TRÊS FRAGMENTOS FLORESTAIS NA REGIÃO SUL DO MUNICÍPIO DE LONDRINA-PR, ATRAVÉS DE TÉCNICAS DE GEOPROCESSAMENTO. 2009. 26 pg. Monografia (Bacharel em Geografia). Universidade Estadual de Londrina. Londrina, Paraná.' },
+            ].map((ref, i) => (
+              <p key={i} style={{ marginBottom: '4mm', paddingLeft: '15mm', textIndent: '-15mm' }}>
+                {ref.bold && <span style={{ fontWeight: '700' }}>{ref.bold}</span>}{ref.rest}
+              </p>
+            ))}
+          </div>
+          <Footer pageNum={42} />
+        </div>
+
+        {/* PAGE 43 - Seção 19 Responsáveis */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>19. RESPONSÁVEIS</div>
+          {/* Box empresa */}
+          <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm 6mm', marginBottom: '6mm', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <div style={{ fontSize: '10pt', lineHeight: '1.8', color: '#000' }}>
+              <div style={{ fontWeight: '900', color: '#1a3a6b', marginBottom: '2mm' }}>BACCARIM ENGENHARIA URBANA LTDA</div>
+              <div>CNPJ: 03.019.603/0001-23</div>
+              <div>Registro no Crea-PR: 52.707</div>
+              <div>Endereço: Avenida Dom Pedro II, nº 33, Centro, Sala 02.</div>
+              <div>Ibiporã – PR</div>
+              <div>Telefone: (43) 3268-0916</div>
+              <div>Email: alberto@baccarimengenharia.com.br</div>
+            </div>
+            <SmallLogo />
+          </div>
+          {/* Box ART */}
+          <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm 6mm', marginBottom: '6mm', fontSize: '10pt', lineHeight: '1.8', color: '#1a3a6b', textAlign: 'center' }}>
+            <div style={{ marginBottom: '3mm' }}>Responsável técnico pela elaboração do documento: Alberto Baccarim Junior</div>
+            <div>ART Nº: 1720260789180</div>
+            <div>Profissional: Alberto Baccarim Junior</div>
+            <div>Formação Profissional: Eng.º Civil</div>
+            <div>Registro no Crea: PR- 142.811/D</div>
+            <div style={{ marginTop: '8mm', marginBottom: '4mm', fontStyle: 'italic', fontSize: '13pt', color: '#000', fontFamily: 'cursive' }}>Alberto Baccarim Junior</div>
+            <div style={{ color: '#000' }}>Alberto Baccarim Junior</div>
+          </div>
+          {/* Box Proposição */}
+          <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '4mm 6mm', fontSize: '10pt', color: '#000' }}>
+            <div style={{ fontWeight: '900', color: '#1a3a6b', marginBottom: '3mm', textAlign: 'center' }}>PROPOSIÇÃO E EXECUÇÃO DESTE RELATÓRIO AMBIENTAL PRELIMINAR - RAP</div>
+            <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+              <tbody>
+                <tr>
+                  <td style={{ border: '1px solid #1a3a6b', padding: '3px 6px', fontWeight: '700', width: '35%' }}>RAZÃO SOCIAL:</td>
+                  <td style={{ border: '1px solid #1a3a6b', padding: '3px 6px' }}>Francisco Sigueru Hiraiwa</td>
+                </tr>
+                <tr>
+                  <td style={{ border: '1px solid #1a3a6b', padding: '3px 6px', fontWeight: '700' }}>CPF:</td>
+                  <td style={{ border: '1px solid #1a3a6b', padding: '3px 6px' }}>073.396.409-59</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <Footer pageNum={43} />
+        </div>
+
+        {/* PAGE 44 - Seção 20 Anexos */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>20. ANEXOS</div>
+          <div style={{ fontSize: '10pt', lineHeight: '2.2', color: '#1a3a6b' }}>
+            {[
+              { num: '1', desc: 'Anotação de Responsabilidade Técnica ART nº 1720260789180 (Engº Civil Alberto Baccarim Junior).' },
+              { num: '2', desc: 'Planta-Ilustrativa.' },
+              { num: '3', desc: 'Planta-Planialtimétrica.' },
+              { num: '4', desc: 'Mapa de Declividade.' },
+              { num: '5', desc: 'Laudo-Geológico-Geotécnico.' },
+              { num: '6', desc: 'Relatório Fotográfico.' },
+            ].map((a, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginBottom: '2mm', marginLeft: '15mm' }}>
+                <span style={{ fontWeight: '700' }}>Anexo {a.num} –</span>
+                <span>{a.desc}</span>
+              </div>
+            ))}
+          </div>
+          <Footer pageNum={44} />
+        </div>
+
+        {/* PAGE 45 - Capa Anexo 01 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 01</div>
+          </div>
+          <div style={{ textAlign: 'center', fontSize: '10pt', color: '#1a3a6b', marginBottom: '20mm' }}>
+            <p>Anotação de Responsabilidade Técnica ART nº 1720260789180</p>
+            <p>(Engº Civil Alberto Baccarim Junior).</p>
+          </div>
+          <Footer pageNum={45} />
+        </div>
+
       </div>
     </div>
   );
