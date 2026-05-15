@@ -1255,6 +1255,66 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={45} />
         </div>
 
+        {/* PAGE 46 - Capa Anexo 02 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 02</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Planta-Ilustrativa</div>
+          </div>
+          <Footer pageNum={46} />
+        </div>
+
+        {/* PAGE 47 - Capa Anexo 03 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 03</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Planta-Planialtimétrica</div>
+          </div>
+          <Footer pageNum={47} />
+        </div>
+
+        {/* PAGE 48 - Capa Anexo 04 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 04</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Mapa de declividade</div>
+          </div>
+          <Footer pageNum={48} />
+        </div>
+
+        {/* PAGE 49 - Capa Anexo 05 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 05</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Laudo-Geológico-Geotécnico</div>
+          </div>
+          <Footer pageNum={49} />
+        </div>
+
+        {/* PAGE 50 - Capa Anexo 06 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 06</div>
+          </div>
+          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Relatório Fotográfico</div>
+          </div>
+          <Footer pageNum={50} />
+        </div>
+
       </div>
     </div>
   );
