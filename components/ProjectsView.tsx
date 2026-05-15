@@ -421,6 +421,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       {rapProject && (
         <ProjectRapReportView
           project={rapProject}
+          onUpdateProject={onUpdateProject}
           onClose={() => setRapProject(null)}
         />
       )}

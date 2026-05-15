@@ -193,6 +193,7 @@ export interface ProjectTechnicalSpecs {
   lng?: number;
   qtdLotes?: number | string; // Kept for compatibility
   customSpecs?: CustomSpec[];
+  rapData?: Record<string, string>;
 }
 
 export interface ProjectMeetingMinute {
