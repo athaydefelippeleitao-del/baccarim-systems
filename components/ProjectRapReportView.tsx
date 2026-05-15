@@ -1,5 +1,6 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useMemo } from 'react';
 import { Project, AppConfig } from '../types';
+import { utmToDecimal } from '../utils/geoUtils';
 
 interface ProjectRapReportViewProps {
   onUpdateProject?: (project: Project) => void;
@@ -40,7 +41,23 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
   const [textoHistorico, setTextoHistorico] = useState(rd.textoHistorico || 'A partir da interpretação de imagens de satélite de diferentes períodos, constatou-se que a área analisada apresentou, de forma contínua, ocupação voltada à atividade agrícola, com evidências de cultivo de grãos e outras culturas típicas do uso rural. Ao longo do histórico avaliado, não foram observadas edificações, instalações ou sinais compatíveis com atividades industriais, armazenamento ou destinação de resíduos perigosos, postos de abastecimento, nem operações que envolvessem o manuseio de substâncias químicas de elevada periculosidade, ou quaisquer usos enquadráveis como potenciais geradores de áreas contaminadas, conforme os critérios definidos na Resolução CEMA nº 129/2023.');
   const [textoModalidade, setTextoModalidade] = useState(rd.textoModalidade || `O presente documento refere-se ao processo de licenciamento ambiental para a implantação de um loteamento residencial, resultante do parcelamento do solo urbano. O empreendimento será implantado na matrícula nº ${project.specs?.matricula || ''}. `);
   const [textoLocalizacao, setTextoLocalizacao] = useState(rd.textoLocalizacao || `O empreendimento até então sem denominação comercial estará localizado na ${project.specs?.projectAddress || ''}, na ${project.specs?.projectBairro || ''}. \nFigura 1 exibe o mapa de localização na cidade de Londrina.`);
+  const [textoLaudoGeo, setTextoLaudoGeo] = useState(rd.textoLaudoGeo || `O Laudo Geológico-Geotécnico foi elaborado e está no Anexo 4 deste documento, trata da investigação geológica e geotécnica realizada nos lotes nº ${project.specs?.matricula || 'indicados'} localizados na ${project.specs?.projectBairro || 'Gleba'}, em Londrina/PR. O objetivo do estudo foi avaliar as características do solo para a viabilidade de um loteamento urbano. Foram realizadas 11 sondagens a trado com profundidade de seis metros, seguindo os critérios da NBR 9.603, além de ensaios de permeabilidade e percolação do solo. O levantamento geológico identificou que o solo predominante na área é composto por argila siltosa porosa vermelha, proveniente do intemperismo de rochas basálticas da Formação Serra Geral, não sendo detectado o nível freático durante as perfurações.\n\nOs ensaios indicaram baixa permeabilidade e uma taxa média de percolação de 60 litros por metro quadrado ao dia, considerada adequada para sistemas de tratamento de esgoto com tanques sépticos.\n\nA área apresenta estabilidade geotécnica, sem sinais de erosão ou recalques, sendo classificada como de baixo risco para a implantação do empreendimento. O estudo conclui que o terreno é adequado para loteamento.`);
   const [isSaving, setIsSaving] = useState(false);
+
+  // Satellite image URL from UTM coordinates
+  const satelliteUrl = useMemo(() => {
+    const e = parseFloat((empCoordE || '').replace(/[^\d.]/g, ''));
+    const n = parseFloat((empCoordN || '').replace(/[^\d.]/g, ''));
+    const zone = project.specs?.zone || 22;
+    if (!isNaN(e) && !isNaN(n) && e > 0 && n > 0) {
+      try {
+        const { lat, lng } = utmToDecimal(e, n, zone);
+        const delta = 0.003;
+        return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${lng-delta},${lat-delta*0.7},${lng+delta},${lat+delta*0.7}&bboxSR=4326&layers=show&size=600,400&imageSR=4326&transparent=false&format=png32&f=image`;
+      } catch { return null; }
+    }
+    return null;
+  }, [empCoordE, empCoordN, project.specs?.zone]);
 
   const cidade = 'Londrina/PR';
 
@@ -51,7 +68,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
       empreendedorNome, empreendedorCpf, empreendedorEnd, empreendedorBairro, empreendedorCidade, empreendedorCep,
       empEnderecoNome, empEnderecoFull, empBairro, empCidade, empCep, empLicenca, empMatricula, empCoordE, empCoordN,
       mesElaboracao, anoElaboracao, contratanteEndereco, respTecnico, equipeApoio, embasamento,
-      textoApresentacao, textoHistorico, textoModalidade, textoLocalizacao,
+      textoApresentacao, textoHistorico, textoModalidade, textoLocalizacao, textoLaudoGeo,
     };
     onUpdateProject({ ...project, specs: { ...project.specs, rapData } });
     setTimeout(() => setIsSaving(false), 1000);
@@ -64,8 +81,9 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
       margin: 0,
       filename: `RAP_${project.name.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true, allowTaint: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: 'css', before: '.pdf-page-break' }
     };
     try {
       // @ts-ignore
@@ -81,15 +99,15 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
   const textareaCls = "w-full bg-baccarim-dark border border-baccarim-border rounded-xl px-3 py-2 text-sm text-baccarim-text focus:outline-none focus:border-baccarim-blue transition-all resize-y min-h-[60px]";
   const labelCls = "block text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-1";
 
-  // Page style
+  // Page style — fixed A4 height to avoid blank spacing between pages
   const pageStyle: React.CSSProperties = {
     width: '210mm',
     minHeight: '297mm',
     backgroundColor: 'white',
     position: 'relative',
-    pageBreakAfter: 'always',
     fontFamily: 'Arial, Helvetica, sans-serif',
     color: '#000',
+    boxSizing: 'border-box',
   };
 
   const footerStyle: React.CSSProperties = {
@@ -243,6 +261,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <div><label className={labelCls}>Modalidade do Empreendimento</label><textarea value={textoModalidade} onChange={e => setTextoModalidade(e.target.value)} className={textareaCls} /></div>
           <div><label className={labelCls}>Localização</label><textarea value={textoLocalizacao} onChange={e => setTextoLocalizacao(e.target.value)} className={textareaCls} /></div>
           <div><label className={labelCls}>Histórico do Imóvel</label><textarea value={textoHistorico} onChange={e => setTextoHistorico(e.target.value)} className={textareaCls} style={{minHeight:'100px'}} /></div>
+          <div><label className={labelCls}>Laudo Geológico-Geotécnico</label><textarea value={textoLaudoGeo} onChange={e => setTextoLaudoGeo(e.target.value)} className={textareaCls} style={{minHeight:'100px'}} /></div>
 
           <div className="w-full h-px bg-baccarim-border"></div>
 
@@ -470,17 +489,25 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={8} />
         </div>
 
-        {/* PAGE 9 - Coordenadas */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+        {/* PAGE 9 - Coordenadas + Satélite */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', color: '#000', marginBottom: '5mm', textAlign: 'justify' }}>
             <p style={{ textIndent: '15mm' }}>A Figura 2 apresenta a imagem de satélite com o croqui de localização do terreno objeto do licenciamento ambiental. O limite aproximado da propriedade está demarcado pela linha laranja, e as coordenadas correspondentes ao ponto central da área estão descritas na tabela a seguir.</p>
           </div>
-          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', padding: '6mm', textAlign: 'center', marginBottom: '3mm', minHeight: '70mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
-            <div style={{ fontSize: '8pt', color: '#666' }}>Figura 2 – Planta de localização do empreendimento. Fonte: Google Earth.</div>
-          </div>
-          <table style={{ width: '60%', margin: '5mm auto', borderCollapse: 'collapse', fontSize: '10pt' }}>
+          {satelliteUrl ? (
+            <div style={{ marginBottom: '3mm' }}>
+              <img src={satelliteUrl} alt="Imagem de satélite do empreendimento" crossOrigin="anonymous"
+                style={{ width: '100%', height: '70mm', objectFit: 'cover', border: '1px solid #ccc', borderRadius: '4px', display: 'block' }} />
+              <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginTop: '2mm', fontStyle: 'italic' }}>Figura 2 – Planta de localização do empreendimento. Fonte: Google Earth / ArcGIS.</div>
+            </div>
+          ) : (
+            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', padding: '6mm', textAlign: 'center', marginBottom: '3mm', height: '70mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+              <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
+              <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
+            </div>
+          )}
+          <table style={{ width: '60%', margin: '4mm auto', borderCollapse: 'collapse', fontSize: '10pt' }}>
             <thead><tr style={{ background: '#1a3a6b', color: 'white' }}>
               <th style={{ padding: '4px 8px', textAlign: 'left' }}>Coordenadas</th>
               <th style={{ padding: '4px 8px', textAlign: 'left' }}>UTM</th>
@@ -494,7 +521,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 10 - Relatório Fotográfico + Histórico */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
           <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>6. RELATÓRIO FOTOGRÁFICO</div>
           <div style={{ fontSize: '10pt', color: '#000', marginBottom: '6mm', textIndent: '15mm', textAlign: 'justify', lineHeight: '1.6' }}>O relatório fotográfico foi elaborado e está em anexo a esse Relatório.</div>
@@ -505,9 +532,75 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={10} />
         </div>
 
-      </div>
-    </div>
-  );
-};
+        {/* PAGE 11 - Plantas, Laudos e Estudos */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '5mm' }}>7. PLANTAS, LAUDOS, PROJETOS E ESTUDOS ESPECÍFICOS</div>
 
-export default ProjectRapReportView;
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.1. Planta Ilustrativa</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '6mm' }}>A planta ilustrativa que apresenta o <span style={{ textDecoration: 'underline' }}>Projeto Urbanístico</span> de implantação está no Anexo 3 deste documento.</p>
+
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.2. Planta Planialtimétrica</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '6mm' }}>A planta planialtimétrica que apresenta a distribuição de áreas propostas para o empreendimento foi elaborada e está no Anexo 4 deste documento.</p>
+
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.3. Laudo Geológico-Geotécnico</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            {textoLaudoGeo.split('\n\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p>)}
+          </div>
+          <Footer pageNum={11} />
+        </div>
+
+        {/* PAGE 12 - Laudo Florestal + Diagnóstico Ambiental */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.4. Laudo Florestal</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '8mm' }}>Em razão do empreendimento não prever intervenção ou supressão de vegetação, nativa ou exótica, não se aplica a elaboração de Laudo Florestal para a presente solicitação.</p>
+
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>8. DIAGNÓSTICO AMBIENTAL</div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>8.1. Diagnóstico Do Meio Físico</div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.1. CLIMA</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>Londrina apresenta clima subtropical úmido, classificado como <em>Cfa</em> segundo Köppen-Geiger, com temperaturas amenas ao longo do ano e chuvas bem distribuídas, embora com maior concentração no verão. A temperatura média anual é de 21 °C, conforme mostra a Figura 3, que apresenta o gráfico de temperatura e precipitação mensal da cidade. A variação térmica anual é moderada, com julho sendo o mês mais frio (média 16,8 °C) e dezembro o mais quente (23,6 °C).</p>
+            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>A precipitação média anual é de 1.723 mm, com maior volume nos meses de verão, especialmente em janeiro (276 mm), e o menor em agosto (65 mm), evidenciando a sazonalidade das chuvas (Figura 25). Além do volume, a frequência de dias chuvosos também varia: julho registra os menores índices (5,7 dias) e janeiro os maiores (21,3 dias). Essa distribuição reforça o caráter úmido do clima, mesmo nos meses mais secos.</p>
+          </div>
+          <Footer pageNum={12} />
+        </div>
+
+        {/* PAGE 13 - Figura 3 (clima) */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center', marginBottom: '3mm', height: '85mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-chart-bar"></i>
+            <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>Gráfico do balanço pluviométrico – inserir imagem</div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginBottom: '6mm', fontStyle: 'italic' }}>Figura 3 – Gráfico do balanço pluviométrico do município (CLIMATE.DATA.ORG, 2020).</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm' }}>A Figura 4 ilustra a distribuição da temperatura média anual no estado do Paraná, evidenciando que Londrina está inserida em uma faixa com temperaturas entre 20,1 °C e 21,0 °C, condizente com os dados do gráfico climático (Figura 25).</p>
+          <Footer pageNum={13} />
+        </div>
+
+        {/* PAGE 14 - Figura 4 (temperatura Paraná) */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center', marginBottom: '3mm', height: '100mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-map"></i>
+            <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>Mapa de temperatura média anual – inserir imagem</div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginBottom: '6mm', fontStyle: 'italic' }}>Figura 4 – Temperatura média do ar anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>Já a Figura 6, referente à precipitação anual no Paraná, indica que Londrina se encontra na faixa entre 1.600 mm e 1.800 mm de chuvas anuais, compatível com os 1.723 mm registrados localmente. Isso mostra que a cidade está entre as áreas com maiores índices pluviométricos do estado, ficando atrás apenas das regiões litorâneas e de serra, que ultrapassam 2.000 mm.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>Portanto, o clima em Londrina pode ser caracterizado como moderadamente quente, úmido e com chuvas bem distribuídas, mas mais intensas no verão. Essas condições são influenciadas pela altitude da cidade (603 m), sua localização no norte do Paraná e os sistemas meteorológicos predominantes da região.</p>
+          </div>
+          <Footer pageNum={14} />
+        </div>
+
+        {/* PAGE 15 - Figura 5 (precipitação Paraná) */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', textAlign: 'center', marginBottom: '3mm', height: '110mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-cloud-rain"></i>
+            <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>Mapa de precipitação anual – inserir imagem</div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 5 – Precipitação anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
+          <Footer pageNum={15} />
+        </div>
