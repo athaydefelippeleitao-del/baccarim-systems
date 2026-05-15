@@ -604,3 +604,10 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 5 – Precipitação anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
           <Footer pageNum={15} />
         </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default ProjectRapReportView;
