@@ -781,6 +781,125 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={25} />
         </div>
 
+        {/* PAGE 26 - Seção 12 Metodologia CONAMA */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>12. METODOLOGIA EMPREGADA PARA A ANÁLISE E IDENTIFICAÇÃO DOS IMPACTOS AMBIENTAIS</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Segundo a RESOLUÇÃO CONAMA nº 1, de 23 de janeiro de 1986, que "Dispõe sobre critérios básicos e diretrizes gerais para a avaliação de impacto ambiental". O Conselho Nacional Do Meio Ambiente – CONAMA utilizando a atribuição conferida pelo art. 48 do Decreto nº 88.351, de 1º de junho de 1983, revogado pelo Decreto nº 99.274, de 6 de junho de 1990, para realização da atividade das responsabilidades, dispostas no art. 18 do mesmo decreto, visando a necessidade de se estabelecer definições, responsabilidades, critérios básicos e diretrizes gerais "para uso e implementação da Avaliação de Impacto Ambiental como um dos instrumentos da Política Nacional do Meio Ambiente, resolve:"</p>
+            <p style={{ marginLeft: '15mm', marginBottom: '2mm' }}>Art. 1 - Para efeito desta Resolução, considera-se impacto ambiental qualquer alteração das propriedades físicas, químicas e biológicas do meio ambiente, causada por qualquer forma de matéria ou energia resultante das atividades humanas que, direta ou indiretamente, afetam:</p>
+            <div style={{ marginLeft: '20mm', marginBottom: '3mm' }}>
+              {['A saúde, a segurança e o bem-estar da população;', 'As atividades sociais e econômicas;', 'A biota;', 'As condições estéticas e sanitárias do meio ambiente;', 'A qualidade dos recursos ambientais.'].map((item, i) => (
+                <div key={i} style={{ display: 'flex', gap: '4mm', marginBottom: '1mm' }}>
+                  <span style={{ fontWeight: '700', minWidth: '6mm' }}>{['I.', 'II.', 'III.', 'IV.', 'V.'][i]}</span>
+                  <span>{item}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A avaliação dos impactos ambientais da edificação, na fase de instalação e operação será realizada através do procedimento:</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Avaliação do meio biótico, físico e socioeconômico da edificação, levando em consideração as principais etapas e o conhecimento no processo construtivo e de operação, analisando os impactos em cada etapa isoladamente.</p>
+            <p style={{ fontWeight: '700', marginBottom: '2mm', marginLeft: '15mm' }}>Metodologia</p>
+            <p style={{ textIndent: '15mm', marginBottom: '2mm' }}>Para identificar as etapas do projeto, aspectos ambientais e a avaliação dos impactos foram executadas as seguintes etapas:</p>
+            <div style={{ display: 'flex', gap: '3mm', marginLeft: '15mm' }}>
+              <span>•</span>
+              <span>Realização do levantamento dos aspectos e impactos;</span>
+            </div>
+          </div>
+          <Footer pageNum={26} />
+        </div>
+
+        {/* PAGE 27 - Parâmetros de avaliação */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <div style={{ display: 'flex', gap: '3mm', marginLeft: '15mm', marginBottom: '4mm' }}>
+              <span>•</span>
+              <span>Definição da classificação dos impactos através da construção da planilha de aspectos e impactos;</span>
+            </div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Para a avaliação dos impactos ambientais os aspectos físicos, bióticos e socioeconômicos, foram definidos onde finalmente a listagem dos impactos foi relacionada, definindo os parâmetros para análise de tais impactos.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Os parâmetros adotados serão os seguintes:</p>
+            {[
+              { letra: 'A.', titulo: 'Natureza:', texto: 'identifica e qualifica o tipo de impacto, se é POSITIVO, NEGATIVO ou NEUTRO.' },
+              { letra: 'B.', titulo: 'Abrangência:', texto: 'Indica os impactos cujos efeitos se fazem sentir localmente (LOCAL) ou que podem afetar áreas geográficas mais abrangentes, caracterizando-se como impactos regionais (REGIONAL). Considerou-se como efeito local àquele que se restringe à Área Diretamente Afetada do Empreendimento e, regional, aquele que se reflete na Área de Influência Direta.' },
+              { letra: 'C.', titulo: 'Meio:', texto: 'identifica em qual aspecto o impacto tem efeito (FÍSICO, BIÓTICO e SOCIOECONÔMICO).' },
+              { letra: 'D.', titulo: 'Forma:', texto: 'indica como o impacto se manifesta, se é impacto DIRETA ou INDIRETA.' },
+              { letra: 'E.', titulo: 'Magnitude:', texto: 'refere-se à intensidade e significância do impacto sobre a área afetada, GRANDE, MÉDIA ou PEQUENA.' },
+              { letra: 'F.', titulo: 'Temporalidade:', texto: 'Diferencia os impactos segundo ao prazo após a ação impactante CURTO PRAZO, MÉDIO PRAZO ou LONGO PRAZO' },
+              { letra: 'G.', titulo: 'Fase de ocorrência:', texto: 'Indica em que fase do empreendimento o impacto se manifesta, podendo ser nas fases de PROJETO, INSTALAÇÃO e/ou OPERAÇÃO.' },
+              { letra: 'H.', titulo: 'Duração:', texto: 'Critério que indica o tempo de duração do impacto, podendo ser PERMANENTE (ou seja, a instalação do empreendimento e impacto sempre agirá), TEMPORÁRIO (passado algum tempo o impacto desaparecerá) ou CÍCLICO (o impacto agirá de tempos em tempos).' },
+              { letra: 'I.', titulo: 'Reversibilidade:', texto: 'classifica os impactos quanto à possibilidade de ser' },
+            ].map((p, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginBottom: '2mm', marginLeft: '15mm' }}>
+                <span style={{ fontWeight: '700', minWidth: '8mm' }}>{p.letra}</span>
+                <span><span style={{ textDecoration: 'underline', fontWeight: '700' }}>{p.titulo}</span> {p.texto}</span>
+              </div>
+            ))}
+          </div>
+          <Footer pageNum={27} />
+        </div>
+
+        {/* PAGE 28 - Parâmetros cont. + texto final metodologia */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            {[
+              { letra: '', titulo: '', texto: 'REVERSÍVEIS ou IRREVERSÍVEIS. Permite identificar que impactos poderão ser integralmente reversíveis a partir da implementação de uma ação de reversibilidade ou poderão apenas ser mitigados ou compensados.' },
+              { letra: 'J.', titulo: 'Probabilidade:', texto: 'A probabilidade ou frequência de um impacto será ALTA se sua ocorrência for quase certa e constante ao longo de toda a atividade, MÉDIA se sua ocorrência for intermitente e BAIXA se for quase improvável que ele ocorra.' },
+              { letra: 'K.', titulo: 'Controle:', texto: 'Identifica quais medidas serão tomadas para cada impacto, se será MITIGADO (ação que tem como objetivo reduzir os efeitos de um impacto negativo), CONTROLADO (ação que visa controlar e monitorar os possíveis impactos e verificar a eficácia das demais medidas), COMPENSADO (ação que objetiva compensar, através de melhorias em outro local, um impacto ambiental negativo importante e não mitigável), POTENCIALIZADO (ação que tem como objetivo aumentar os efeitos de um impacto positivo).' },
+            ].map((p, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginBottom: '3mm', marginLeft: '15mm' }}>
+                {p.letra && <span style={{ fontWeight: '700', minWidth: '8mm' }}>{p.letra}</span>}
+                <span>{p.titulo && <span style={{ textDecoration: 'underline', fontWeight: '700' }}>{p.titulo} </span>}{p.texto}</span>
+              </div>
+            ))}
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A metodologia adotada na elaboração deste RAP foi estruturada com o objetivo de atender diretamente ao solicitado pelo órgão ambiental competente (SEMA – Secretaria Municipal do Ambiente), assim como atender à legislação, em especial os princípios e objetivos expressos nos termos, da Resolução SEDEST Nº 050/2022 e de toda a legislação pertinente nas esferas federal, estadual e municipal.</p>
+          </div>
+          <Footer pageNum={28} />
+        </div>
+
+        {/* PAGE 29 - Seção 13 Impactos Fase Instalação + 13.1 Ruídos */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>13. IDENTIFICAÇÃO E AVALIAÇÃO DOS IMPACTOS DURANTE A FASE DE INSTALAÇÃO DO EMPREENDIMENTO</div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.1. Interferências e transtornos à população: emissões atmosféricas, ruídos e tráfego de máquinas</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Durante a fase de implantação do empreendimento, haverá aumento do fluxo de veículos pesados, movimentação de solo e utilização de equipamentos que podem gerar ruídos e poeira, afetando a população do entorno.</p>
+            <p style={{ marginBottom: '2mm' }}>Impactos Identificados:</p>
+            {['Ruídos e poluição sonora','Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Média'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}>
+                <span>•</span><span>{it}</span>
+              </div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '3mm' }}>Respeitar horários de trabalho (08h às 18h); controle de ruídos dos equipamentos; sinalização de vias; evitar tráfego em horários de pico; uso de EPIs; planejamento de rotas.</p>
+            <p style={{ fontWeight: '700', marginBottom: '1mm' }}>Medidas recomendadas:</p>
+            <p style={{ textIndent: '10mm' }}>Planejar antecipadamente os transportes e trajetos, em função do porte dos equipamentos/veículos pesados e do fluxo do tráfego, para os acessos a serem utilizados de forma a possibilitar as manobras com o máximo de segurança e rapidez. Implantação de sinalização adequada e redutores de velocidade, principalmente nas proximidades de escolas, igreja e postos de saúde. No caso da necessidade de uma eventual alteração temporária do tráfego, deverá ser estabelecido contato com os órgãos responsáveis. Promover esclarecimentos, caso necessário, através de Programa de Comunicação e Educação Ambiental, sobre as ações de mão de obra e de equipamentos de forma a minimizar as perturbações no cotidiano das populações residentes próximas aos acessos que serão utilizados. Seleção de trabalhadores residentes em Londrina pode ajudar a diminuir o fluxo de</p>
+          </div>
+          <Footer pageNum={29} />
+        </div>
+
+        {/* PAGE 30 - 13.1 cont. + 13.2 Poeira */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>veículos dos trabalhadores, pois favoreceria o deslocamento por outros meios de transporte (ônibus, bicicleta etc.). Controlar os ruídos a serem emitidos pelos equipamentos utilizados na obra, conforme especificado pelo fabricante e obedecendo às normas brasileiras. Planejar o horário de transporte do pessoal, materiais e equipamentos, evitando-se as horas de pico e noturno, para não perturbar o sossego das comunidades próximas. Utilizar equipamento de proteção individual (EPI) — botas, protetores auriculares, luvas, capacetes etc., pelos funcionários da obra.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.2. Emissão de poeira e poluentes atmosférico</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A formação de nuvens de poeira formada pela passagem de máquinas sobre o solo seco pode promover a poluição do ar nas áreas de influência do empreendimento.</p>
+            {['Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Média'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}>
+                <span>•</span><span>{it}</span>
+              </div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '3mm' }}>Cobrir caçambas com lona; umidificação constante do solo; manutenção e regulagem de máquinas; monitoramento das emissões.</p>
+            <p style={{ fontWeight: '700', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
+            <p style={{ textIndent: '10mm' }}>Manter as caçambas dos veículos cobertas com lona durante o transporte de material e regulagem das descargas do sistema de combustão dos veículos de trabalho. Durante a fase das obras serão geradas emissões provenientes de poeiras originadas nas fases construtivas (empréstimos, bota-foras e sedimentos de escavação). Para diminuir a quantidade de emissões geradas, as máquinas e equipamentos deverão operar dentro das especificações técnicas adequadas, com monitoramento frequente. Já a quantidade de poeira levantada poderá ser reduzida através da constante umidificação do solo com jatos de água.</p>
+          </div>
+          <Footer pageNum={30} />
+        </div>
+
       </div>
     </div>
   );
