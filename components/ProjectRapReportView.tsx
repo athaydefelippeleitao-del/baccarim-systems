@@ -697,6 +697,90 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={20} />
         </div>
 
+        {/* PAGE 21 - Fauna cont. + 9.2 Flora + Figura 10 */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Conforme o IAT, o Parque Municipal Mata dos Godoy é uma das últimas reservas naturais de mata nativa existentes no norte do Paraná, considerada uma Unidade de Conservação Integral. O parque abriga 282 espécies de aves, 65 mamíferos e plantas raras como jacarandá, cabreúva, peroba, guaçatinga e pau-marfim. Já a Unidade de Conservação Parque Ecológico Dr. Daisaku Ikeda que foi criada em novembro de 1999 e inaugurada em setembro de 2000, tem identificado em seu Plano de Manejo mais de 96 espécies de aves, 12 mamíferos, 32 espécies de répteis, além de peixes e anfíbios. O Parque Municipal Arthur Thomas é habitado por uma fauna privilegiada, que inclui espécies como macaco-prego, quati, cutia, paca, teiú, garção, garça, águia-pescadora e tatu-galinha, entre outros animais.</p>
+          </div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>9.2. Caracterização Da Flora</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#1a3a6b', textIndent: '15mm', marginBottom: '4mm' }}>Em Londrina, a fisionomia vegetal originalmente dominante é a Floresta Estacional Semidecidual, que tem como principal característica o caráter parcialmente decíduo de suas espécies, sendo que de 20 a 50% dos indivíduos do conjunto florestal perdem suas folhas na estação seca (IBGE, 2012).</p>
+          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '70mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+            <div style={{ fontSize: '8pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '6px' }}>ESTADO DO PARANÁ – COBERTURA VEGETAL NATIVA</div>
+            <i style={{ fontSize: '22pt', color: '#888' }} className="fas fa-tree"></i>
+            <div style={{ fontSize: '8pt', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>inserir imagem</div>
+          </div>
+          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 10 – Mapa de vegetação do estado brasileiro do Paraná. Fonte: (IPARDES, 2007).</div>
+          <Footer pageNum={21} />
+        </div>
+
+        {/* PAGE 22 - Flora cont. */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A cobertura vegetal da região de Londrina está inserida na <span style={{ color: '#1a3a6b', textDecoration: 'underline' }}>Floresta Estacional Semidecidual (FES)</span>, que integra o Bioma Mata Atlântica. A FES caracteriza-se por sua dupla estacionalidade climática, apresentando períodos tropicais com chuvas intensas no verão, seguidos por estiagens acentuadas, além de uma fase subtropical marcada pelo inverno frio e seco. Essa diversidade climática influencia diretamente a composição e o comportamento vegetativo, com espécies caducifólias que perdem parte das folhas durante o inverno.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Historicamente, a área onde atualmente está localizado o município de Londrina era predominantemente ocupada por mata pluvial tropical e subtropical. No entanto, devido ao intenso avanço da agricultura e à urbanização, especialmente a partir do século XX, grande parte dessa vegetação original foi suprimida, restando apenas fragmentos isolados em áreas de conservação e proteção ambiental. Os principais remanescentes florestais no município são encontrados no Parque Estadual Mata dos Godoy, no Parque Arthur Thomas e na Reserva Indígena do Apucaraninha. Essas áreas preservam a vegetação típica da FES, com espécies arbóreas como o pau-d'alho (Gallesia integrifolia), o cedro-rosa (Cedrela fissilis), o peroba-rosa (Aspidosperma polyneuron), a canafístula (Peltophorum dubium) e o ipê-roxo (Handroanthus heptaphyllus). O sub-bosque apresenta uma composição variada de arbustos, cipós e epífitas, como bromélias e orquídeas.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>De acordo com a Fundação SOS Mata Atlântica e o INPE (2008), Londrina possui aproximadamente 12.026,88 hectares de remanescentes florestais, o que corresponde a cerca de 7% da área total do município, que é de 165.808,92 hectares. Essa vegetação remanescente desempenha papel fundamental na conservação da biodiversidade local, protegendo espécies endêmicas e servindo de corredor ecológico.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Em áreas urbanas e rurais que sofreram intervenção antrópica, a vegetação original foi substituída, principalmente, por espécies exóticas e cultivadas. As árvores nativas que ainda se destacam nesses espaços são o ipê-amarelo (Handroanthus albus), a embaúba (Cecropia spp.), o ingá (Inga spp.) e a aroeira-pimenteira (Schinus terebinthifolia), geralmente integradas a reflorestamentos e áreas verdes urbanas. A preservação desses fragmentos vegetais e a recomposição de áreas degradadas são fundamentais para garantir a manutenção da flora nativa e dos serviços ecossistêmicos que ela proporciona, como regulação hídrica, proteção do solo e manutenção da fauna local.</p>
+          </div>
+          <Footer pageNum={22} />
+        </div>
+
+        {/* PAGE 23 - Seção 10 Diagnóstico Socioeconômico */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>10. DIAGNÓSTICO DO MEIO SOCIOECONÔMICO</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O Município de Londrina apresentou um crescimento econômico e populacional acelerado ao longo de sua história, quando comparado a outras regiões do estado e do país.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Esse desenvolvimento esteve associado principalmente à cultura cafeeira, que encontrou condições favoráveis no solo latossolo vermelho da região, e ao processo de colonização e ocupação do território.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>De acordo com estimativas do IBGE de 2022, a população de Londrina era de 555.965 habitantes, tornando-se a segunda cidade mais populosa do Paraná e a quarta da Região Sul. A densidade demográfica do município é de 336,42 habitantes por quilômetro quadrado. Londrina é considerada um importante polo de desenvolvimento estadual e regional, conectando o Sul ao Sudeste do Brasil, e consolidando-se como centro urbano, econômico, industrial, financeiro, administrativo e cultural do norte do Paraná.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O Produto Interno Bruto (PIB) de Londrina é composto majoritariamente pelo setor de serviços, seguido pela indústria e agropecuária. O Índice de Desenvolvimento Humano (IDH) do município é de 0,824, ocupando o décimo lugar entre os municípios do estado. Segundo a Secretaria de Planejamento do Município (2022), o complexo industrial de Londrina conta com 2.956 indústrias de diversos setores, destacando-se como importante núcleo produtivo.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A infraestrutura urbana da cidade é bem desenvolvida, abrangendo serviços públicos essenciais, como abastecimento de água, coleta e tratamento de esgoto, gestão de resíduos sólidos, fornecimento de energia elétrica, sistema de saúde pública e rede de ensino. Londrina conta com hospitais, unidades de saúde, escolas, universidades, biblioteca pública, museus, teatros, cinemas e outros equipamentos culturais, garantindo qualidade de vida aos seus habitantes.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Na área da educação, segundo o IBGE, com base no Censo Educacional 2021 do INEP, Londrina possui 231 pré-escolas, 215 escolas de nível fundamental e 85 escolas de nível médio. Quanto ao ensino superior, o Censo Educacional de 2007 registra 10 instituições presenciais, além de 29 polos de ensino à distância implantados posteriormente.</p>
+          </div>
+          <Footer pageNum={23} />
+        </div>
+
+        {/* PAGE 24 - Socioeconômico cont. + Seção 11 Impactos + AII */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A rede de saúde pública inclui 133 unidades atendendo pelo Sistema Único de Saúde (SUS). Segundo o IBGE (2010), 85,2% dos domicílios possuem esgotamento sanitário adequado, 96,3% dos domicílios urbanos estão em vias públicas com arborização, e 83,1% em vias públicas com infraestrutura urbana adequada, incluindo calçamento, pavimentação, meio-fio e bueiro. O sistema viário e de transportes é estruturado, destacando-se as rodovias PR-445 (Celso Garcia Cid) e BR-369, que conectam Londrina a outras cidades da região. O transporte público municipal é realizado por ônibus, atendendo os principais bairros e áreas metropolitanas. Segundo o Plano Diretor de Londrina, a área no entorno do empreendimento apresenta uso diversificado do solo, incluindo áreas residenciais de médio e alto padrão, loteamentos de casas, e estabelecimentos comerciais e de serviços, como lojas, restaurantes e escritórios. Também há usos institucionais, como escolas e unidades de saúde, além de áreas verdes, praças e parques, que oferecem lazer e preservação ambiental. Essa diversificação demonstra a dinamicidade da ocupação territorial em Londrina, onde coexistem atividades residenciais, comerciais, industriais e serviços públicos, formando um espaço urbano multifuncional e integrado.</p>
+          </div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>11. IDENTIFICAÇÃO E ANÁLISE DOS IMPACTOS AMBIENTAIS</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '5mm' }}>
+            <p style={{ textIndent: '15mm' }}>A área de influência de um empreendimento corresponde ao espaço territorial que pode ser afetado direta ou indiretamente pelos impactos ambientais decorrentes das fases de planejamento, implantação e operação das atividades. Esses impactos podem ser positivos ou negativos. Delimitar adequadamente essas áreas é essencial para determinar o espaço geográfico que será objeto de levantamento e análise de dados, permitindo a caracterização dos contextos biogeofísicos, socioeconômicos e culturais da região antes da realização das obras. A partir desse diagnóstico, é possível identificar as áreas que serão impactadas pela implantação do empreendimento.</p>
+          </div>
+          <div style={{ background: '#f0f4ff', border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm', marginBottom: '4mm' }}>
+            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DE INFLUÊNCIA INDIRETA (AII)</div>
+            <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>A Área de Influência Indireta compreende os territórios que sofrem impactos menos significativos em comparação com as áreas diretamente afetadas, geralmente localizados no</p>
+          </div>
+          <Footer pageNum={24} />
+        </div>
+
+        {/* PAGE 25 - AII cont. + AID + ADA */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '5mm' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>entorno da Área de Influência Direta (AID). No meio socioeconômico, a AII corresponde ao território do município de Londrina, que poderá ser beneficiado pelo aumento de oferta de empregos e pela arrecadação tributária decorrente do empreendimento. Para os meios físicos e bióticos, a AII inclui os acessos à propriedade a partir do município de Londrina e sua respectiva faixa de domínio. Portanto, a AII abrange uma área que, embora impactada, sofre efeitos menos significativos do que as áreas diretamente afetadas.</p>
+          </div>
+          <div style={{ background: '#f0f4ff', border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm', marginBottom: '4mm' }}>
+            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DE INFLUÊNCIA DIRETA – AID</div>
+            <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+              <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Conceitualmente, a Área de Influência Direta (AID) consiste nas áreas geográficas diretamente afetadas pelos impactos decorrentes do empreendimento e corresponde ao espaço territorial contíguo e ampliado da ADA, e como esta, deverá sofrer impactos, tanto positivos quanto negativos. Tais impactos devem ser mitigados, compensados ou potencializados (se positivos) pelo empreendedor.</p>
+              <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Assim, a delimitação da AID decorreu dos fenômenos causais de primeira ordem, uma vez que haverá alguma interferência sobre o ambiente local. Deste modo, no concernente aos meios físicos, bióticos e antrópicos, está sendo considerada a área onde será implantado o empreendimento e seu entorno imediato.</p>
+              <p style={{ textIndent: '15mm' }}>Neste empreendimento fica delimitada como AID para os meios Físicos e Bióticos e socioeconômicos uma faixa de 500 metros a partir do loteamento.</p>
+            </div>
+          </div>
+          <div style={{ background: '#f0f4ff', border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm' }}>
+            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DIRETAMENTE AFETADA (ADA)</div>
+            <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm' }}>A Área Diretamente Afetada compreende a região impactada diretamente pela construção do empreendimento, abrangendo a área necessária para a implantação das estruturas, vias de acesso privativas e demais operações vinculadas exclusivamente à infraestrutura do projeto. A ADA corresponde, portanto, à área total destinada ao empreendimento, incluindo estruturas de apoio e acessos específicos.</p>
+          </div>
+          <Footer pageNum={25} />
+        </div>
+
       </div>
     </div>
   );
