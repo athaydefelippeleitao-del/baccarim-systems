@@ -1004,6 +1004,131 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={35} />
         </div>
 
+        {/* PAGE 36 - 14.4 cont. Resíduos + 14.5 Arborização */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>contribuindo para a saúde pública, limpeza urbana e proteção ambiental.</p>
+            {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Alta'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
+            <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Realizar campanhas internas de educação ambiental voltadas à separação adequada dos resíduos, promovendo a consciência sobre a responsabilidade compartilhada na gestão dos resíduos sólidos. Implantar pontos de coleta seletiva. Estabelecer rotinas de coleta interna compatíveis com a frequência da coleta pública municipal, de modo a evitar acúmulo de resíduos e minimizar riscos à saúde pública e ao bem-estar.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.5. Arborização Do Sistema Viário E Espaços Públicos</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Com o plantio de indivíduos arbóreos através da implantação da arborização do sistema viário e espaços públicos na área do futuro empreendimento haverá um aumento considerável na cobertura vegetal no local do empreendimento. Ainda, através da recuperação e revegetação das áreas degradadas, haverá um ganho ambiental significativo decorrente da preservação e manutenção das áreas verdes no entorno do empreendimento.</p>
+            {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Grande','Abrangência: Local','Probabilidade: Alta'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
+            <p style={{ textIndent: '10mm' }}>Priorizar o plantio de árvores nativas adaptadas à região,</p>
+          </div>
+          <Footer pageNum={36} />
+        </div>
+
+        {/* PAGE 37 - 14.5 cont. + 14.6 Recuperação áreas */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '5mm' }}>que requerem menos cuidados e contribuem para a biodiversidade local. Definir um espaçamento adequado entre as árvores, considerando seu crescimento e a necessidade de iluminação e ventilação para os espaços urbanos. Promover campanhas de sensibilização junto à comunidade sobre a importância da arborização e como cuidar das árvores plantadas. Estabelecer um plano de manutenção que inclua podas, controle de pragas e doenças, e monitoramento da saúde das árvores, garantindo seu crescimento saudável. Implementar projetos de replantio com espécies nativas nas áreas ao redor das nascentes e cursos d'água que foram afetados por atividades de parcelamento e edificações.</p>
+            <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.6. Recuperação e revegetação das áreas degradadas e comprometidas com a necessidade de preservação</div>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O empreendimento prevê a recuperação ambiental de áreas afetadas por usos anteriores, com revegetação e proteção de áreas sensíveis, contribuindo para a conservação dos recursos naturais.</p>
+            {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Alta'].map((it, i) => (
+              <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
+            ))}
+            <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
+            <p style={{ textIndent: '10mm' }}>Execução de projetos de restauração ecológica, com uso de espécies nativas em áreas de preservação permanente (APPs) ou sujeitas a intervenções, além de acompanhamento técnico para garantir a efetividade das ações.</p>
+          </div>
+          <Footer pageNum={37} />
+        </div>
+
+        {/* PAGE 38 - Seção 15 Quadro de Medidas (tabela parte 1) */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '3mm' }}>15. QUADRO DE MEDIDAS MITIGADORAS E COMPENSATÓRIAS</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', color: '#000', textAlign: 'justify', textIndent: '15mm', marginBottom: '5mm' }}>Com base na avaliação dos impactos ambientais relacionados e para melhor descrição de cada item, as medidas mitigadoras foram relacionadas nos itens anteriores.</p>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
+            <thead>
+              <tr style={{ background: '#1a3a6b', color: 'white' }}>
+                {['Impacto Ambiental','Medida Mitigadora/Compensatória','Componente Ambiental Afetado','Fase de Implementação','Caráter','Eficácia','Responsável pela Implementação'].map((h, i) => (
+                  <th key={i} style={{ padding: '3px 4px', textAlign: 'center', border: '1px solid #aaa', fontSize: '7.5pt' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Emissão de ruídos e poluição sonora','Restrição de horários, manutenção de equipamentos, sinalização e comunicação com a população','Físico','Instalação','Corretivo','Alta','Construtora /Empreendedor'],
+                ['Emissão de poeira e poluentes atmosféricos','Umidificação do solo, cobertura de caminhões, manutenção de máquinas','Físico','Instalação','Corretivo','Alta','Construtora /Empreendedor'],
+                ['Transtornos pelo tráfego de máquinas','Planejamento de rotas, controle de horários e sinalização','Socioeconômico','Instalação','Preventivo','Média','Construtora /Empreendedor'],
+                ['Erosão e instabilidade do solo (terraplanagem)','Drenagem adequada, obras em etapas, proteção do solo','Físico','Instalação','Preventivo','Alta','Construtora /Empreendedor'],
+                ['Impermeabilização do solo','Uso de pavimento permeável, sistema de drenagem pluvial eficiente','Físico','Instalação e Ocupação','Preventivo','Alta','Construtora /Empreendedor'],
+                ['Lançamento inadequado de águas pluviais','Instalação de dissipadores, bacias de contenção e reuso de águas','Físico','Instalação e Ocupação','Preventivo','Alta','Construtora /Empreendedor'],
+                ['Aumento da demanda por serviços públicos','Planejamento urbano integrado e articulação com o poder público para ampliação da oferta de serviços','Socioeconômico','Ocupação','Corretivo','Média','Município /Empreendedor'],
+                ['Geração de efluentes sanitários','Conexão com rede pública e uso de tecnologias sustentáveis','Físico','Ocupação','Preventivo','Alta','Empreendedor /Concessionária de Saneamento'],
+              ].map((row, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? '#f0f4ff' : 'white' }}>
+                  {row.map((cell, j) => (
+                    <td key={j} style={{ padding: '3px 4px', border: '1px solid #ccc', textAlign: 'center', color: j === 2 ? '#1a3a6b' : '#000', fontWeight: j === 2 ? '700' : 'normal', fontSize: '7.5pt' }}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Footer pageNum={38} />
+        </div>
+
+        {/* PAGE 39 - Quadro Medidas (tabela parte 2) */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
+            <thead>
+              <tr style={{ background: '#1a3a6b', color: 'white' }}>
+                {['Impacto Ambiental','Medida Mitigadora/Compensatória','Componente Ambiental Afetado','Fase de Implementação','Caráter','Eficácia','Responsável pela Implementação'].map((h, i) => (
+                  <th key={i} style={{ padding: '3px 4px', textAlign: 'center', border: '1px solid #aaa', fontSize: '7.5pt' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {[
+                ['Geração de resíduos sólidos urbanos','Implantação de coleta seletiva e educação ambiental','Físico /Socioeconômico','Ocupação','Preventivo','Alta','Empreendedor /Prefeitura Municipal'],
+                ['Alteração paisagística e perda da vegetação local','Arborização urbana com espécies nativas e integração paisagística','Biótico','Instalação e Ocupação','Compensatório','Alta','Empreendedor /Construtora'],
+                ['Destinação inadequada de resíduos da obra','Plano de Gerenciamento de Resíduos da Construção Civil (PGRCC)','Físico','Instalação','Preventivo','Alta','Construtora'],
+                ['Potencial contaminação por efluentes no canteiro de obras','Banheiros químicos com manutenção regular e sistema de coleta adequado','Físico','Instalação','Corretivo','Alta','Construtora'],
+              ].map((row, i) => (
+                <tr key={i} style={{ background: i % 2 === 0 ? '#f0f4ff' : 'white' }}>
+                  {row.map((cell, j) => (
+                    <td key={j} style={{ padding: '3px 4px', border: '1px solid #ccc', textAlign: 'center', color: j === 2 ? '#1a3a6b' : '#000', fontWeight: j === 2 ? '700' : 'normal', fontSize: '7.5pt' }}>{cell}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <Footer pageNum={39} />
+        </div>
+
+        {/* PAGE 40 - Seção 16 Legislação + Seção 17 Conclusões */}
+        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
+          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>16. LEGISLAÇÃO APLICÁVEL</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Instrução Normativa nº 21, de 25 de Abril de 2025 - Estabelece definições, critérios, diretrizes e procedimentos para o licenciamento ambiental de empreendimentos imobiliários urbanos no território paranaense.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Resolução CONAMA nº 237/1997 – Dispõe sobre a revisão e complementação dos procedimentos e critérios utilizados para o licenciamento ambiental.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Lei Municipal Nº 11.468/2011 - Institui o código de posturas do município de Londrina.</p>
+          </div>
+          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>17. CONCLUSÕES</div>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Do ponto de vista ambiental, constata-se que a área onde será implantado o empreendimento possui histórico de uso agrícola, caracterizando-se como uma área rural já submetida a atividades antrópicas.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Considerando que a natureza do empreendimento envolve o parcelamento do solo e posterior edificação para fins residenciais, é esperado que ocorram alterações nas características ambientais da área. Contudo, tais mudanças são passíveis de controle e compensação, desde que devidamente planejadas e executadas.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O projeto propõe a adoção de uma infraestrutura adequada, aliada à implementação de medidas mitigadoras e compensatórias compatíveis com os impactos diagnosticados, bem como o cumprimento rigoroso da legislação ambiental vigente.</p>
+            <p style={{ textIndent: '15mm' }}>Dessa forma, conclui-se pela viabilidade técnica, ambiental e sociocultural do empreendimento, desde que observadas as diretrizes propostas neste estudo e cumpridas integralmente as condicionantes do processo de licenciamento ambiental.</p>
+          </div>
+          <Footer pageNum={40} />
+        </div>
+
       </div>
     </div>
   );
