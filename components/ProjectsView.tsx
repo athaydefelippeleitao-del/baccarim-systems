@@ -7,6 +7,7 @@ import { downloadFile } from '../utils/fileUtils';
 import { exportProjectDocumentsAsZip } from '../utils/zipUtils';
 import ProjectExtensionReportView from './ProjectExtensionReportView';
 import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
+import ProjectRapReportView from './ProjectRapReportView';
 
 interface ProjectsViewProps {
   projects: Project[];
@@ -50,6 +51,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   const [newCustomSpec, setNewCustomSpec] = useState({ label: '', value: '' });
   const [extensionProject, setExtensionProject] = useState<Project | null>(null);
   const [meetingMinutesProject, setMeetingMinutesProject] = useState<Project | null>(null);
+  const [rapProject, setRapProject] = useState<Project | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleDilacaoPrazo = (project: Project) => {
@@ -416,6 +418,13 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
         />
       )}
 
+      {rapProject && (
+        <ProjectRapReportView
+          project={rapProject}
+          onClose={() => setRapProject(null)}
+        />
+      )}
+
       {confirmDialog && (
         <div className="fixed inset-0 bg-baccarim-dark/80 backdrop-blur-md z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-baccarim-card rounded-[2.5rem] w-full max-w-sm shadow-2xl p-10 text-center animate-in zoom-in-95 duration-300 border border-baccarim-border-hover">
@@ -552,6 +561,14 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       >
                         <i className="fas fa-handshake"></i>
                         <span>Ata de Reunião</span>
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setRapProject(project); }}
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-emerald-700 text-white uppercase tracking-widest hover:bg-emerald-600 transition-all flex items-center space-x-2"
+                        title="Relatório Ambiental Preliminar"
+                      >
+                        <i className="fas fa-leaf"></i>
+                        <span>RAP</span>
                       </button>
                       <button
                         onClick={(e) => { e.stopPropagation(); setIsEditingSpecs(isEditing ? null : project.id); }}
