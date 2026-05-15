@@ -484,7 +484,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <Footer pageNum={7} />
         </div>
 
-        {/* PAGE 8 - Modalidade + Localização */}
+        {/* PAGE 8 - Modalidade + Localização Regional */}
         <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
           <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
           <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>4. IDENTIFICAÇÃO, MODALIDADE E LOCALIZAÇÃO DO EMPREENDIMENTO</div>
@@ -494,21 +494,60 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           </div>
           <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '6mm' }}></div>
           <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>5. LOCALIZAÇÃO DO EMPREENDIMENTO</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '5mm' }}>
+          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '4mm' }}>
             {textoLocalizacao.split('\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '3mm' }}>{p}</p>)}
           </div>
-          {locationMapUrl ? (
-            <div style={{ marginBottom: '3mm' }}>
-              <img src={locationMapUrl} alt="Mapa de localização" crossOrigin="anonymous"
-                style={{ width: '100%', height: '70mm', objectFit: 'cover', border: '1px solid #ccc', borderRadius: '4px', display: 'block' }} />
-              <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginTop: '2mm', fontStyle: 'italic' }}>Figura 1 – Mapa de localização do Município de Londrina, Paraná.</div>
+          
+          {/* MAPA REGIONAL (PARANÁ) */}
+          <div style={{ position: 'relative', border: '1px solid #000', padding: '2mm', marginBottom: '2mm' }}>
+            <img src="/mapa_parana.png" alt="Mapa de localização regional" 
+              style={{ width: '100%', height: '80mm', objectFit: 'contain', background: '#fff' }} />
+            
+            {/* LEGENDA */}
+            <div style={{ position: 'absolute', bottom: '5mm', right: '5mm', background: '#fff', border: '1px solid #000', padding: '2mm', fontSize: '8pt', minWidth: '45mm' }}>
+              <div style={{ fontWeight: 'bold', marginBottom: '2mm', textTransform: 'uppercase' }}>LEGENDA:</div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '2mm', marginBottom: '1mm' }}>
+                <div style={{ width: '8mm', height: '4mm', background: 'red' }}></div>
+                <span>Região Metropolitana de Londrina</span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '2mm' }}>
+                <div style={{ width: '8mm', height: '4mm', background: 'red', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, white 2px, white 4px)' }}></div>
+                <span>Londrina</span>
+              </div>
             </div>
-          ) : (
-            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', padding: '6mm', textAlign: 'center', marginBottom: '3mm', minHeight: '60mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-              <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-map"></i>
-              <div style={{ fontSize: '8pt', color: '#666' }}>Figura 1 – Mapa de localização do Município de Londrina, Paraná.</div>
-            </div>
-          )}
+          </div>
+          
+          <div style={{ fontSize: '7.5pt', color: '#000', textAlign: 'center', lineHeight: '1.2', marginBottom: '6mm' }}>
+            Figura 1 – Mapa de localização do Município de Londrina, Paraná. Fonte: Ambiente construído e o deslocamento a pé: Uma análise comparativa em Londrina – PR (Murilo Doro Maidana, Larissa Casaril da Fontoura e Milena Kanashiro). 2021.
+          </div>
+
+          {/* TABELA DE DISTÂNCIAS */}
+          <div style={{ width: '70%', margin: '0 auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt', textAlign: 'center' }}>
+              <thead>
+                <tr style={{ borderBottom: '2px solid #000' }}>
+                  <th style={{ padding: '2px', fontWeight: 'bold' }}>Distância aproximada entre as cidades</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ['Londrina – Assaí', '45 km'],
+                  ['Londrina – Bela Vista do Paraíso', '42 km'],
+                  ['Londrina – Cambé', '13 km'],
+                  ['Londrina – Ivaiporã', '170 km'],
+                  ['Londrina – Curitiba', '379 km']
+                ].map(([c, d], idx) => (
+                  <tr key={idx} style={{ borderBottom: idx === 4 ? '2px solid #000' : 'none' }}>
+                    <td style={{ padding: '2px', display: 'flex', justifyContent: 'space-between' }}>
+                      <span style={{ flex: 1, textAlign: 'center' }}>{c}</span>
+                      <span style={{ fontWeight: 'bold', minWidth: '20mm' }}>{d}</span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
           <Footer pageNum={8} />
         </div>
 
