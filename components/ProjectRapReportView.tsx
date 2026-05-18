@@ -430,64 +430,144 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 3 - SUMÁRIO (parte 1) */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 25mm 20mm' }}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '6mm' }}>
-            <SmallLogo />
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10mm 15mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '25mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '14pt', color: '#1a3a6b', marginBottom: '10mm', letterSpacing: '0.15em' }}>SUMÁRIO</div>
+              
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: '#1a3a6b' }}>
+                <tbody>
+                  {sumarioItems.slice(0, 29).map((item, i) => {
+                    const level = item.num.split('.').filter(Boolean).length - 1;
+                    const isBold = level === 0;
+                    return (
+                      <tr key={i}>
+                        <td style={{ paddingLeft: `${level * 8}mm`, paddingBottom: '6px', fontWeight: isBold ? '700' : '400', width: '15%', verticalAlign: 'top' }}>
+                          {item.num}
+                        </td>
+                        <td style={{ paddingBottom: '6px', fontWeight: isBold ? '700' : '400', verticalAlign: 'top' }}>
+                          <span style={{ textDecoration: 'underline' }}>{item.title}</span>
+                          <span style={{ float: 'right', fontWeight: '400' }}>.......{item.page}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '10mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              3
+            </div>
+
           </div>
-          <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '13pt', color: '#1a3a6b', marginBottom: '8mm', letterSpacing: '0.15em' }}>SUMÁRIO</div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt' }}>
-            <tbody>
-              {sumarioItems.slice(0, 29).map((item, i) => (
-                <tr key={i}>
-                  <td style={{ paddingLeft: item.num.split('.').length > 2 ? '8mm' : item.num.includes('.') && item.num !== item.num.replace('.', '') ? '4mm' : '0', paddingBottom: '3px', color: '#1a3a6b', fontWeight: item.num.split('.').length <= 2 ? '700' : '400', width: '15%' }}>{item.num}</td>
-                  <td style={{ paddingBottom: '3px', color: '#1a3a6b', fontWeight: item.num.split('.').length <= 2 ? '700' : '400' }}>
-                    <span style={{ textDecoration: 'underline', cursor: 'default' }}>{item.title}</span>
-                    <span style={{ float: 'right', fontWeight: '400' }}>.......{item.page}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Footer pageNum={3} />
         </div>
 
         {/* PAGE 4 - SUMÁRIO (parte 2) */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 25mm 20mm' }}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '6mm' }}>
-            <SmallLogo />
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10mm 15mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '25mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ marginTop: '10mm' }}></div>
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: '#1a3a6b' }}>
+                <tbody>
+                  {sumarioItems.slice(29).map((item, i) => {
+                    const level = item.num.split('.').filter(Boolean).length - 1;
+                    const isBold = level === 0;
+                    return (
+                      <tr key={i}>
+                        <td style={{ paddingLeft: `${level * 8}mm`, paddingBottom: '6px', fontWeight: isBold ? '700' : '400', width: '15%', verticalAlign: 'top' }}>
+                          {item.num}
+                        </td>
+                        <td style={{ paddingBottom: '6px', fontWeight: isBold ? '700' : '400', verticalAlign: 'top' }}>
+                          <span style={{ textDecoration: 'underline' }}>{item.title}</span>
+                          <span style={{ float: 'right', fontWeight: '400' }}>.......{item.page}</span>
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '10mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              4
+            </div>
+
           </div>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt' }}>
-            <tbody>
-              {sumarioItems.slice(29).map((item, i) => (
-                <tr key={i}>
-                  <td style={{ paddingLeft: item.num.split('.').length > 2 ? '8mm' : item.num.includes('.') ? '4mm' : '0', paddingBottom: '3px', color: '#1a3a6b', fontWeight: item.num.split('.').length <= 2 ? '700' : '400', width: '15%' }}>{item.num}</td>
-                  <td style={{ paddingBottom: '3px', color: '#1a3a6b', fontWeight: item.num.split('.').length <= 2 ? '700' : '400' }}>
-                    <span style={{ textDecoration: 'underline' }}>{item.title}</span>
-                    <span style={{ float: 'right', fontWeight: '400' }}>.......{item.page}</span>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <Footer pageNum={4} />
         </div>
 
         {/* PAGE 5 - LISTA DE FIGURAS */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 25mm 20mm' }}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '6mm' }}>
-            <SmallLogo />
-          </div>
-          <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '13pt', color: '#1a3a6b', marginBottom: '8mm', letterSpacing: '0.1em' }}>LISTA DE FIGURAS</div>
-          <div style={{ fontSize: '9pt', lineHeight: '1.8' }}>
-            {figuras.map((fig) => (
-              <div key={fig.num} style={{ marginBottom: '6px', color: '#000' }}>
-                <span style={{ fontWeight: '700', color: '#1a3a6b' }}>Figura {fig.num} – </span>
-                {fig.title}
-                <span style={{ float: 'right', color: '#1a3a6b', fontWeight: '700' }}>.......{fig.page}</span>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10mm 15mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '25mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '14pt', color: '#1a3a6b', marginBottom: '10mm', letterSpacing: '0.1em' }}>LISTA DE FIGURAS</div>
+              
+              <div style={{ fontSize: '10pt', lineHeight: '2.0', color: '#1a3a6b' }}>
+                {figuras.map((fig) => (
+                  <div key={fig.num} style={{ display: 'flex', marginBottom: '6px' }}>
+                    <div style={{ fontWeight: '700', marginRight: '6px' }}>Figura {fig.num} –</div>
+                    <div style={{ flex: 1 }}>
+                      <span style={{ textDecoration: 'underline' }}>{fig.title}</span>
+                      <span style={{ float: 'right', fontWeight: '400' }}>.......{fig.page}</span>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '10mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              5
+            </div>
+
           </div>
-          <Footer pageNum={5} />
         </div>
         {/* PAGE 6 - Identificação Empreendedor + Empresa */}
         <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
