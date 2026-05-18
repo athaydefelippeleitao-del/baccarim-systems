@@ -298,27 +298,49 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
       <div ref={reportRef} className="shrink-0" style={{ width: '210mm' }}>
 
         {/* PAGE 1 - CAPA */}
-        <div style={{ ...pageStyle, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'space-between', padding: '20mm 20mm 25mm 20mm' }}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end' }}>
-            <SmallLogo />
-          </div>
-
-          <div style={{ textAlign: 'center', flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '24px' }}>
-            <Logo />
-            <div style={{ fontSize: '13pt', fontWeight: '700', color: '#1a3a6b', letterSpacing: '0.05em', marginTop: '8px' }}>
-              RELATÓRIO AMBIENTAL PRELIMINAR - RAP
-            </div>
-            <div style={{ marginTop: '32px' }}>
-              <div style={{ fontSize: '14pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', letterSpacing: '0.02em' }}>
-                {empreendedorNome.toUpperCase()}
+        <div style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Block */}
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '35mm' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', paddingRight: '20mm' }}>
+                  <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '55mm', height: 'auto', objectFit: 'contain', marginBottom: '5mm' }} />
+                </div>
+                <div style={{ fontSize: '38pt', fontWeight: '900', color: '#1a3a6b', lineHeight: 1.0, letterSpacing: '-0.02em' }}>
+                  Baccarim<br />Engenharia de<br />Loteamentos
+                </div>
+                <div style={{ fontSize: '13pt', fontWeight: '500', color: '#000', marginTop: '6mm' }}>
+                  RELATÓRIO AMBIENTAL PRELIMINAR - RAP
+                </div>
               </div>
             </div>
-            <div style={{ marginTop: '48px', textAlign: 'center', fontSize: '12pt', fontWeight: '700', color: '#1a3a6b' }}>
-              {cidade}<br />{anoElaboracao}
-            </div>
-          </div>
 
-          <Footer pageNum={1} />
+            {/* Middle Block (Name) */}
+            <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <div style={{ fontSize: '16pt', fontWeight: '900', color: '#000', textAlign: 'center', textTransform: 'uppercase' }}>
+                {empreendedorNome}
+              </div>
+            </div>
+
+            {/* Bottom Block */}
+            <div style={{ textAlign: 'center', marginBottom: '15mm' }}>
+              <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '8mm' }}>
+                {cidade}<br />{anoElaboracao}
+              </div>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              1
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 2 - FOLHA DE ROSTO */}
