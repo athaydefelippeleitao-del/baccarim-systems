@@ -12,7 +12,9 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
   const [viewMode, setViewMode] = useState<'list' | 'edit'>('list');
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+  const today = new Date();
+  const localDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
+  const [date, setDate] = useState(localDate);
   const [time, setTime] = useState(new Date().toTimeString().slice(0, 5));
   const [participants, setParticipants] = useState('');
   const [agenda, setAgenda] = useState('');
@@ -30,7 +32,9 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
       setDecisions(minute.decisions);
     } else {
       setEditingId(null);
-      setDate(new Date().toISOString().split('T')[0]);
+      const today2 = new Date();
+      const localDate2 = `${today2.getFullYear()}-${String(today2.getMonth() + 1).padStart(2, '0')}-${String(today2.getDate()).padStart(2, '0')}`;
+      setDate(localDate2);
       setTime(new Date().toTimeString().slice(0, 5));
       setParticipants('');
       setAgenda('');
@@ -196,7 +200,8 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
       doc.setFont("helvetica", "bold");
       doc.text("Data/Hora:", pageWidth / 2, cursorY + 18);
       doc.setFont("helvetica", "normal");
-      doc.text(`${new Date(targetDate).toLocaleDateString('pt-BR')} às ${targetTime}`, (pageWidth / 2) + 22, cursorY + 18);
+      const [y, m, d] = targetDate.split('-');
+      doc.text(`${d}/${m}/${y} às ${targetTime}`, (pageWidth / 2) + 22, cursorY + 18);
 
       doc.setFont("helvetica", "bold");
       doc.text("Cliente:", margin + 5, cursorY + 25);
@@ -311,7 +316,7 @@ const ProjectMeetingMinutesView: React.FC<ProjectMeetingMinutesViewProps> = ({ p
                             <i className="fas fa-calendar-alt"></i>
                           </div>
                           <div>
-                            <p className="text-sm font-black text-baccarim-navy">{new Date(minute.date).toLocaleDateString('pt-BR')} às {minute.time}</p>
+                            <p className="text-sm font-black text-baccarim-navy">{minute.date.split('-').reverse().join('/')} às {minute.time}</p>
                             <p className="text-[9px] text-baccarim-text-muted font-bold uppercase truncate max-w-[150px]">{minute.participants}</p>
                           </div>
                         </div>
