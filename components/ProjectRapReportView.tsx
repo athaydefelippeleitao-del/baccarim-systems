@@ -441,25 +441,27 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
               <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '14pt', color: '#1a3a6b', marginBottom: '10mm', letterSpacing: '0.15em' }}>SUMÁRIO</div>
               
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: '#1a3a6b' }}>
-                <tbody>
-                  {sumarioItems.slice(0, 29).map((item, i) => {
-                    const level = item.num.split('.').filter(Boolean).length - 1;
-                    const isBold = level === 0;
-                    return (
-                      <tr key={i}>
-                        <td style={{ paddingLeft: `${level * 8}mm`, paddingBottom: '6px', fontWeight: isBold ? '700' : '400', width: '15%', verticalAlign: 'top' }}>
-                          {item.num}
-                        </td>
-                        <td style={{ paddingBottom: '6px', fontWeight: isBold ? '700' : '400', verticalAlign: 'top' }}>
+              <div style={{ width: '100%', fontSize: '10pt', color: '#1a3a6b' }}>
+                {sumarioItems.slice(0, 23).map((item, i) => {
+                  const level = item.num.split('.').filter(Boolean).length - 1;
+                  const isBold = level === 0;
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '8px', fontWeight: isBold ? '700' : '400' }}>
+                      <div style={{ width: '14mm', flexShrink: 0, marginLeft: `${level * 8}mm` }}>
+                        {item.num}
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                        <div style={{ flex: 1, paddingRight: '8px' }}>
                           <span style={{ textDecoration: 'underline' }}>{item.title}</span>
-                          <span style={{ float: 'right', fontWeight: '400' }}>.......{item.page}</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          .......{item.page}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Footer */}
@@ -490,25 +492,27 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
 
             <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
               <div style={{ marginTop: '10mm' }}></div>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', color: '#1a3a6b' }}>
-                <tbody>
-                  {sumarioItems.slice(29).map((item, i) => {
-                    const level = item.num.split('.').filter(Boolean).length - 1;
-                    const isBold = level === 0;
-                    return (
-                      <tr key={i}>
-                        <td style={{ paddingLeft: `${level * 8}mm`, paddingBottom: '6px', fontWeight: isBold ? '700' : '400', width: '15%', verticalAlign: 'top' }}>
-                          {item.num}
-                        </td>
-                        <td style={{ paddingBottom: '6px', fontWeight: isBold ? '700' : '400', verticalAlign: 'top' }}>
+              <div style={{ width: '100%', fontSize: '10pt', color: '#1a3a6b' }}>
+                {sumarioItems.slice(23).map((item, i) => {
+                  const level = item.num.split('.').filter(Boolean).length - 1;
+                  const isBold = level === 0;
+                  return (
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '8px', fontWeight: isBold ? '700' : '400' }}>
+                      <div style={{ width: '14mm', flexShrink: 0, marginLeft: `${level * 8}mm` }}>
+                        {item.num}
+                      </div>
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
+                        <div style={{ flex: 1, paddingRight: '8px' }}>
                           <span style={{ textDecoration: 'underline' }}>{item.title}</span>
-                          <span style={{ float: 'right', fontWeight: '400' }}>.......{item.page}</span>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
+                        </div>
+                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+                          .......{item.page}
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
 
             {/* Footer */}
