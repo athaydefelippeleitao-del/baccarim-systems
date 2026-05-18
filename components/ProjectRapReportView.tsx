@@ -344,68 +344,89 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 2 - FOLHA DE ROSTO */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 25mm 20mm' }}>
-          <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', marginBottom: '10mm' }}>
-            <SmallLogo />
-          </div>
-
-          <div style={{ textAlign: 'center', fontWeight: '700', fontSize: '11pt', color: '#1a3a6b', marginBottom: '8mm', letterSpacing: '0.1em', textDecoration: 'underline' }}>
-            RELATÓRIO AMBIENTAL PRELIMINAR – RAP
-          </div>
-
-          {/* Contratante / Contratada */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8mm', marginBottom: '8mm' }}>
-            <div>
-              <div style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '4px', textDecoration: 'underline' }}>Contratante</div>
-              <div style={{ fontSize: '10pt', color: '#000' }}>{contratanteEndereco}</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10mm 15mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '25mm', height: 'auto', objectFit: 'contain' }} />
             </div>
-            <div>
-              <div style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '4px', textDecoration: 'underline' }}>Contratada</div>
-            </div>
-          </div>
 
-          {/* Logo grande centro */}
-          <div style={{ textAlign: 'center', marginBottom: '6mm' }}>
-            <Logo />
-          </div>
-          <div style={{ textAlign: 'right', fontSize: '10pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '8mm' }}>
-            Avenida Dom Pedro II, nº 33, Centro,<br />Sala 02 – Ibiporã/PR
-          </div>
+            <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '12pt', color: '#000', marginBottom: '8mm', letterSpacing: '0.05em', textDecoration: 'underline' }}>
+                RELATÓRIO AMBIENTAL PRELIMINAR – RAP
+              </div>
 
-          {/* Elaboração + Embasamento */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6mm', border: '1px solid #1a3a6b', marginBottom: '4mm' }}>
-            <div style={{ padding: '6mm', borderRight: '1px solid #1a3a6b' }}>
-              <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4px' }}>ELABORAÇÃO</div>
-              <div style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b' }}>{mesElaboracao}/{anoElaboracao}</div>
-              <div style={{ fontSize: '8pt', marginTop: '8px', color: '#000' }}>
-                Todos os direitos são reservados à Baccarim Engenharia Urbana LTDA
+              {/* Contratante / Contratada */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', width: '100%', marginBottom: '15mm', marginTop: '10mm' }}>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '35mm' }}>Contratante</div>
+                  <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', textAlign: 'center', maxWidth: '80%' }}>
+                    {contratanteEndereco}
+                  </div>
+                </div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '15mm' }}>Contratada</div>
+                  <div style={{ fontSize: '24pt', fontWeight: '900', color: '#1a3a6b', lineHeight: 1.0, letterSpacing: '-0.02em', alignSelf: 'flex-start', marginLeft: '15%' }}>
+                    Baccarim<br />Engenharia de<br />Loteamentos
+                  </div>
+                  <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', textAlign: 'center', marginTop: '8mm' }}>
+                    Avenida Dom Pedro II, nº 33, Centro,<br />Sala 02 – Ibiporã/PR
+                  </div>
+                </div>
+              </div>
+
+              {/* Elaboração + Embasamento */}
+              <div style={{ border: '1px solid #000', width: '90%', margin: '0 auto', display: 'flex', flexDirection: 'column', marginBottom: '10mm' }}>
+                <div style={{ display: 'flex', borderBottom: '1px solid #000' }}>
+                  <div style={{ flex: 1, padding: '5mm', textAlign: 'center', borderRight: '1px solid #000', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                    <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '6mm' }}>ELABORAÇÃO</div>
+                    <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000' }}>{mesElaboracao}/{anoElaboracao}</div>
+                  </div>
+                  <div style={{ flex: 1, padding: '5mm', textAlign: 'center', display: 'flex', flexDirection: 'column', justifyContent: 'flex-start' }}>
+                    <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '6mm' }}>EMBASAMENTO TÉCNICO</div>
+                    <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', whiteSpace: 'pre-line' }}>{embasamento}</div>
+                  </div>
+                </div>
+                <div style={{ padding: '3mm', textAlign: 'center', fontSize: '10pt', fontWeight: '700', color: '#000' }}>
+                  Todos os direitos são reservados à Baccarim Engenharia Urbana LTDA
+                </div>
+              </div>
+
+              {/* Responsável técnico */}
+              <div style={{ textAlign: 'center', marginBottom: '12mm' }}>
+                <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '5mm' }}>RESPONSÁVEL TÉCNICO DO RAP</div>
+                {respTecnico.split('\n').map((line, i) => (
+                  <div key={i} style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '3mm' }}>{line}</div>
+                ))}
+                <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000', marginBottom: '3mm' }}>Engenheiro Civil</div>
+                <div style={{ fontSize: '10pt', fontWeight: '700', color: '#000' }}>CREA – PR – 142.811/D</div>
+              </div>
+
+              {/* Equipe de apoio */}
+              <div style={{ width: '90%', margin: '0 auto', textAlign: 'left' }}>
+                <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm' }}>Equipe de apoio:</div>
+                {equipeApoio.split('\n').map((line, i) => (
+                  <div key={i} style={{ fontSize: '10pt', color: '#000', marginBottom: '4mm' }}>{line}</div>
+                ))}
               </div>
             </div>
-            <div style={{ padding: '6mm' }}>
-              <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4px' }}>EMBASAMENTO TÉCNICO</div>
-              <div style={{ fontSize: '9pt', color: '#000' }}>{embasamento}</div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '10mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
             </div>
-          </div>
 
-          {/* Responsável técnico */}
-          <div style={{ border: '1px solid #1a3a6b', padding: '6mm', textAlign: 'center', marginBottom: '4mm' }}>
-            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4px' }}>RESPONSÁVEL TÉCNICO DO RAP</div>
-            {respTecnico.split('\n').map((line, i) => (
-              <div key={i} style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b' }}>{line}</div>
-            ))}
-            <div style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b' }}>Engenheiro Civil</div>
-            <div style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b' }}>CREA – PR – 142.811/D</div>
-          </div>
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              2
+            </div>
 
-          {/* Equipe de apoio */}
-          <div style={{ padding: '4mm 6mm' }}>
-            <div style={{ fontSize: '10pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '4px' }}>Equipe de apoio:</div>
-            {equipeApoio.split('\n').map((line, i) => (
-              <div key={i} style={{ fontSize: '9pt', color: '#1a3a6b' }}>{line}</div>
-            ))}
           </div>
-
-          <Footer pageNum={2} />
         </div>
 
         {/* PAGE 3 - SUMÁRIO (parte 1) */}
