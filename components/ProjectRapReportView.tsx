@@ -442,29 +442,27 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '13pt', color: '#1a3a6b', marginBottom: '6mm', letterSpacing: '0.2em' }}>SUMÁRIO</div>
               
               <div style={{ width: '100%', fontSize: '9pt', color: '#1a3a6b' }}>
-                {sumarioItems.slice(0, 26).map((item, i) => {
+                {sumarioItems.slice(0, 30).map((item, i) => {
                   const parts = item.num.replace(/\.$/, '').split('.');
                   const level = parts.length - 1;
-                  const isBold = level === 0;
-                  // Indentation per level
-                  const indentMap: Record<number, string> = { 0: '0mm', 1: '10mm', 2: '18mm' };
-                  const numWidthMap: Record<number, string> = { 0: '10mm', 1: '14mm', 2: '14mm' };
-                  const indent = indentMap[level] ?? '18mm';
+                  const indentMap: Record<number, string> = { 0: '0mm', 1: '6mm', 2: '12mm', 3: '18mm' };
+                  const numWidthMap: Record<number, string> = { 0: '7mm', 1: '10mm', 2: '14mm', 3: '18mm' };
+                  const indent = indentMap[level] ?? '12mm';
                   const numWidth = numWidthMap[level] ?? '14mm';
+
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-end', marginBottom: isBold ? '5px' : '3px', paddingLeft: indent }}>
-                      <div style={{ width: numWidth, flexShrink: 0, fontWeight: isBold ? '700' : '400' }}>
-                        {item.num}
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '3px', color: '#1a3a6b', fontWeight: '700', fontSize: '9pt' }}>
+                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', lineHeight: '1.2', paddingLeft: indent }}>
+                        <div style={{ position: 'absolute', bottom: '2px', left: 0, right: 0, whiteSpace: 'nowrap', zIndex: 1, letterSpacing: '2px' }}>
+                          {'.'.repeat(300)}
+                        </div>
+                        <span style={{ backgroundColor: '#ffffff', paddingRight: '4px', textDecoration: 'underline', position: 'relative', zIndex: 2 }}>
+                          <span style={{ display: 'inline-block', width: numWidth }}>{item.num}</span>
+                          {item.title}
+                        </span>
                       </div>
-                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', minWidth: 0 }}>
-                        <div style={{ flex: 1, overflow: 'hidden', position: 'relative', marginBottom: '1px' }}>
-                          <span style={{ fontWeight: isBold ? '700' : '400', textDecoration: 'underline', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{item.title}</span>
-                          {/* Dot leader */}
-                          <span style={{ display: 'inline-block', width: '100%', borderBottom: '1px dotted #1a3a6b', position: 'absolute', bottom: '2px', left: 0, right: 0 }} />
-                        </div>
-                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '3px', fontWeight: '400', minWidth: '12mm', textAlign: 'right' }}>
-                          .......{item.page}
-                        </div>
+                      <div style={{ flexShrink: 0, paddingLeft: '4px', backgroundColor: '#ffffff', zIndex: 2, position: 'relative', marginBottom: '1px' }}>
+                        {item.page}
                       </div>
                     </div>
                   );
@@ -501,26 +499,27 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
               <div style={{ marginTop: '6mm' }} />
               <div style={{ width: '100%', fontSize: '9pt', color: '#1a3a6b' }}>
-                {sumarioItems.slice(26).map((item, i) => {
+                {sumarioItems.slice(30).map((item, i) => {
                   const parts = item.num.replace(/\.$/, '').split('.');
                   const level = parts.length - 1;
-                  const isBold = level === 0;
-                  const indentMap: Record<number, string> = { 0: '0mm', 1: '10mm', 2: '18mm' };
-                  const numWidthMap: Record<number, string> = { 0: '10mm', 1: '14mm', 2: '14mm' };
-                  const indent = indentMap[level] ?? '18mm';
+                  const indentMap: Record<number, string> = { 0: '0mm', 1: '6mm', 2: '12mm', 3: '18mm' };
+                  const numWidthMap: Record<number, string> = { 0: '7mm', 1: '10mm', 2: '14mm', 3: '18mm' };
+                  const indent = indentMap[level] ?? '12mm';
                   const numWidth = numWidthMap[level] ?? '14mm';
+
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-end', marginBottom: isBold ? '5px' : '3px', paddingLeft: indent }}>
-                      <div style={{ width: numWidth, flexShrink: 0, fontWeight: isBold ? '700' : '400' }}>
-                        {item.num}
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-end', marginBottom: '3px', color: '#1a3a6b', fontWeight: '700', fontSize: '9pt' }}>
+                      <div style={{ flex: 1, position: 'relative', overflow: 'hidden', lineHeight: '1.2', paddingLeft: indent }}>
+                        <div style={{ position: 'absolute', bottom: '2px', left: 0, right: 0, whiteSpace: 'nowrap', zIndex: 1, letterSpacing: '2px' }}>
+                          {'.'.repeat(300)}
+                        </div>
+                        <span style={{ backgroundColor: '#ffffff', paddingRight: '4px', textDecoration: 'underline', position: 'relative', zIndex: 2 }}>
+                          <span style={{ display: 'inline-block', width: numWidth }}>{item.num}</span>
+                          {item.title}
+                        </span>
                       </div>
-                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', minWidth: 0 }}>
-                        <div style={{ flex: 1, overflow: 'hidden', position: 'relative', marginBottom: '1px' }}>
-                          <span style={{ fontWeight: isBold ? '700' : '400', textDecoration: 'underline', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{item.title}</span>
-                        </div>
-                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '3px', fontWeight: '400', minWidth: '12mm', textAlign: 'right' }}>
-                          .......{item.page}
-                        </div>
+                      <div style={{ flexShrink: 0, paddingLeft: '4px', backgroundColor: '#ffffff', zIndex: 2, position: 'relative', marginBottom: '1px' }}>
+                        {item.page}
                       </div>
                     </div>
                   );
