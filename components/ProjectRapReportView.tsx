@@ -688,13 +688,38 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 7 - Apresentação */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>3. APRESENTAÇÃO</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
-            {textoApresentacao.split('\n\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '5mm' }}>{p}</p>)}
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ marginTop: '10mm' }} />
+
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm', marginLeft: '10mm' }}>3. APRESENTAÇÃO</div>
+              <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', padding: '0 10mm' }}>
+                {textoApresentacao.split('\n\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm', marginTop: 0 }}>{p}</p>)}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              7
+            </div>
+
           </div>
-          <Footer pageNum={7} />
         </div>
 
         {/* PAGE 8 - Modalidade + Localização Regional */}
