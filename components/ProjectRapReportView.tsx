@@ -434,27 +434,35 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
             
             {/* Top Right Logo */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10mm 15mm 0 0' }}>
-              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '25mm', height: 'auto', objectFit: 'contain' }} />
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
             </div>
 
-            <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '14pt', color: '#1a3a6b', marginBottom: '10mm', letterSpacing: '0.15em' }}>SUMÁRIO</div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <div style={{ textAlign: 'center', fontWeight: '900', fontSize: '13pt', color: '#1a3a6b', marginBottom: '6mm', letterSpacing: '0.2em' }}>SUMÁRIO</div>
               
-              <div style={{ width: '100%', fontSize: '10pt', color: '#1a3a6b' }}>
-                {sumarioItems.slice(0, 23).map((item, i) => {
-                  const level = item.num.split('.').filter(Boolean).length - 1;
+              <div style={{ width: '100%', fontSize: '9pt', color: '#1a3a6b' }}>
+                {sumarioItems.slice(0, 26).map((item, i) => {
+                  const parts = item.num.replace(/\.$/, '').split('.');
+                  const level = parts.length - 1;
                   const isBold = level === 0;
+                  // Indentation per level
+                  const indentMap: Record<number, string> = { 0: '0mm', 1: '10mm', 2: '18mm' };
+                  const numWidthMap: Record<number, string> = { 0: '10mm', 1: '14mm', 2: '14mm' };
+                  const indent = indentMap[level] ?? '18mm';
+                  const numWidth = numWidthMap[level] ?? '14mm';
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '8px', fontWeight: isBold ? '700' : '400' }}>
-                      <div style={{ width: '14mm', flexShrink: 0, marginLeft: `${level * 8}mm` }}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-end', marginBottom: isBold ? '5px' : '3px', paddingLeft: indent }}>
+                      <div style={{ width: numWidth, flexShrink: 0, fontWeight: isBold ? '700' : '400' }}>
                         {item.num}
                       </div>
-                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                        <div style={{ flex: 1, paddingRight: '8px' }}>
-                          <span style={{ textDecoration: 'underline' }}>{item.title}</span>
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', minWidth: 0 }}>
+                        <div style={{ flex: 1, overflow: 'hidden', position: 'relative', marginBottom: '1px' }}>
+                          <span style={{ fontWeight: isBold ? '700' : '400', textDecoration: 'underline', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{item.title}</span>
+                          {/* Dot leader */}
+                          <span style={{ display: 'inline-block', width: '100%', borderBottom: '1px dotted #1a3a6b', position: 'absolute', bottom: '2px', left: 0, right: 0 }} />
                         </div>
-                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '3px', fontWeight: '400', minWidth: '12mm', textAlign: 'right' }}>
                           .......{item.page}
                         </div>
                       </div>
@@ -465,16 +473,16 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             </div>
 
             {/* Footer */}
-            <div style={{ textAlign: 'center', marginBottom: '10mm', marginTop: 'auto' }}>
-              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
                 <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
-                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
                 Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
               </div>
             </div>
 
             {/* Page Number */}
-            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
               3
             </div>
 
@@ -486,26 +494,31 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
             
             {/* Top Right Logo */}
-            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '10mm 15mm 0 0' }}>
-              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '25mm', height: 'auto', objectFit: 'contain' }} />
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
             </div>
 
-            <div style={{ flex: 1, padding: '0 10mm', display: 'flex', flexDirection: 'column' }}>
-              <div style={{ marginTop: '10mm' }}></div>
-              <div style={{ width: '100%', fontSize: '10pt', color: '#1a3a6b' }}>
-                {sumarioItems.slice(23).map((item, i) => {
-                  const level = item.num.split('.').filter(Boolean).length - 1;
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+              <div style={{ marginTop: '6mm' }} />
+              <div style={{ width: '100%', fontSize: '9pt', color: '#1a3a6b' }}>
+                {sumarioItems.slice(26).map((item, i) => {
+                  const parts = item.num.replace(/\.$/, '').split('.');
+                  const level = parts.length - 1;
                   const isBold = level === 0;
+                  const indentMap: Record<number, string> = { 0: '0mm', 1: '10mm', 2: '18mm' };
+                  const numWidthMap: Record<number, string> = { 0: '10mm', 1: '14mm', 2: '14mm' };
+                  const indent = indentMap[level] ?? '18mm';
+                  const numWidth = numWidthMap[level] ?? '14mm';
                   return (
-                    <div key={i} style={{ display: 'flex', alignItems: 'flex-start', marginBottom: '8px', fontWeight: isBold ? '700' : '400' }}>
-                      <div style={{ width: '14mm', flexShrink: 0, marginLeft: `${level * 8}mm` }}>
+                    <div key={i} style={{ display: 'flex', alignItems: 'flex-end', marginBottom: isBold ? '5px' : '3px', paddingLeft: indent }}>
+                      <div style={{ width: numWidth, flexShrink: 0, fontWeight: isBold ? '700' : '400' }}>
                         {item.num}
                       </div>
-                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end' }}>
-                        <div style={{ flex: 1, paddingRight: '8px' }}>
-                          <span style={{ textDecoration: 'underline' }}>{item.title}</span>
+                      <div style={{ flex: 1, display: 'flex', alignItems: 'flex-end', minWidth: 0 }}>
+                        <div style={{ flex: 1, overflow: 'hidden', position: 'relative', marginBottom: '1px' }}>
+                          <span style={{ fontWeight: isBold ? '700' : '400', textDecoration: 'underline', whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>{item.title}</span>
                         </div>
-                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0 }}>
+                        <div style={{ whiteSpace: 'nowrap', flexShrink: 0, paddingLeft: '3px', fontWeight: '400', minWidth: '12mm', textAlign: 'right' }}>
                           .......{item.page}
                         </div>
                       </div>
@@ -516,16 +529,16 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             </div>
 
             {/* Footer */}
-            <div style={{ textAlign: 'center', marginBottom: '10mm', marginTop: 'auto' }}>
-              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
                 <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
-                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
                 Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
               </div>
             </div>
 
             {/* Page Number */}
-            <div style={{ position: 'absolute', bottom: '10mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
               4
             </div>
 
