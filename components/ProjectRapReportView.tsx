@@ -586,31 +586,105 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           </div>
         </div>
         {/* PAGE 6 - Identificação Empreendedor + Empresa */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
 
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '5mm' }}>1. IDENTIFICAÇÃO DO EMPREENDEDOR</div>
-          <table style={{ width: '100%', fontSize: '10pt', marginBottom: '6mm', borderCollapse: 'collapse' }}>
-            {[['Nome:', empreendedorNome], ['CPF:', empreendedorCpf], ['Endereço:', empreendedorEnd], ['Bairro:', empreendedorBairro], ['Município/UF:', `${empreendedorCidade}${empreendedorCep ? '    CEP: ' + empreendedorCep : ''}`]].map(([k, v]) => (
-              <tr key={k as string}><td style={{ fontWeight: '700', color: '#1a3a6b', width: '35%', paddingBottom: '3px' }}>{k}</td><td style={{ color: '#000', paddingBottom: '3px' }}>{v}</td></tr>
-            ))}
-          </table>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ marginTop: '10mm' }} />
 
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '4mm', marginLeft: '6mm' }}>1.1. Identificação Do Empreendimento</div>
-          <table style={{ width: '100%', fontSize: '10pt', marginBottom: '8mm', borderCollapse: 'collapse' }}>
-            {[['Nome:', empEnderecoNome], ['Endereço:', empEnderecoFull], ['Bairro:', empBairro], ['Município/UF:', `${empCidade}${empCep ? '    CEP: ' + empCep : ''}`], ['Licença Ambiental:', empLicenca]].map(([k, v]) => (
-              <tr key={k as string}><td style={{ fontWeight: '700', color: '#1a3a6b', width: '35%', paddingBottom: '4px', verticalAlign: 'top' }}>{k}</td><td style={{ color: '#000', paddingBottom: '4px' }}>{v}</td></tr>
-            ))}
-          </table>
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm' }}>1. IDENTIFICAÇÃO DO EMPREENDEDOR</div>
+              <table style={{ width: 'calc(100% - 10mm)', fontSize: '10pt', marginBottom: '10mm', borderCollapse: 'collapse', marginLeft: '10mm' }}>
+                <tbody>
+                  {[['Nome:', empreendedorNome], ['CPF:', empreendedorCpf], ['Endereço:', empreendedorEnd], ['Bairro:', empreendedorBairro]].map(([k, v]) => (
+                    <tr key={k as string}><td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>{k}</td><td colSpan={2} style={{ color: '#000', paddingBottom: '5px' }}>{v}</td></tr>
+                  ))}
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>Município/UF:</td>
+                    <td style={{ color: '#000', paddingBottom: '5px', width: '50mm' }}>{empreendedorCidade}</td>
+                    <td style={{ color: '#000', paddingBottom: '5px' }}>
+                      <span style={{ fontWeight: '700', marginRight: '4px' }}>CEP:</span>
+                      <span>{empreendedorCep}</span>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
 
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '5mm' }}>2. IDENTIFICAÇÃO DA EMPRESA E RESPONSÁVEL PELA ELABORAÇÃO DO RAP</div>
-          <table style={{ width: '100%', fontSize: '10pt', borderCollapse: 'collapse' }}>
-            {[['Responsável técnico:', respTecnico], ['Conselho de Classe:', 'CREA/PR'], ['Número de Registro:', '142.811/D'], ['Empresa Responsável:', 'BACCARIM ENGENHARIA URBANA LTDA'], ['E-mail:', 'alberto@baccarimengenharia.com.br'], ['CNPJ:', '03.019.603/0001-23'], ['Endereço:', 'Avenida Dom Pedro II, nº 33, Centro, Sala 02'], ['Município/UF:', 'Ibiporã – Paraná    CEP: 86200-000'], ['Telefone:', '(43) 3268-0916']].map(([k, v]) => (
-              <tr key={k as string}><td style={{ fontWeight: '700', color: '#1a3a6b', width: '35%', paddingBottom: '4px' }}>{k}</td><td style={{ color: '#000', paddingBottom: '4px' }}>{v}</td></tr>
-            ))}
-          </table>
-          <Footer pageNum={6} />
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm', marginLeft: '6mm' }}>1.1. Identificação Do Empreendimento</div>
+              <table style={{ width: 'calc(100% - 15mm)', fontSize: '10pt', marginBottom: '12mm', borderCollapse: 'collapse', marginLeft: '15mm' }}>
+                <tbody>
+                  {[['Nome:', empEnderecoNome], ['Endereço:', empEnderecoFull], ['Bairro:', empBairro]].map(([k, v]) => (
+                    <tr key={k as string}><td style={{ fontWeight: '700', color: '#000', width: '40mm', paddingBottom: '5px', verticalAlign: 'top' }}>{k}</td><td colSpan={2} style={{ color: '#000', paddingBottom: '5px' }}>{v}</td></tr>
+                  ))}
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '40mm', paddingBottom: '5px', verticalAlign: 'top' }}>Município/UF:</td>
+                    <td style={{ color: '#000', paddingBottom: '5px', width: '50mm' }}>{empCidade}</td>
+                    <td style={{ color: '#000', paddingBottom: '5px' }}>
+                      <span style={{ fontWeight: '700', marginRight: '4px' }}>CEP:</span>
+                      <span>{empCep}</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '40mm', paddingBottom: '5px', verticalAlign: 'top' }}>Licença Ambiental:</td>
+                    <td colSpan={2} style={{ color: '#000', paddingBottom: '5px', maxWidth: '100mm', lineHeight: '1.4' }}>{empLicenca}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm' }}>2. IDENTIFICAÇÃO DA EMPRESA E RESPONSÁVEL PELA ELABORAÇÃO DO RAP</div>
+              <table style={{ width: 'calc(100% - 10mm)', fontSize: '10pt', borderCollapse: 'collapse', marginLeft: '10mm' }}>
+                <tbody>
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>Responsável técnico:</td>
+                    <td colSpan={2} style={{ color: '#000', paddingBottom: '5px' }}>{respTecnico}</td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>Conselho de Classe:</td>
+                    <td style={{ color: '#000', paddingBottom: '5px', width: '50mm' }}>CREA/PR</td>
+                    <td style={{ color: '#000', paddingBottom: '5px' }}>
+                      <span style={{ fontWeight: '700', marginRight: '4px' }}>Número de Registro:</span>
+                      <span>142.811/D</span>
+                    </td>
+                  </tr>
+                  {[['Empresa Responsável:', 'BACCARIM ENGENHARIA URBANA LTDA'], ['E-mail:', 'alberto@baccarimengenharia.com.br'], ['CNPJ:', '03.019.603/0001-23'], ['Endereço:', 'Avenida Dom Pedro II, nº 33, Centro, Sala 02']].map(([k, v]) => (
+                    <tr key={k as string}><td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>{k}</td><td colSpan={2} style={{ color: '#000', paddingBottom: '5px' }}>{v}</td></tr>
+                  ))}
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>Município/UF:</td>
+                    <td style={{ color: '#000', paddingBottom: '5px', width: '50mm' }}>Ibiporã-Paraná</td>
+                    <td style={{ color: '#000', paddingBottom: '5px' }}>
+                      <span style={{ fontWeight: '700', marginRight: '4px' }}>CEP:</span>
+                      <span>86200-000</span>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td style={{ fontWeight: '700', color: '#000', width: '45mm', paddingBottom: '5px', verticalAlign: 'top' }}>Telefone:</td>
+                    <td colSpan={2} style={{ color: '#000', paddingBottom: '5px' }}>(43) 3268-0916</td>
+                  </tr>
+                </tbody>
+              </table>
+
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>
+              6
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 7 - Apresentação */}
