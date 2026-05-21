@@ -1085,10 +1085,8 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
 
             <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
               <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '10mm' }}>
-                <div style={{ width: '90%', height: '125mm', border: '1px solid #000', background: '#f5f5f5', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                  <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-cloud-rain"></i>
-                  <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>Mapa de precipitação anual – inserir imagem</div>
-                </div>
+                <img src="/precipitacao_parana.png" alt="Mapa de precipitação anual" 
+                  style={{ width: '90%', height: '125mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
               </div>
               <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 5 - Precipitação anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
             </div>
