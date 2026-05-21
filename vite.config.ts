@@ -8,7 +8,8 @@ export default defineConfig({
     'process.env.GEMINI_API_KEY': JSON.stringify(process.env.GEMINI_API_KEY || process.env.API_KEY || '')
   },
   server: {
-    host: true
+    host: true,
+    allowedHosts: true
   },
   build: {
     outDir: 'dist',
