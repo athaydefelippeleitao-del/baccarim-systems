@@ -1037,18 +1037,41 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 14 - Figura 4 (temperatura Paraná) */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
-            <img src="/temp_parana.png" alt="Mapa de temperatura média anual" 
-              style={{ width: '100%', height: '100mm', objectFit: 'contain', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }} />
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
+                <img src="/temp_parana.png" alt="Mapa de temperatura média anual" 
+                  style={{ width: '90%', height: '125mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
+              </div>
+              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 4 - Temperatura média do ar anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+                <p style={{ textIndent: '15mm', marginBottom: '4mm', marginTop: 0 }}>Já a Figura 6, referente à precipitação anual no Paraná, indica que Londrina se encontra na faixa entre 1.600 mm e 1.800 mm de chuvas anuais, compatível com os 1.723 mm registrados localmente. Isso mostra que a cidade está entre as áreas com maiores índices pluviométricos do estado, ficando atrás apenas das regiões litorâneas e de serra, que ultrapassam 2.000 mm.</p>
+                <p style={{ textIndent: '15mm', margin: 0 }}>Portanto, o clima em Londrina pode ser caracterizado como moderadamente quente, úmido e com chuvas bem distribuídas, mas mais intensas no verão. Essas condições são influenciadas pela altitude da cidade (603 m), sua localização no norte do Paraná e os sistemas meteorológicos predominantes da região.</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              14
+            </div>
+
           </div>
-          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginBottom: '6mm', fontStyle: 'italic' }}>Figura 4 – Temperatura média do ar anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
-            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>Já a Figura 6, referente à precipitação anual no Paraná, indica que Londrina se encontra na faixa entre 1.600 mm e 1.800 mm de chuvas anuais, compatível com os 1.723 mm registrados localmente. Isso mostra que a cidade está entre as áreas com maiores índices pluviométricos do estado, ficando atrás apenas das regiões litorâneas e de serra, que ultrapassam 2.000 mm.</p>
-            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>Portanto, o clima em Londrina pode ser caracterizado como moderadamente quente, úmido e com chuvas bem distribuídas, mas mais intensas no verão. Essas condições são influenciadas pela altitude da cidade (603 m), sua localização no norte do Paraná e os sistemas meteorológicos predominantes da região.</p>
-          </div>
-          <Footer pageNum={14} />
         </div>
 
         {/* PAGE 15 - Figura 5 (precipitação Paraná) */}
