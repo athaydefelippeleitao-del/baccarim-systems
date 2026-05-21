@@ -879,15 +879,38 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 10 - Relatório Fotográfico + Histórico */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>6. RELATÓRIO FOTOGRÁFICO</div>
-          <div style={{ fontSize: '10pt', color: '#000', marginBottom: '6mm', textIndent: '15mm', textAlign: 'justify', lineHeight: '1.6' }}>O relatório fotográfico foi elaborado e está em anexo a esse Relatório.</div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '4mm', marginLeft: '6mm' }}>6.1. <span style={{ textDecoration: 'underline' }}>Histórico</span> do <span style={{ textDecoration: 'underline' }}>uso</span> do Imóvel</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
-            {textoHistorico.split('\n\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p>)}
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm', marginTop: '10mm', textTransform: 'uppercase' }}>6. RELATÓRIO FOTOGRÁFICO</div>
+              <div style={{ fontSize: '10.5pt', color: '#000', marginBottom: '8mm', textIndent: '15mm', textAlign: 'justify', lineHeight: '1.6' }}>O relatório fotográfico foi elaborado e está em anexo a esse Relatório.</div>
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm' }}>6.1. Histórico do uso do Imóvel</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+                {textoHistorico.split('\n').map((p, i) => p.trim() ? <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p> : null)}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              10
+            </div>
+
           </div>
-          <Footer pageNum={10} />
         </div>
 
         {/* PAGE 11 - Plantas, Laudos e Estudos */}
