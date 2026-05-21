@@ -723,70 +723,92 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 8 - Modalidade + Localização Regional */}
-        <div style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>4. IDENTIFICAÇÃO, MODALIDADE E LOCALIZAÇÃO DO EMPREENDIMENTO</div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '4mm', marginLeft: '6mm' }}>4.1. Identificação E Modalidade Do Empreendimento</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
-            {textoModalidade.split('\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p>)}
-          </div>
-          <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '6mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>5. LOCALIZAÇÃO DO EMPREENDIMENTO</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '4mm' }}>
-            {textoLocalizacao.split('\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '3mm' }}>{p}</p>)}
-          </div>
-          
-          {/* MAPA REGIONAL (PARANÁ) */}
-          <div style={{ position: 'relative', border: '1px solid #000', padding: '2mm', marginBottom: '2mm' }}>
-            <img src="/mapa_parana.png" alt="Mapa de localização regional" 
-              style={{ width: '100%', height: '80mm', objectFit: 'contain', background: '#fff' }} />
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
             
-            {/* LEGENDA */}
-            <div style={{ position: 'absolute', bottom: '5mm', right: '5mm', background: '#fff', border: '1px solid #000', padding: '2mm', fontSize: '8pt', minWidth: '45mm' }}>
-              <div style={{ fontWeight: 'bold', marginBottom: '2mm', textTransform: 'uppercase' }}>LEGENDA:</div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '2mm', marginBottom: '1mm' }}>
-                <div style={{ width: '8mm', height: '4mm', background: 'red' }}></div>
-                <span>Região Metropolitana de Londrina</span>
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm', textTransform: 'uppercase' }}>4. IDENTIFICAÇÃO, MODALIDADE E LOCALIZAÇÃO DO EMPREENDIMENTO</div>
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm' }}>4.1. Identificação E Modalidade Do Empreendimento</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+                {textoModalidade.split('\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p>)}
               </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '2mm' }}>
-                <div style={{ width: '8mm', height: '4mm', background: 'red', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, white 2px, white 4px)' }}></div>
-                <span>Londrina</span>
+              
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm', textTransform: 'uppercase', marginTop: '4mm' }}>5. LOCALIZAÇÃO DO EMPREENDIMENTO</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '4mm' }}>
+                {textoLocalizacao.split('\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '3mm' }}>{p}</p>)}
+              </div>
+              
+              {/* MAPA REGIONAL (PARANÁ) */}
+              <div style={{ position: 'relative', border: '1px solid #000', padding: '0', marginBottom: '2mm', width: '100%' }}>
+                <img src="/mapa_parana.png" alt="Mapa de localização regional" 
+                  style={{ width: '100%', height: '80mm', objectFit: 'contain', background: '#fff' }} />
+                
+                {/* LEGENDA */}
+                <div style={{ position: 'absolute', bottom: '5mm', right: '5mm', background: '#fff', border: '1px solid #000', padding: '2mm', fontSize: '8pt', minWidth: '45mm' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '2mm' }}>LEGENDA:</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2mm', marginBottom: '1mm' }}>
+                    <div style={{ width: '8mm', height: '4mm', background: 'red' }}></div>
+                    <span>Região Metropolitana de Londrina</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2mm' }}>
+                    <div style={{ width: '8mm', height: '4mm', background: 'red', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, white 2px, white 4px)' }}></div>
+                    <span>Londrina</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', lineHeight: '1.2', marginBottom: '8mm' }}>
+                Figura 1 – Mapa de localização do Município de Londrina, Paraná. Fonte: Ambiente construído e o deslocamento a pé: Uma análise comparativa em Londrina – PR (Murilo Doro Maidana, Larissa Casaril da Fontoura e Milena Kanashiro). 2021.
+              </div>
+
+              {/* TABELA DE DISTÂNCIAS */}
+              <div style={{ width: '70%', margin: '0 auto' }}>
+                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10pt', textAlign: 'center' }}>
+                  <thead>
+                    <tr style={{ borderBottom: '1.5px solid #000', borderTop: '1.5px solid #000' }}>
+                      <th style={{ padding: '4px', fontWeight: 'bold' }}>Distância aproximada entre as cidades</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {[
+                      ['Londrina – Assaí', '45 km'],
+                      ['Londrina – Bela Vista do Paraíso', '42 km'],
+                      ['Londrina – Cambé', '13 km'],
+                      ['Londrina – Ivaiporã', '170 km'],
+                      ['Londrina – Curitiba', '379 km']
+                    ].map(([c, d], idx) => (
+                      <tr key={idx} style={{ borderBottom: idx === 4 ? '1.5px solid #000' : 'none' }}>
+                        <td style={{ padding: '2px', display: 'flex', justifyContent: 'center' }}>
+                          <span style={{ width: '55%', textAlign: 'right', paddingRight: '10mm' }}>{c}</span>
+                          <span style={{ width: '45%', textAlign: 'left', fontWeight: 'bold' }}>{d}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               </div>
             </div>
-          </div>
-          
-          <div style={{ fontSize: '7.5pt', color: '#000', textAlign: 'center', lineHeight: '1.2', marginBottom: '6mm' }}>
-            Figura 1 – Mapa de localização do Município de Londrina, Paraná. Fonte: Ambiente construído e o deslocamento a pé: Uma análise comparativa em Londrina – PR (Murilo Doro Maidana, Larissa Casaril da Fontoura e Milena Kanashiro). 2021.
-          </div>
 
-          {/* TABELA DE DISTÂNCIAS */}
-          <div style={{ width: '70%', margin: '0 auto' }}>
-            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '9pt', textAlign: 'center' }}>
-              <thead>
-                <tr style={{ borderBottom: '2px solid #000' }}>
-                  <th style={{ padding: '2px', fontWeight: 'bold' }}>Distância aproximada entre as cidades</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ['Londrina – Assaí', '45 km'],
-                  ['Londrina – Bela Vista do Paraíso', '42 km'],
-                  ['Londrina – Cambé', '13 km'],
-                  ['Londrina – Ivaiporã', '170 km'],
-                  ['Londrina – Curitiba', '379 km']
-                ].map(([c, d], idx) => (
-                  <tr key={idx} style={{ borderBottom: idx === 4 ? '2px solid #000' : 'none' }}>
-                    <td style={{ padding: '2px', display: 'flex', justifyContent: 'space-between' }}>
-                      <span style={{ flex: 1, textAlign: 'center' }}>{c}</span>
-                      <span style={{ fontWeight: 'bold', minWidth: '20mm' }}>{d}</span>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
 
-          <Footer pageNum={8} />
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              8
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 9 - Coordenadas + Satélite (Ajustado) */}
