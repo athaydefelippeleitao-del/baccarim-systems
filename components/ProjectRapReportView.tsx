@@ -812,49 +812,70 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 9 - Coordenadas + Satélite (Ajustado) */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          
-          <div style={{ fontSize: '10.5pt', lineHeight: '1.6', color: '#000', marginBottom: '6mm', textAlign: 'justify' }}>
-            <p style={{ textIndent: '15mm' }}>A Figura 2 apresenta a imagem de satélite com o croqui de localização do terreno objeto do licenciamento ambiental. O limite aproximado da propriedade está demarcado pela linha laranja, e as coordenadas correspondentes ao ponto central da área estão descritas na tabela a seguir.</p>
-          </div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
 
-          <div style={{ textAlign: 'center', marginBottom: '2mm' }}>
-            {satelliteUrl ? (
-              <img src={satelliteUrl} alt="Imagem de satélite" crossOrigin="anonymous"
-                style={{ width: '100%', height: '100mm', objectFit: 'cover', border: '1px solid #000', display: 'block', marginBottom: '2mm' }} />
-            ) : (
-              <div style={{ background: '#f5f5f5', border: '1px solid #000', width: '100%', height: '100mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', marginBottom: '2mm' }}>
-                <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
-                <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.6', color: '#000', marginBottom: '6mm', textAlign: 'justify', marginTop: '10mm' }}>
+                <p style={{ textIndent: '15mm' }}>A Figura 2 apresenta a imagem de satélite com o croqui de localização do terreno objeto do licenciamento ambiental. O limite aproximado da propriedade está demarcado pela linha laranja, e as coordenadas correspondentes ao ponto central da área estão descritas na tabela a seguir.</p>
               </div>
-            )}
-            <div style={{ fontSize: '10pt', color: '#000', fontWeight: 'bold' }}>Avenida Alcides Turini, Gleba Ribeirão Cafezal – Lote A/2</div>
-            <div style={{ fontSize: '8pt', color: '#000', marginTop: '1mm' }}>Figura 2 - Planta de localização do empreendimento. Fonte: Google Earth.</div>
-          </div>
 
-          <div style={{ marginTop: '6mm' }}>
-            <table style={{ width: '60%', margin: '0 auto', borderCollapse: 'collapse', fontSize: '10pt', textAlign: 'center' }}>
-              <thead>
-                <tr>
-                  <th style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>Coordenadas</th>
-                  <th style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>UTM</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>Longitude</td>
-                  <td style={{ border: '1px solid #000', padding: '4px 8px' }}>{empCoordE || '474501.23 m E'}</td>
-                </tr>
-                <tr>
-                  <td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>Latitude</td>
-                  <td style={{ border: '1px solid #000', padding: '4px 8px' }}>{empCoordN || '7415709.98 m S'}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
+              <div style={{ textAlign: 'center', marginBottom: '2mm' }}>
+                {satelliteUrl ? (
+                  <img src={satelliteUrl} alt="Imagem de satélite" crossOrigin="anonymous"
+                    style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #000', display: 'block', marginBottom: '2mm' }} />
+                ) : (
+                  <div style={{ background: '#f5f5f5', border: '1px solid #000', width: '100%', height: '110mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', marginBottom: '2mm' }}>
+                    <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
+                    <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
+                  </div>
+                )}
+                <div style={{ fontSize: '10pt', color: '#000', fontWeight: 'bold' }}>Avenida Alcides Turini, Gleba Ribeirão Cafezal – Lote A/2</div>
+                <div style={{ fontSize: '8pt', color: '#000', marginTop: '1mm' }}>Figura 2 - Planta de localização do empreendimento. Fonte: Google Earth.</div>
+              </div>
 
-          <Footer pageNum={9} />
+              <div style={{ marginTop: '8mm' }}>
+                <table style={{ width: '50%', margin: '0 auto', borderCollapse: 'collapse', fontSize: '10pt', textAlign: 'center' }}>
+                  <thead>
+                    <tr>
+                      <th style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>Coordenadas</th>
+                      <th style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>UTM</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>Longitude</td>
+                      <td style={{ border: '1px solid #000', padding: '4px 8px' }}>{empCoordE || '474501.23 m E'}</td>
+                    </tr>
+                    <tr>
+                      <td style={{ border: '1px solid #000', padding: '4px 8px', fontWeight: 'bold' }}>Latitude</td>
+                      <td style={{ border: '1px solid #000', padding: '4px 8px' }}>{empCoordN || '7415709.98 m S'}</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              9
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 10 - Relatório Fotográfico + Histórico */}
