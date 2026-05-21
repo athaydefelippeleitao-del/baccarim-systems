@@ -914,21 +914,48 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 11 - Plantas, Laudos e Estudos */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '5mm' }}>7. PLANTAS, LAUDOS, PROJETOS E ESTUDOS ESPECÍFICOS</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
 
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.1. Planta Ilustrativa</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '6mm' }}>A planta ilustrativa que apresenta o <span style={{ textDecoration: 'underline' }}>Projeto Urbanístico</span> de implantação está no Anexo 3 deste documento.</p>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '5mm', marginTop: '10mm', textTransform: 'uppercase' }}>7. PLANTAS, LAUDOS, PROJETOS E ESTUDOS ESPECÍFICOS</div>
 
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.2. Planta Planialtimétrica</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '6mm' }}>A planta planialtimétrica que apresenta a distribuição de áreas propostas para o empreendimento foi elaborada e está no Anexo 4 deste documento.</p>
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm' }}>7.1. Planta Ilustrativa</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+                <p style={{ textIndent: '15mm', margin: 0 }}>A planta ilustrativa que apresenta o Projeto Urbanístico de implantação está no Anexo 3 deste documento.</p>
+              </div>
 
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.3. Laudo Geológico-Geotécnico</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
-            {textoLaudoGeo.split('\n\n').map((p, i) => <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p>)}
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm' }}>7.2. Planta Planialtimétrica</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
+                <p style={{ textIndent: '15mm', margin: 0 }}>A planta planialtimétrica que apresenta a distribuição de áreas propostas para o empreendimento foi elaborada e está no Anexo 4 deste documento.</p>
+              </div>
+
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm' }}>7.3. Laudo Geológico-Geotécnico</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+                {textoLaudoGeo.split('\n').map((p, i) => p.trim() ? <p key={i} style={{ textIndent: '15mm', marginBottom: '4mm' }}>{p}</p> : null)}
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              11
+            </div>
+
           </div>
-          <Footer pageNum={11} />
         </div>
 
         {/* PAGE 12 - Laudo Florestal + Diagnóstico Ambiental */}
