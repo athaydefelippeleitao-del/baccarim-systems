@@ -1000,15 +1000,40 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 13 - Figura 3 (clima) */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
-            <img src="/balanco_londrina.png" alt="Gráfico do balanço pluviométrico" 
-              style={{ width: '100%', height: '85mm', objectFit: 'contain', border: '1px solid #ccc', borderRadius: '4px', background: '#fff' }} />
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '10mm' }}>
+                <img src="/balanco_londrina.png" alt="Gráfico do balanço pluviométrico" 
+                  style={{ width: '85%', height: '110mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
+              </div>
+              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 3 - Gráfico do balanço pluviométrico do município (CLIMATE.DATA.ORG, 2020).</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+                <p style={{ textIndent: '15mm', margin: 0 }}>A Figura 4 ilustra a distribuição da temperatura média anual no estado do Paraná, evidenciando que Londrina está inserida em uma faixa com temperaturas entre 20,1 °C e 21,0 °C, condizente com os dados do gráfico climático (Figura 25).</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              13
+            </div>
+
           </div>
-          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', marginBottom: '6mm', fontStyle: 'italic' }}>Figura 3 – Gráfico do balanço pluviométrico do município (CLIMATE.DATA.ORG, 2020).</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm' }}>A Figura 4 ilustra a distribuição da temperatura média anual no estado do Paraná, evidenciando que Londrina está inserida em uma faixa com temperaturas entre 20,1 °C e 21,0 °C, condizente com os dados do gráfico climático (Figura 25).</p>
-          <Footer pageNum={13} />
         </div>
 
         {/* PAGE 14 - Figura 4 (temperatura Paraná) */}
