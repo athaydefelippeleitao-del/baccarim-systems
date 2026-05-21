@@ -959,20 +959,44 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 12 - Laudo Florestal + Diagnóstico Ambiental */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>7.4. Laudo Florestal</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '8mm' }}>Em razão do empreendimento não prever intervenção ou supressão de vegetação, nativa ou exótica, não se aplica a elaboração de Laudo Florestal para a presente solicitação.</p>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
 
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>8. DIAGNÓSTICO AMBIENTAL</div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>8.1. Diagnóstico Do Meio Físico</div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.1. CLIMA</div>
-          <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
-            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>Londrina apresenta clima subtropical úmido, classificado como <em>Cfa</em> segundo Köppen-Geiger, com temperaturas amenas ao longo do ano e chuvas bem distribuídas, embora com maior concentração no verão. A temperatura média anual é de 21 °C, conforme mostra a Figura 3, que apresenta o gráfico de temperatura e precipitação mensal da cidade. A variação térmica anual é moderada, com julho sendo o mês mais frio (média 16,8 °C) e dezembro o mais quente (23,6 °C).</p>
-            <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>A precipitação média anual é de 1.723 mm, com maior volume nos meses de verão, especialmente em janeiro (276 mm), e o menor em agosto (65 mm), evidenciando a sazonalidade das chuvas (Figura 25). Além do volume, a frequência de dias chuvosos também varia: julho registra os menores índices (5,7 dias) e janeiro os maiores (21,3 dias). Essa distribuição reforça o caráter úmido do clima, mesmo nos meses mais secos.</p>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm', marginTop: '10mm' }}>7.4. Laudo Florestal</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000', marginBottom: '10mm' }}>
+                <p style={{ textIndent: '15mm', margin: 0 }}>Em razão do empreendimento não prever intervenção ou supressão de vegetação, nativa ou exótica, não se aplica a elaboração de Laudo Florestal para a presente solicitação.</p>
+              </div>
+
+              <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm', textTransform: 'uppercase' }}>8. DIAGNÓSTICO AMBIENTAL</div>
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '6mm' }}>8.1. Diagnóstico Do Meio Físico</div>
+              <div style={{ fontSize: '11pt', color: '#000', marginBottom: '4mm', marginLeft: '12mm' }}>8.1.1. CLIMA</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+                <p style={{ textIndent: '15mm', marginBottom: '4mm', marginTop: 0 }}>Londrina apresenta clima subtropical úmido, classificado como <em>Cfa</em> segundo Köppen-Geiger, com temperaturas amenas ao longo do ano e chuvas bem distribuídas, embora com maior concentração no verão. A temperatura média anual é de 21 °C, conforme mostra a Figura 3, que apresenta o gráfico de temperatura e precipitação mensal da cidade. A variação térmica anual é moderada, com julho sendo o mês mais frio (média 16,8 °C) e dezembro o mais quente (23,6 °C).</p>
+                <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>A precipitação média anual é de 1.723 mm, com maior volume nos meses de verão, especialmente em janeiro (276 mm), e o menor em agosto (65 mm), evidenciando a sazonalidade das chuvas (Figura 25). Além do volume, a frequência de dias chuvosos também varia: julho registra os menores índices (5,7 dias) e janeiro os maiores (21,3 dias). Essa distribuição reforça o caráter úmido do clima, mesmo nos meses mais secos.</p>
+              </div>
+            </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              12
+            </div>
+
           </div>
-          <Footer pageNum={12} />
         </div>
 
         {/* PAGE 13 - Figura 3 (clima) */}
