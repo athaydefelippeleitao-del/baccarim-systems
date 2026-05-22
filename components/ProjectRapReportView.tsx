@@ -1186,9 +1186,16 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 18 - Bacia Cafezal + Figura 8 satellite */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#1a3a6b', textIndent: '15mm', marginBottom: '6mm' }}>Já a bacia Municipal que abrange o local do empreendimento é a <span style={{ textDecoration: 'underline' }}>Bacia do Ribeirão do Cafezal</span>.</p>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '6mm' }}>Já a bacia Municipal que abrange o local do empreendimento é a <span style={{  }}>Bacia do Ribeirão do Cafezal</span>.</p>
           {satelliteUrl ? (
             <div style={{ marginBottom: '3mm' }}>
               <img src={satelliteUrl} alt="Localização do empreendimento e corpos d'água" crossOrigin="anonymous"
@@ -1196,21 +1203,44 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             </div>
           ) : (
             <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '110mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-              <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
+              <i style={{ fontSize: '24pt', color: '#000', marginBottom: '4px' }} className="fas fa-satellite"></i>
               <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
             </div>
           )}
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 8 – Localização do empreendimento e corpos d'água mais próximos. Fonte: Portal Ambiental da Prefeitura de Londrina – SIGLON.</div>
-          <Footer pageNum={18} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              18
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 19 - 8.1.3 Solo e Relevo + Figura 9 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.3. SOLO E RELEVO</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '4mm' }}>De acordo com o Mapa <span style={{ textDecoration: 'underline' }}>Simplificado</span> de Solos do Estado do Paraná (BHERING et al., 2007), os principais tipos de solos presentes no município de Londrina são os Latossolos, Nitossolos e Neossolos Litólicos. Conforme o Levantamento de Reconhecimento dos Solos do Estado do Paraná (Embrapa Solos, 2007), os solos predominantes na área urbana são o Latossolo (L) e a associação de Nitossolos com Neossolos Litólicos (N + RL).</p>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.3. SOLO E RELEVO</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '4mm' }}>De acordo com o Mapa <span style={{  }}>Simplificado</span> de Solos do Estado do Paraná (BHERING et al., 2007), os principais tipos de solos presentes no município de Londrina são os Latossolos, Nitossolos e Neossolos Litólicos. Conforme o Levantamento de Reconhecimento dos Solos do Estado do Paraná (Embrapa Solos, 2007), os solos predominantes na área urbana são o Latossolo (L) e a associação de Nitossolos com Neossolos Litólicos (N + RL).</p>
           <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '72mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <div style={{ fontSize: '9pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '6px' }}>MAPA SIMPLIFICADO DE SOLOS DO ESTADO DO PARANÁ</div>
+            <div style={{ fontSize: '9pt', fontWeight: '700', color: '#000', marginBottom: '6px' }}>MAPA SIMPLIFICADO DE SOLOS DO ESTADO DO PARANÁ</div>
             <i style={{ fontSize: '22pt', color: '#888' }} className="fas fa-map"></i>
             <div style={{ fontSize: '8pt', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>inserir imagem</div>
           </div>
@@ -1219,61 +1249,153 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O Latossolo é um solo profundo, bem drenado, com textura argilosa a muito argilosa e coloração avermelhada. Destaca-se pela alta fertilidade, com elevados teores de nutrientes como cálcio, magnésio, potássio e fósforo. É típico de regiões tropicais, com clima quente e chuvas bem distribuídas ao longo do ano.</p>
             <p style={{ textIndent: '15mm' }}>Os Nitossolos também são profundos, com cor escura e textura argilosa, apresentando boa fertilidade natural, especialmente em nitrogênio e fósforo. Já os Neossolos Litólicos são solos rasos, com textura arenosa e baixa fertilidade, limitando seu uso agrícola</p>
           </div>
-          <Footer pageNum={19} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              19
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 20 - Continuação Solo + Seção 9 Meio Biótico + Fauna */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>sem manejo adequado.</p>
             <p style={{ textIndent: '15mm' }}>De maneira geral, os solos da região de Londrina são considerados altamente produtivos e amplamente utilizados na agricultura.</p>
           </div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>9. DIAGNÓSTICO DO MEIO BIÓTICO</div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>9.1. Caracterização Da Fauna</div>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '6mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>9. DIAGNÓSTICO DO MEIO BIÓTICO</div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>9.1. Caracterização Da Fauna</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A fauna da região de Londrina está inserida no Bioma Mata Atlântica, especificamente na Floresta Estacional Semidecidual (FES), que apresenta grande diversidade de espécies devido à sua dupla estacionalidade climática, com períodos tropicais chuvosos e subtropicais mais secos. Devido ao rápido avanço da agricultura e da urbanização, especialmente a partir do século XX, grande parte da fauna original foi afetada, restando populações reduzidas e fragmentadas em áreas remanescentes, como o Parque Estadual Mata dos Godoy, o Parque Arthur Thomas e a Reserva Indígena do Apucaraninha.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Entre os mamíferos que ainda podem ser encontrados na região destacam-se a onça-parda (Puma concolor), a jaguatirica (Leopardus pardalis), a raposa-do-campo (Cerdocyon thous) e diferentes espécies de tatu, como o tatu-galinha (Dasypus novemcinctus) e o tatu-peba (Euphractus sexcinctus). A avifauna é representada por espécies como a jacutinga (Penelope obscura), o tucano-toco (Ramphastos toco) e o papagaio-verdadeiro (Amazona aestiva). A herpetofauna inclui serpentes como a jararaca (Bothrops jararaca) e lagartos como o teiú (Tupinambis merianae). Nos cursos d'água da região ocorrem peixes nativos como a piracanjuba (Brycon orbignyanus) e o curimbatá (Prochilodus lineatus).</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Com a expansão urbana e a degradação de habitats naturais, algumas espécies adaptaram-se às áreas urbanas, como o gambá-de-orelha-branca (Didelphis albiventris), o cachorro-do-mato (Cynomys ludovicianus), o pombo-doméstico (Columbia livia) e o sabiá-do-campo (Mimus saturninus). Essas espécies convivem com a população urbana, muitas vezes utilizando áreas verdes e parques municipais como refúgio. Segundo a Prefeitura de Londrina, na cidade há três Unidades de Conservação, a Unidade de Conservação Municipal Parque Arthur Thomas, a Unidade de Conservação Parque Estadual Mata dos Godoy e a Unidade de Conservação Parque Ecológico Dr. Daisaku Ikeda.</p>
           </div>
-          <Footer pageNum={20} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              20
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 21 - Fauna cont. + 9.2 Flora + Figura 10 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Conforme o IAT, o Parque Municipal Mata dos Godoy é uma das últimas reservas naturais de mata nativa existentes no norte do Paraná, considerada uma Unidade de Conservação Integral. O parque abriga 282 espécies de aves, 65 mamíferos e plantas raras como jacarandá, cabreúva, peroba, guaçatinga e pau-marfim. Já a Unidade de Conservação Parque Ecológico Dr. Daisaku Ikeda que foi criada em novembro de 1999 e inaugurada em setembro de 2000, tem identificado em seu Plano de Manejo mais de 96 espécies de aves, 12 mamíferos, 32 espécies de répteis, além de peixes e anfíbios. O Parque Municipal Arthur Thomas é habitado por uma fauna privilegiada, que inclui espécies como macaco-prego, quati, cutia, paca, teiú, garção, garça, águia-pescadora e tatu-galinha, entre outros animais.</p>
           </div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>9.2. Caracterização Da Flora</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#1a3a6b', textIndent: '15mm', marginBottom: '4mm' }}>Em Londrina, a fisionomia vegetal originalmente dominante é a Floresta Estacional Semidecidual, que tem como principal característica o caráter parcialmente decíduo de suas espécies, sendo que de 20 a 50% dos indivíduos do conjunto florestal perdem suas folhas na estação seca (IBGE, 2012).</p>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>9.2. Caracterização Da Flora</div>
+          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '4mm' }}>Em Londrina, a fisionomia vegetal originalmente dominante é a Floresta Estacional Semidecidual, que tem como principal característica o caráter parcialmente decíduo de suas espécies, sendo que de 20 a 50% dos indivíduos do conjunto florestal perdem suas folhas na estação seca (IBGE, 2012).</p>
           <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '70mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <div style={{ fontSize: '8pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '6px' }}>ESTADO DO PARANÁ – COBERTURA VEGETAL NATIVA</div>
+            <div style={{ fontSize: '8pt', fontWeight: '700', color: '#000', marginBottom: '6px' }}>ESTADO DO PARANÁ – COBERTURA VEGETAL NATIVA</div>
             <i style={{ fontSize: '22pt', color: '#888' }} className="fas fa-tree"></i>
             <div style={{ fontSize: '8pt', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>inserir imagem</div>
           </div>
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 10 – Mapa de vegetação do estado brasileiro do Paraná. Fonte: (IPARDES, 2007).</div>
-          <Footer pageNum={21} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              21
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 22 - Flora cont. */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
-            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A cobertura vegetal da região de Londrina está inserida na <span style={{ color: '#1a3a6b', textDecoration: 'underline' }}>Floresta Estacional Semidecidual (FES)</span>, que integra o Bioma Mata Atlântica. A FES caracteriza-se por sua dupla estacionalidade climática, apresentando períodos tropicais com chuvas intensas no verão, seguidos por estiagens acentuadas, além de uma fase subtropical marcada pelo inverno frio e seco. Essa diversidade climática influencia diretamente a composição e o comportamento vegetativo, com espécies caducifólias que perdem parte das folhas durante o inverno.</p>
+            <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A cobertura vegetal da região de Londrina está inserida na <span style={{ color: '#000' }}>Floresta Estacional Semidecidual (FES)</span>, que integra o Bioma Mata Atlântica. A FES caracteriza-se por sua dupla estacionalidade climática, apresentando períodos tropicais com chuvas intensas no verão, seguidos por estiagens acentuadas, além de uma fase subtropical marcada pelo inverno frio e seco. Essa diversidade climática influencia diretamente a composição e o comportamento vegetativo, com espécies caducifólias que perdem parte das folhas durante o inverno.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Historicamente, a área onde atualmente está localizado o município de Londrina era predominantemente ocupada por mata pluvial tropical e subtropical. No entanto, devido ao intenso avanço da agricultura e à urbanização, especialmente a partir do século XX, grande parte dessa vegetação original foi suprimida, restando apenas fragmentos isolados em áreas de conservação e proteção ambiental. Os principais remanescentes florestais no município são encontrados no Parque Estadual Mata dos Godoy, no Parque Arthur Thomas e na Reserva Indígena do Apucaraninha. Essas áreas preservam a vegetação típica da FES, com espécies arbóreas como o pau-d'alho (Gallesia integrifolia), o cedro-rosa (Cedrela fissilis), o peroba-rosa (Aspidosperma polyneuron), a canafístula (Peltophorum dubium) e o ipê-roxo (Handroanthus heptaphyllus). O sub-bosque apresenta uma composição variada de arbustos, cipós e epífitas, como bromélias e orquídeas.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>De acordo com a Fundação SOS Mata Atlântica e o INPE (2008), Londrina possui aproximadamente 12.026,88 hectares de remanescentes florestais, o que corresponde a cerca de 7% da área total do município, que é de 165.808,92 hectares. Essa vegetação remanescente desempenha papel fundamental na conservação da biodiversidade local, protegendo espécies endêmicas e servindo de corredor ecológico.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Em áreas urbanas e rurais que sofreram intervenção antrópica, a vegetação original foi substituída, principalmente, por espécies exóticas e cultivadas. As árvores nativas que ainda se destacam nesses espaços são o ipê-amarelo (Handroanthus albus), a embaúba (Cecropia spp.), o ingá (Inga spp.) e a aroeira-pimenteira (Schinus terebinthifolia), geralmente integradas a reflorestamentos e áreas verdes urbanas. A preservação desses fragmentos vegetais e a recomposição de áreas degradadas são fundamentais para garantir a manutenção da flora nativa e dos serviços ecossistêmicos que ela proporciona, como regulação hídrica, proteção do solo e manutenção da fauna local.</p>
           </div>
-          <Footer pageNum={22} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              22
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 23 - Seção 10 Diagnóstico Socioeconômico */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '6mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>10. DIAGNÓSTICO DO MEIO SOCIOECONÔMICO</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '6mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>10. DIAGNÓSTICO DO MEIO SOCIOECONÔMICO</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O Município de Londrina apresentou um crescimento econômico e populacional acelerado ao longo de sua história, quando comparado a outras regiões do estado e do país.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Esse desenvolvimento esteve associado principalmente à cultura cafeeira, que encontrou condições favoráveis no solo latossolo vermelho da região, e ao processo de colonização e ocupação do território.</p>
@@ -1282,35 +1404,81 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A infraestrutura urbana da cidade é bem desenvolvida, abrangendo serviços públicos essenciais, como abastecimento de água, coleta e tratamento de esgoto, gestão de resíduos sólidos, fornecimento de energia elétrica, sistema de saúde pública e rede de ensino. Londrina conta com hospitais, unidades de saúde, escolas, universidades, biblioteca pública, museus, teatros, cinemas e outros equipamentos culturais, garantindo qualidade de vida aos seus habitantes.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Na área da educação, segundo o IBGE, com base no Censo Educacional 2021 do INEP, Londrina possui 231 pré-escolas, 215 escolas de nível fundamental e 85 escolas de nível médio. Quanto ao ensino superior, o Censo Educacional de 2007 registra 10 instituições presenciais, além de 29 polos de ensino à distância implantados posteriormente.</p>
           </div>
-          <Footer pageNum={23} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              23
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 24 - Socioeconômico cont. + Seção 11 Impactos + AII */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A rede de saúde pública inclui 133 unidades atendendo pelo Sistema Único de Saúde (SUS). Segundo o IBGE (2010), 85,2% dos domicílios possuem esgotamento sanitário adequado, 96,3% dos domicílios urbanos estão em vias públicas com arborização, e 83,1% em vias públicas com infraestrutura urbana adequada, incluindo calçamento, pavimentação, meio-fio e bueiro. O sistema viário e de transportes é estruturado, destacando-se as rodovias PR-445 (Celso Garcia Cid) e BR-369, que conectam Londrina a outras cidades da região. O transporte público municipal é realizado por ônibus, atendendo os principais bairros e áreas metropolitanas. Segundo o Plano Diretor de Londrina, a área no entorno do empreendimento apresenta uso diversificado do solo, incluindo áreas residenciais de médio e alto padrão, loteamentos de casas, e estabelecimentos comerciais e de serviços, como lojas, restaurantes e escritórios. Também há usos institucionais, como escolas e unidades de saúde, além de áreas verdes, praças e parques, que oferecem lazer e preservação ambiental. Essa diversificação demonstra a dinamicidade da ocupação territorial em Londrina, onde coexistem atividades residenciais, comerciais, industriais e serviços públicos, formando um espaço urbano multifuncional e integrado.</p>
           </div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>11. IDENTIFICAÇÃO E ANÁLISE DOS IMPACTOS AMBIENTAIS</div>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>11. IDENTIFICAÇÃO E ANÁLISE DOS IMPACTOS AMBIENTAIS</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '5mm' }}>
             <p style={{ textIndent: '15mm' }}>A área de influência de um empreendimento corresponde ao espaço territorial que pode ser afetado direta ou indiretamente pelos impactos ambientais decorrentes das fases de planejamento, implantação e operação das atividades. Esses impactos podem ser positivos ou negativos. Delimitar adequadamente essas áreas é essencial para determinar o espaço geográfico que será objeto de levantamento e análise de dados, permitindo a caracterização dos contextos biogeofísicos, socioeconômicos e culturais da região antes da realização das obras. A partir desse diagnóstico, é possível identificar as áreas que serão impactadas pela implantação do empreendimento.</p>
           </div>
           <div style={{ background: '#f0f4ff', border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm', marginBottom: '4mm' }}>
-            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DE INFLUÊNCIA INDIRETA (AII)</div>
+            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#000', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DE INFLUÊNCIA INDIRETA (AII)</div>
             <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>A Área de Influência Indireta compreende os territórios que sofrem impactos menos significativos em comparação com as áreas diretamente afetadas, geralmente localizados no</p>
           </div>
-          <Footer pageNum={24} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              24
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 25 - AII cont. + AID + ADA */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '5mm' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>entorno da Área de Influência Direta (AID). No meio socioeconômico, a AII corresponde ao território do município de Londrina, que poderá ser beneficiado pelo aumento de oferta de empregos e pela arrecadação tributária decorrente do empreendimento. Para os meios físicos e bióticos, a AII inclui os acessos à propriedade a partir do município de Londrina e sua respectiva faixa de domínio. Portanto, a AII abrange uma área que, embora impactada, sofre efeitos menos significativos do que as áreas diretamente afetadas.</p>
           </div>
           <div style={{ background: '#f0f4ff', border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm', marginBottom: '4mm' }}>
-            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DE INFLUÊNCIA DIRETA – AID</div>
+            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#000', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DE INFLUÊNCIA DIRETA – AID</div>
             <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
               <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Conceitualmente, a Área de Influência Direta (AID) consiste nas áreas geográficas diretamente afetadas pelos impactos decorrentes do empreendimento e corresponde ao espaço territorial contíguo e ampliado da ADA, e como esta, deverá sofrer impactos, tanto positivos quanto negativos. Tais impactos devem ser mitigados, compensados ou potencializados (se positivos) pelo empreendedor.</p>
               <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Assim, a delimitação da AID decorreu dos fenômenos causais de primeira ordem, uma vez que haverá alguma interferência sobre o ambiente local. Deste modo, no concernente aos meios físicos, bióticos e antrópicos, está sendo considerada a área onde será implantado o empreendimento e seu entorno imediato.</p>
@@ -1318,16 +1486,39 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             </div>
           </div>
           <div style={{ background: '#f0f4ff', border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm' }}>
-            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#1a3a6b', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DIRETAMENTE AFETADA (ADA)</div>
+            <div style={{ fontSize: '10pt', fontWeight: '900', color: '#000', textAlign: 'center', marginBottom: '3mm' }}>ÁREA DIRETAMENTE AFETADA (ADA)</div>
             <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm' }}>A Área Diretamente Afetada compreende a região impactada diretamente pela construção do empreendimento, abrangendo a área necessária para a implantação das estruturas, vias de acesso privativas e demais operações vinculadas exclusivamente à infraestrutura do projeto. A ADA corresponde, portanto, à área total destinada ao empreendimento, incluindo estruturas de apoio e acessos específicos.</p>
           </div>
-          <Footer pageNum={25} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              25
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 26 - Seção 12 Metodologia CONAMA */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>12. METODOLOGIA EMPREGADA PARA A ANÁLISE E IDENTIFICAÇÃO DOS IMPACTOS AMBIENTAIS</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>12. METODOLOGIA EMPREGADA PARA A ANÁLISE E IDENTIFICAÇÃO DOS IMPACTOS AMBIENTAIS</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Segundo a RESOLUÇÃO CONAMA nº 1, de 23 de janeiro de 1986, que "Dispõe sobre critérios básicos e diretrizes gerais para a avaliação de impacto ambiental". O Conselho Nacional Do Meio Ambiente – CONAMA utilizando a atribuição conferida pelo art. 48 do Decreto nº 88.351, de 1º de junho de 1983, revogado pelo Decreto nº 99.274, de 6 de junho de 1990, para realização da atividade das responsabilidades, dispostas no art. 18 do mesmo decreto, visando a necessidade de se estabelecer definições, responsabilidades, critérios básicos e diretrizes gerais "para uso e implementação da Avaliação de Impacto Ambiental como um dos instrumentos da Política Nacional do Meio Ambiente, resolve:"</p>
             <p style={{ marginLeft: '15mm', marginBottom: '2mm' }}>Art. 1 - Para efeito desta Resolução, considera-se impacto ambiental qualquer alteração das propriedades físicas, químicas e biológicas do meio ambiente, causada por qualquer forma de matéria ou energia resultante das atividades humanas que, direta ou indiretamente, afetam:</p>
@@ -1348,12 +1539,35 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               <span>Realização do levantamento dos aspectos e impactos;</span>
             </div>
           </div>
-          <Footer pageNum={26} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              26
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 27 - Parâmetros de avaliação */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <div style={{ display: 'flex', gap: '3mm', marginLeft: '15mm', marginBottom: '4mm' }}>
               <span>•</span>
@@ -1374,16 +1588,39 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             ].map((p, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginBottom: '2mm', marginLeft: '15mm' }}>
                 <span style={{ fontWeight: '700', minWidth: '8mm' }}>{p.letra}</span>
-                <span><span style={{ textDecoration: 'underline', fontWeight: '700' }}>{p.titulo}</span> {p.texto}</span>
+                <span><span style={{ fontWeight: '700' }}>{p.titulo}</span> {p.texto}</span>
               </div>
             ))}
           </div>
-          <Footer pageNum={27} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              27
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 28 - Parâmetros cont. + texto final metodologia */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             {[
               { letra: '', titulo: '', texto: 'REVERSÍVEIS ou IRREVERSÍVEIS. Permite identificar que impactos poderão ser integralmente reversíveis a partir da implementação de uma ação de reversibilidade ou poderão apenas ser mitigados ou compensados.' },
@@ -1392,20 +1629,43 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             ].map((p, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginBottom: '3mm', marginLeft: '15mm' }}>
                 {p.letra && <span style={{ fontWeight: '700', minWidth: '8mm' }}>{p.letra}</span>}
-                <span>{p.titulo && <span style={{ textDecoration: 'underline', fontWeight: '700' }}>{p.titulo} </span>}{p.texto}</span>
+                <span>{p.titulo && <span style={{ fontWeight: '700' }}>{p.titulo} </span>}{p.texto}</span>
               </div>
             ))}
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A metodologia adotada na elaboração deste RAP foi estruturada com o objetivo de atender diretamente ao solicitado pelo órgão ambiental competente (SEMA – Secretaria Municipal do Ambiente), assim como atender à legislação, em especial os princípios e objetivos expressos nos termos, da Resolução SEDEST Nº 050/2022 e de toda a legislação pertinente nas esferas federal, estadual e municipal.</p>
           </div>
-          <Footer pageNum={28} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              28
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 29 - Seção 13 Impactos Fase Instalação + 13.1 Ruídos */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>13. IDENTIFICAÇÃO E AVALIAÇÃO DOS IMPACTOS DURANTE A FASE DE INSTALAÇÃO DO EMPREENDIMENTO</div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.1. Interferências e transtornos à população: emissões atmosféricas, ruídos e tráfego de máquinas</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>13. IDENTIFICAÇÃO E AVALIAÇÃO DOS IMPACTOS DURANTE A FASE DE INSTALAÇÃO DO EMPREENDIMENTO</div>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>13.1. Interferências e transtornos à população: emissões atmosféricas, ruídos e tráfego de máquinas</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Durante a fase de implantação do empreendimento, haverá aumento do fluxo de veículos pesados, movimentação de solo e utilização de equipamentos que podem gerar ruídos e poeira, afetando a população do entorno.</p>
             <p style={{ marginBottom: '2mm' }}>Impactos Identificados:</p>
@@ -1419,16 +1679,39 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginBottom: '1mm' }}>Medidas recomendadas:</p>
             <p style={{ textIndent: '10mm' }}>Planejar antecipadamente os transportes e trajetos, em função do porte dos equipamentos/veículos pesados e do fluxo do tráfego, para os acessos a serem utilizados de forma a possibilitar as manobras com o máximo de segurança e rapidez. Implantação de sinalização adequada e redutores de velocidade, principalmente nas proximidades de escolas, igreja e postos de saúde. No caso da necessidade de uma eventual alteração temporária do tráfego, deverá ser estabelecido contato com os órgãos responsáveis. Promover esclarecimentos, caso necessário, através de Programa de Comunicação e Educação Ambiental, sobre as ações de mão de obra e de equipamentos de forma a minimizar as perturbações no cotidiano das populações residentes próximas aos acessos que serão utilizados. Seleção de trabalhadores residentes em Londrina pode ajudar a diminuir o fluxo de</p>
           </div>
-          <Footer pageNum={29} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              29
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 30 - 13.1 cont. + 13.2 Poeira */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '4mm' }}>veículos dos trabalhadores, pois favoreceria o deslocamento por outros meios de transporte (ônibus, bicicleta etc.). Controlar os ruídos a serem emitidos pelos equipamentos utilizados na obra, conforme especificado pelo fabricante e obedecendo às normas brasileiras. Planejar o horário de transporte do pessoal, materiais e equipamentos, evitando-se as horas de pico e noturno, para não perturbar o sossego das comunidades próximas. Utilizar equipamento de proteção individual (EPI) — botas, protetores auriculares, luvas, capacetes etc., pelos funcionários da obra.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.2. Emissão de poeira e poluentes atmosférico</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>13.2. Emissão de poeira e poluentes atmosférico</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A formação de nuvens de poeira formada pela passagem de máquinas sobre o solo seco pode promover a poluição do ar nas áreas de influência do empreendimento.</p>
             {['Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Média'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}>
@@ -1440,13 +1723,36 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
             <p style={{ textIndent: '10mm' }}>Manter as caçambas dos veículos cobertas com lona durante o transporte de material e regulagem das descargas do sistema de combustão dos veículos de trabalho. Durante a fase das obras serão geradas emissões provenientes de poeiras originadas nas fases construtivas (empréstimos, bota-foras e sedimentos de escavação). Para diminuir a quantidade de emissões geradas, as máquinas e equipamentos deverão operar dentro das especificações técnicas adequadas, com monitoramento frequente. Já a quantidade de poeira levantada poderá ser reduzida através da constante umidificação do solo com jatos de água.</p>
           </div>
-          <Footer pageNum={30} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              30
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 31 - 13.3 Tráfego de máquinas + 13.4 Terraplanagem início */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.3. Tráfego de máquinas</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>13.3. Tráfego de máquinas</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Na fase de implantação da edificação haverá um fluxo maior de veículos, geralmente pesados de grande porte, que irão atender aos serviços exigidos na obra, como terraplanagem, implantação de infraestrutura básica e a construção das residências, sendo que este último tem o caráter menos intenso e mais difuso ao longo dos anos.</p>
             {['Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Baixa'].map((it, i) => (
@@ -1455,15 +1761,38 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas recomendadas:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Planejar antecipadamente os transportes e trajetos, em função do porte dos equipamentos/veículos pesados e do fluxo do tráfego, para os acessos a serem utilizados de forma a possibilitar as manobras com o máximo de segurança e rapidez. Implantação de sinalização adequada e redutores de velocidade, principalmente nas proximidades de escolas, igreja e postos de saúde. No caso da necessidade de uma eventual alteração temporária do tráfego, deverá ser estabelecido contato com os órgãos responsáveis. Promover esclarecimentos através de Programa de Comunicação e Educação Ambiental, sobre as ações de mão de obra e de equipamentos de forma a minimizar perturbações no cotidiano da comunidade residente próxima ao acesso que serão utilizados. Controlar os ruídos a serem emitidos pelos equipamentos utilizados na obra, conforme especificado pelo fabricante e obedecendo às normas brasileiras. Planejar o horário de transporte do pessoal, materiais e equipamentos, evitando-se as horas de pico e noturno, para não perturbar o sossego das comunidades próximas.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.4. Impactos Resultantes De Obras De Terraplanagem</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>13.4. Impactos Resultantes De Obras De Terraplanagem</div>
             <p style={{ textIndent: '15mm' }}>Durante as obras de implantação do empreendimento (limpeza de terreno,</p>
           </div>
-          <Footer pageNum={31} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              31
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 32 - 13.4 cont. + 13.5 Impermeabilização início */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>terraplanagem, obras auxiliares, vias de acesso e áreas de apoio) ocorrerão alterações no ambiente natural e exposição do solo superficial, deixando a superfície da ADA mais vulnerável à ação erosiva das águas pluviais. Tal situação poderá favorecer o surgimento de condições propícias ao desenvolvimento de processos erosivos, em função do escoamento concentrado ou pela intensificação dos processos já existentes.</p>
             {['Efeito: Negativo','Natureza: Direta','Periodicidade: Temporária','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Média'].map((it, i) => (
@@ -1472,18 +1801,41 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Estudo prévio do solo e do relevo, identificando áreas mais suscetíveis à erosão. Com base nesse diagnóstico, implementar a técnica de terraplanagem em etapas, se necessário, evitando a remoção da vegetação em grandes áreas de uma só vez para preservar a cobertura do solo, que atua como uma barreira natural contra a erosão. A utilização de práticas de drenagem adequadas é outra medida importante. A instalação de sistemas de drenagem superficial e subterrânea pode ajudar a controlar e direcionar o escoamento da água da chuva, reduzindo a erosão causada pelo escoamento superficial. Além disso, a construção de terraços ou taludes em áreas inclinadas pode aumentar a retenção de água e diminuir a velocidade do escoamento, auxiliando na estabilização do solo.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.5. Impactos Decorrentes Da Impermeabilização Do Solo</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>13.5. Impactos Decorrentes Da Impermeabilização Do Solo</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Devido à alteração do uso do solo, para a edificação, haverá menos áreas permeáveis, devido às construções civis, compactação do solo e do arruamento.</p>
             {['Natureza: NEGATIVA','Abrangência: LOCAL','Meio: FÍSICO','Forma: DIRETA'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
             ))}
           </div>
-          <Footer pageNum={32} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              32
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 33 - 13.5 cont. + 13.6 Patrimônio + Seção 14 início + 14.1 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             {['Magnitude: MÉDIA','Temporalidade: LONGO PRAZO','Fase de ocorrência: INSTALAÇÃO','Duração: PERMANENTE','Reversibilidade: IRREVERSÍVEL','Probabilidade: ALTA','Controle: MITIGADO.'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
@@ -1491,23 +1843,46 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Projetar e dimensionar sistema de drenagem adequada de acordo com métodos conhecidos, aperfeiçoar, detalhar levantamentos topográficos.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>13.6. Proteção ao patrimônio histórico e paisagístico</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>13.6. Proteção ao patrimônio histórico e paisagístico</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Não foram identificados bens tombados ou áreas com relevância histórico-cultural direta na área do empreendimento. No entanto, a paisagem local pode ser afetada pela implantação.</p>
             {['Efeito: Negativo','Natureza: Direta','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Pequena','Abrangência: Local','Probabilidade: Baixa'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
             ))}
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Manutenção de áreas verdes e visuais relevantes; integração da arborização ao paisagismo urbano; comunicação ao IPHAN caso haja achados arqueológicos durante as obras.</p>
-            <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '3mm' }}>14. IDENTIFICAÇÃO E AVALIAÇÃO DOS IMPACTOS DURANTE A FASE DE OCUPAÇÃO DO EMPREENDIMENTO</div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '2mm', marginLeft: '6mm' }}>14.1. Mitigação dos impactos referentes ao incremento de população</div>
+            <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '4mm' }}></div>
+            <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '3mm' }}>14. IDENTIFICAÇÃO E AVALIAÇÃO DOS IMPACTOS DURANTE A FASE DE OCUPAÇÃO DO EMPREENDIMENTO</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '2mm', marginLeft: '6mm' }}>14.1. Mitigação dos impactos referentes ao incremento de população</div>
           </div>
-          <Footer pageNum={33} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              33
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 34 - 14.1 cont. + 14.2 Demanda serviços */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>A ocupação do empreendimento implicará no acréscimo populacional na região, o que pode gerar sobrecarga nas infraestruturas e serviços públicos, caso não haja planejamento adequado.</p>
             {['Efeito: Negativo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Irreversível','Magnitude: Grande','Abrangência: Regional','Probabilidade: Alta'].map((it, i) => (
@@ -1516,7 +1891,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Previsão de infraestrutura proporcional ao adensamento, com ampliação de sistemas de abastecimento de água, esgotamento sanitário, transporte, segurança, educação e lazer. Adoção de planejamento urbano integrado e incentivo à ocupação ordenada.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.2. Estimativa do aumento da demanda por serviços públicos de educação, saúde, segurança e transporte coletivo</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>14.2. Estimativa do aumento da demanda por serviços públicos de educação, saúde, segurança e transporte coletivo</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Com base na densidade populacional estimada para o uso residencial, haverá aumento da demanda por serviços públicos essenciais, exigindo expansão e adequação da rede pública municipal.</p>
             {['Efeito: Negativo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Irreversível','Magnitude: Grande','Abrangência: Regional','Probabilidade: Alta'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
@@ -1524,16 +1899,39 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Mitigadoras:</p>
             <p style={{ textIndent: '10mm' }}>Elaboração de diagnóstico da capacidade atual dos serviços</p>
           </div>
-          <Footer pageNum={34} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              34
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 35 - 14.2 cont. + 14.3 Efluentes + 14.4 Resíduos início */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '5mm' }}>públicos e planejamento para sua ampliação, incluindo parcerias com o poder público. Priorização de investimentos em transporte coletivo, postos de saúde, escolas e segurança comunitária.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.3. Tratamento E Disposição Final De Efluentes Sanitários Do Empreendimento</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>14.3. Tratamento E Disposição Final De Efluentes Sanitários Do Empreendimento</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Uma vez constatada a viabilidade de extensão da rede de coleta de esgoto do empreendimento à do município, o atendimento ao saneamento básico proporciona melhoria nas condições sanitárias e ambientais do entorno, evitando a contaminação do solo e dispersão de doenças.</p>
             {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Grande','Abrangência: Regional','Probabilidade: Alta'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
@@ -1541,15 +1939,38 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Realizar programas de educação ambiental voltados aos moradores, com foco no uso correto da rede de esgoto e no descarte adequado de resíduos, evitando obstruções e danos à infraestrutura sanitária. Implantar sistemas internos de reuso de águas cinzas, se possível, provenientes de chuveiros, pias e máquinas de lavar, com reaproveitamento para fins não potáveis, como irrigação de jardins e limpeza de áreas comuns. Monitorar continuamente as instalações internas do sistema de esgotamento sanitário, por meio de vistorias periódicas e adotar um plano de manutenção preventiva e corretiva. Incentivar o uso de tecnologias sustentáveis, como torneiras com aeradores, válvulas de descarga com duplo acionamento e dispositivos economizadores de água.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.4. Coleta E Destino Final De Resíduos Sólidos Urbanos</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>14.4. Coleta E Destino Final De Resíduos Sólidos Urbanos</div>
             <p style={{ textIndent: '15mm' }}>A integração à rede de coleta municipal viabiliza a gestão adequada dos resíduos,</p>
           </div>
-          <Footer pageNum={35} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              35
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 36 - 14.4 cont. Resíduos + 14.5 Arborização */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>contribuindo para a saúde pública, limpeza urbana e proteção ambiental.</p>
             {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Alta'].map((it, i) => (
@@ -1558,7 +1979,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
             <p style={{ textIndent: '10mm', marginBottom: '5mm' }}>Realizar campanhas internas de educação ambiental voltadas à separação adequada dos resíduos, promovendo a consciência sobre a responsabilidade compartilhada na gestão dos resíduos sólidos. Implantar pontos de coleta seletiva. Estabelecer rotinas de coleta interna compatíveis com a frequência da coleta pública municipal, de modo a evitar acúmulo de resíduos e minimizar riscos à saúde pública e ao bem-estar.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.5. Arborização Do Sistema Viário E Espaços Públicos</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>14.5. Arborização Do Sistema Viário E Espaços Públicos</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Com o plantio de indivíduos arbóreos através da implantação da arborização do sistema viário e espaços públicos na área do futuro empreendimento haverá um aumento considerável na cobertura vegetal no local do empreendimento. Ainda, através da recuperação e revegetação das áreas degradadas, haverá um ganho ambiental significativo decorrente da preservação e manutenção das áreas verdes no entorno do empreendimento.</p>
             {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Grande','Abrangência: Local','Probabilidade: Alta'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
@@ -1566,16 +1987,39 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
             <p style={{ textIndent: '10mm' }}>Priorizar o plantio de árvores nativas adaptadas à região,</p>
           </div>
-          <Footer pageNum={36} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              36
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 37 - 14.5 cont. + 14.6 Recuperação áreas */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '5mm' }}>que requerem menos cuidados e contribuem para a biodiversidade local. Definir um espaçamento adequado entre as árvores, considerando seu crescimento e a necessidade de iluminação e ventilação para os espaços urbanos. Promover campanhas de sensibilização junto à comunidade sobre a importância da arborização e como cuidar das árvores plantadas. Estabelecer um plano de manutenção que inclua podas, controle de pragas e doenças, e monitoramento da saúde das árvores, garantindo seu crescimento saudável. Implementar projetos de replantio com espécies nativas nas áreas ao redor das nascentes e cursos d'água que foram afetados por atividades de parcelamento e edificações.</p>
             <div style={{ width: '100%', height: '1px', background: '#ddd', marginBottom: '4mm' }}></div>
-            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '6mm' }}>14.6. Recuperação e revegetação das áreas degradadas e comprometidas com a necessidade de preservação</div>
+            <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>14.6. Recuperação e revegetação das áreas degradadas e comprometidas com a necessidade de preservação</div>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O empreendimento prevê a recuperação ambiental de áreas afetadas por usos anteriores, com revegetação e proteção de áreas sensíveis, contribuindo para a conservação dos recursos naturais.</p>
             {['Efeito: Positivo','Natureza: Direto','Periodicidade: Permanente','Reversibilidade: Reversível','Magnitude: Média','Abrangência: Local','Probabilidade: Alta'].map((it, i) => (
               <div key={i} style={{ display: 'flex', gap: '3mm', marginLeft: '10mm', marginBottom: '1mm' }}><span>•</span><span>{it}</span></div>
@@ -1583,18 +2027,41 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <p style={{ fontWeight: '700', marginTop: '3mm', marginBottom: '1mm' }}>Medidas Potencializadoras:</p>
             <p style={{ textIndent: '10mm' }}>Execução de projetos de restauração ecológica, com uso de espécies nativas em áreas de preservação permanente (APPs) ou sujeitas a intervenções, além de acompanhamento técnico para garantir a efetividade das ações.</p>
           </div>
-          <Footer pageNum={37} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              37
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 38 - Seção 15 Quadro de Medidas (tabela parte 1) */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '3mm' }}>15. QUADRO DE MEDIDAS MITIGADORAS E COMPENSATÓRIAS</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '3mm' }}>15. QUADRO DE MEDIDAS MITIGADORAS E COMPENSATÓRIAS</div>
           <p style={{ fontSize: '10pt', lineHeight: '1.6', color: '#000', textAlign: 'justify', textIndent: '15mm', marginBottom: '5mm' }}>Com base na avaliação dos impactos ambientais relacionados e para melhor descrição de cada item, as medidas mitigadoras foram relacionadas nos itens anteriores.</p>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
             <thead>
-              <tr style={{ background: '#1a3a6b', color: 'white' }}>
+              <tr style={{ background: '#000', color: 'white' }}>
                 {['Impacto Ambiental','Medida Mitigadora/Compensatória','Componente Ambiental Afetado','Fase de Implementação','Caráter','Eficácia','Responsável pela Implementação'].map((h, i) => (
                   <th key={i} style={{ padding: '3px 4px', textAlign: 'center', border: '1px solid #aaa', fontSize: '7.5pt' }}>{h}</th>
                 ))}
@@ -1613,21 +2080,44 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               ].map((row, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? '#f0f4ff' : 'white' }}>
                   {row.map((cell, j) => (
-                    <td key={j} style={{ padding: '3px 4px', border: '1px solid #ccc', textAlign: 'center', color: j === 2 ? '#1a3a6b' : '#000', fontWeight: j === 2 ? '700' : 'normal', fontSize: '7.5pt' }}>{cell}</td>
+                    <td key={j} style={{ padding: '3px 4px', border: '1px solid #ccc', textAlign: 'center', color: j === 2 ? '#000' : '#000', fontWeight: j === 2 ? '700' : 'normal', fontSize: '7.5pt' }}>{cell}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
-          <Footer pageNum={38} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              38
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 39 - Quadro Medidas (tabela parte 2) */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '8pt' }}>
             <thead>
-              <tr style={{ background: '#1a3a6b', color: 'white' }}>
+              <tr style={{ background: '#000', color: 'white' }}>
                 {['Impacto Ambiental','Medida Mitigadora/Compensatória','Componente Ambiental Afetado','Fase de Implementação','Caráter','Eficácia','Responsável pela Implementação'].map((h, i) => (
                   <th key={i} style={{ padding: '3px 4px', textAlign: 'center', border: '1px solid #aaa', fontSize: '7.5pt' }}>{h}</th>
                 ))}
@@ -1642,41 +2132,87 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               ].map((row, i) => (
                 <tr key={i} style={{ background: i % 2 === 0 ? '#f0f4ff' : 'white' }}>
                   {row.map((cell, j) => (
-                    <td key={j} style={{ padding: '3px 4px', border: '1px solid #ccc', textAlign: 'center', color: j === 2 ? '#1a3a6b' : '#000', fontWeight: j === 2 ? '700' : 'normal', fontSize: '7.5pt' }}>{cell}</td>
+                    <td key={j} style={{ padding: '3px 4px', border: '1px solid #ccc', textAlign: 'center', color: j === 2 ? '#000' : '#000', fontWeight: j === 2 ? '700' : 'normal', fontSize: '7.5pt' }}>{cell}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
-          <Footer pageNum={39} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              39
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 40 - Seção 16 Legislação + Seção 17 Conclusões */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>16. LEGISLAÇÃO APLICÁVEL</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>16. LEGISLAÇÃO APLICÁVEL</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', marginBottom: '6mm' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Instrução Normativa nº 21, de 25 de Abril de 2025 - Estabelece definições, critérios, diretrizes e procedimentos para o licenciamento ambiental de empreendimentos imobiliários urbanos no território paranaense.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Resolução CONAMA nº 237/1997 – Dispõe sobre a revisão e complementação dos procedimentos e critérios utilizados para o licenciamento ambiental.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Lei Municipal Nº 11.468/2011 - Institui o código de posturas do município de Londrina.</p>
           </div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '4mm' }}>17. CONCLUSÕES</div>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '4mm' }}>17. CONCLUSÕES</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Do ponto de vista ambiental, constata-se que a área onde será implantado o empreendimento possui histórico de uso agrícola, caracterizando-se como uma área rural já submetida a atividades antrópicas.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>Considerando que a natureza do empreendimento envolve o parcelamento do solo e posterior edificação para fins residenciais, é esperado que ocorram alterações nas características ambientais da área. Contudo, tais mudanças são passíveis de controle e compensação, desde que devidamente planejadas e executadas.</p>
             <p style={{ textIndent: '15mm', marginBottom: '3mm' }}>O projeto propõe a adoção de uma infraestrutura adequada, aliada à implementação de medidas mitigadoras e compensatórias compatíveis com os impactos diagnosticados, bem como o cumprimento rigoroso da legislação ambiental vigente.</p>
             <p style={{ textIndent: '15mm' }}>Dessa forma, conclui-se pela viabilidade técnica, ambiental e sociocultural do empreendimento, desde que observadas as diretrizes propostas neste estudo e cumpridas integralmente as condicionantes do processo de licenciamento ambiental.</p>
           </div>
-          <Footer pageNum={40} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              40
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 41 - Seção 18 Referências Bibliográficas parte 1 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>18. REFERÊNCIAS BIBLIOGRÁFICAS</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm' }}>18. REFERÊNCIAS BIBLIOGRÁFICAS</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
             {[
               { bold: 'BHERING, S. B.; SANTOS, H. G.; MANZATTO, C. V.; BOGNOLA, I.; FASOLO CARVALHO, A. P.; POTTER, O.; AGLIO, M. L. D.; SILVA, J. S.; CHAFFIN, C. E.; CARVALHO JUNIOR, W.', rest: ' Mapa de Solos do Estado do Paraná. 2007. Disponível em: <http://www.infoteca.cnptia.embrapa.br/infoteca/handle/doc/339505>. Acesso em: 15/04/2025.' },
@@ -1693,12 +2229,35 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </p>
             ))}
           </div>
-          <Footer pageNum={41} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              41
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 42 - Referências cont. */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '10pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
             {[
               { bold: '', rest: '<http://www.ipardes.gov.br/cadernos/MontaCadPdf1.php?Municipio=86000&btOk=ok>. Acesso em: 15/04/2025.' },
@@ -1712,18 +2271,41 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </p>
             ))}
           </div>
-          <Footer pageNum={42} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              42
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 43 - Seção 19 Responsáveis */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>19. RESPONSÁVEIS</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm' }}>19. RESPONSÁVEIS</div>
           {/* Box empresa */}
           <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm 6mm', marginBottom: '6mm', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div style={{ fontSize: '10pt', lineHeight: '1.8', color: '#000' }}>
-              <div style={{ fontWeight: '900', color: '#1a3a6b', marginBottom: '2mm' }}>BACCARIM ENGENHARIA URBANA LTDA</div>
+              <div style={{ fontWeight: '900', color: '#000', marginBottom: '2mm' }}>BACCARIM ENGENHARIA URBANA LTDA</div>
               <div>CNPJ: 03.019.603/0001-23</div>
               <div>Registro no Crea-PR: 52.707</div>
               <div>Endereço: Avenida Dom Pedro II, nº 33, Centro, Sala 02.</div>
@@ -1734,7 +2316,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <SmallLogo />
           </div>
           {/* Box ART */}
-          <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm 6mm', marginBottom: '6mm', fontSize: '10pt', lineHeight: '1.8', color: '#1a3a6b', textAlign: 'center' }}>
+          <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '5mm 6mm', marginBottom: '6mm', fontSize: '10pt', lineHeight: '1.8', color: '#000', textAlign: 'center' }}>
             <div style={{ marginBottom: '3mm' }}>Responsável técnico pela elaboração do documento: Alberto Baccarim Junior</div>
             <div>ART Nº: 1720260789180</div>
             <div>Profissional: Alberto Baccarim Junior</div>
@@ -1745,7 +2327,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           </div>
           {/* Box Proposição */}
           <div style={{ border: '1px solid #1a3a6b', borderRadius: '4px', padding: '4mm 6mm', fontSize: '10pt', color: '#000' }}>
-            <div style={{ fontWeight: '900', color: '#1a3a6b', marginBottom: '3mm', textAlign: 'center' }}>PROPOSIÇÃO E EXECUÇÃO DESTE RELATÓRIO AMBIENTAL PRELIMINAR - RAP</div>
+            <div style={{ fontWeight: '900', color: '#000', marginBottom: '3mm', textAlign: 'center' }}>PROPOSIÇÃO E EXECUÇÃO DESTE RELATÓRIO AMBIENTAL PRELIMINAR - RAP</div>
             <table style={{ width: '100%', borderCollapse: 'collapse' }}>
               <tbody>
                 <tr>
@@ -1759,15 +2341,38 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </tbody>
             </table>
           </div>
-          <Footer pageNum={43} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              43
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 44 - Seção 20 Anexos */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ width: '100%', height: '2px', background: '#1a3a6b', marginBottom: '5mm' }}></div>
-          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#1a3a6b', marginBottom: '6mm' }}>20. ANEXOS</div>
-          <div style={{ fontSize: '10pt', lineHeight: '2.2', color: '#1a3a6b' }}>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+          <div style={{ width: '100%', height: '2px', background: '#000', marginBottom: '5mm' }}></div>
+          <div style={{ fontSize: '11pt', fontWeight: '900', color: '#000', marginBottom: '6mm' }}>20. ANEXOS</div>
+          <div style={{ fontSize: '10pt', lineHeight: '2.2', color: '#000' }}>
             {[
               { num: '1', desc: 'Anotação de Responsabilidade Técnica ART nº 1720260789180 (Engº Civil Alberto Baccarim Junior).' },
               { num: '2', desc: 'Planta-Ilustrativa.' },
@@ -1782,7 +2387,23 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
             ))}
           </div>
-          <Footer pageNum={44} />
+                      </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              44
+            </div>
+
+          </div>
         </div>
 
         {/* PAGE 45 - Capa Anexo 01 */}
