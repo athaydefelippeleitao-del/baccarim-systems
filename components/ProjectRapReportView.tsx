@@ -1109,22 +1109,42 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 16 - 8.1.2 Hidrografia */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <div style={{ fontSize: '11pt', fontWeight: '700', color: '#1a3a6b', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.2. HIDROGRAFIA</div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '5mm' }}>No que diz respeito à hidrografia, Londrina está inserida na <span style={{ textDecoration: 'underline' }}>Unidade Hidrográfica</span> do Baixo Tibagi, conforme identificado no mapa das Unidades Hidrográficas do Paraná (Figura 28). Essa unidade abrange a parte inferior da bacia do rio Tibagi, importante sub-bacia do rio Paranapanema, e desempenha papel relevante na disponibilidade hídrica da região norte do estado. A bacia do Baixo Tibagi é composta por diversos afluentes que cortam o município e abastecem não apenas o consumo humano, mas também atividades agrícolas e industriais. A presença desta bacia é estratégica para a gestão de recursos hídricos e controle de impactos ambientais no território municipal.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2.5fr', gap: '4mm', marginBottom: '3mm' }}>
-            <div style={{ background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '4mm', minHeight: '40mm' }}>
-              <i style={{ fontSize: '18pt', color: '#1a3a6b' }} className="fas fa-map-marker-alt"></i>
-              <div style={{ fontSize: '7pt', color: '#666', textAlign: 'center', marginTop: '2px' }}>Localização</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
             </div>
-            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', minHeight: '60mm' }}>
-              <i style={{ fontSize: '22pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-water"></i>
-              <div style={{ fontSize: '8pt', color: '#555', fontStyle: 'italic', textAlign: 'center' }}>UNIDADES HIDROGRÁFICAS DO PARANÁ – inserir imagem</div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '4mm', marginLeft: '12mm', marginTop: '10mm' }}>8.1.2. HIDROGRAFIA</div>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000' }}>
+                <p style={{ textIndent: '15mm', marginBottom: '4mm', marginTop: 0 }}>No que diz respeito à hidrografia, Londrina está inserida na Unidade Hidrográfica do Baixo Tibagi, conforme identificado no mapa das Unidades Hidrográficas do Paraná (Figura 28). Essa unidade abrange a parte inferior da bacia do rio Tibagi, importante sub-bacia do rio Paranapanema, e desempenha papel relevante na disponibilidade hídrica da região norte do estado. A bacia do Baixo Tibagi é composta por diversos afluentes que cortam o município e abastecem não apenas o consumo humano, mas também atividades agrícolas e industriais. A presença desta bacia é estratégica para a gestão de recursos hídricos e controle de impactos ambientais no território municipal.</p>
+              </div>
+
+              <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
+                <img src="/unidades_hidrograficas_parana.png" alt="Mapa de Unidades Hidrográficas do Paraná" 
+                  style={{ width: '90%', height: '110mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
+              </div>
+              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 6 - Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi). Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
             </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              16
+            </div>
+
           </div>
-          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 6 – Unidades Hidrográficas do Paraná [Unidade Hidrográfica do Baixo do Tibagi]. Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
-          <Footer pageNum={16} />
         </div>
 
         {/* PAGE 17 - Unidades Aquíferas */}
