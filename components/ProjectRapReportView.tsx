@@ -1150,21 +1150,43 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 17 - Unidades Aquíferas */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '8mm' }}><SmallLogo /></div>
-          <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#1a3a6b', textIndent: '15mm', marginBottom: '5mm' }}>Referente às unidades aquíferas, Londrina está localizada na <span style={{ textDecoration: 'underline' }}>Unidade Aquífera Serra Geral Norte</span>, conforme representado na Figura 28. Essa unidade ocupa a porção nordeste do Estado do Paraná e está associada predominantemente à presença de rochas vulcânicas da Formação Serra Geral, com ampla distribuição regional.</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 2.5fr', gap: '4mm', marginBottom: '3mm' }}>
-            <div style={{ background: '#f0f0f0', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', padding: '4mm', minHeight: '35mm' }}>
-              <i style={{ fontSize: '16pt', color: '#1a3a6b' }} className="fas fa-map-pin"></i>
-              <div style={{ fontSize: '7pt', color: '#666', textAlign: 'center', marginTop: '2px' }}>RAPO / Londrina</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
             </div>
-            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', minHeight: '70mm' }}>
-              <i style={{ fontSize: '22pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-layer-group"></i>
-              <div style={{ fontSize: '8pt', color: '#555', fontStyle: 'italic', textAlign: 'center' }}>UNIDADES AQUÍFERAS DO PARANÁ – inserir imagem</div>
+
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
+              <div style={{ fontSize: '10.5pt', lineHeight: '1.8', textAlign: 'justify', color: '#000', marginTop: '10mm' }}>
+                <p style={{ textIndent: '15mm', marginBottom: '4mm', marginTop: 0 }}>Referente às unidades aquíferas, Londrina está localizada na Unidade Aquífera Serra Geral Norte, conforme representado na Figura 28 Essa unidade ocupa a porção nordeste do Estado do Paraná e está associada predominantemente à presença de rochas vulcânicas da Formação Serra Geral, com ampla distribuição regional.</p>
+              </div>
+
+              <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
+                <div style={{ width: '90%', height: '110mm', border: '1px solid #000', background: '#f5f5f5', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                  <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-layer-group"></i>
+                  <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>UNIDADES AQUÍFERAS DO PARANÁ – inserir imagem correta aqui</div>
+                </div>
+              </div>
+              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 7 - Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi).<br/>Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
             </div>
+
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', marginTop: 'auto' }}>
+              <div style={{ fontSize: '8pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 - Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+
+            {/* Page Number */}
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '10pt', color: '#000' }}>
+              17
+            </div>
+
           </div>
-          <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 7 – Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi). Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
-          <Footer pageNum={17} />
         </div>
 
         {/* PAGE 18 - Bacia Cafezal + Figura 8 satellite */}
