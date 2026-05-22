@@ -1124,8 +1124,10 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
 
               <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
-                <img src="/unidades_hidrograficas_parana.png" alt="Mapa de Unidades Hidrográficas do Paraná" 
-                  style={{ width: '90%', height: '110mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
+                <div style={{ width: '90%', height: '110mm', border: '1px solid #000', background: '#f5f5f5', margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                  <i style={{ fontSize: '28pt', color: '#1a3a6b', marginBottom: '6px' }} className="fas fa-water"></i>
+                  <div style={{ fontSize: '9pt', color: '#555', fontStyle: 'italic' }}>UNIDADES HIDROGRÁFICAS DO PARANÁ – inserir imagem correta aqui</div>
+                </div>
               </div>
               <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 6 - Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi). Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
             </div>
