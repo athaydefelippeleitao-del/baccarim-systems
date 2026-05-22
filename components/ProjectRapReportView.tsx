@@ -1124,7 +1124,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
 
               <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
-                <img src="/unidades_hidrograficas_parana.png" alt="Mapa de Unidades Hidrográficas do Paraná" 
+                <img src="/unidades_hidrograficas_parana.jpg" alt="Mapa de Unidades Hidrográficas do Paraná" 
                   style={{ width: '90%', height: '110mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
               </div>
               <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 6 - Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi). Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
@@ -1162,7 +1162,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
 
               <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
-                <img src="/unidades_aquiferas_parana.png" alt="Mapa de Unidades Aquíferas do Paraná" 
+                <img src="/unidades_aquiferas_parana.jpg" alt="Mapa de Unidades Aquíferas do Paraná" 
                   style={{ width: '90%', height: '110mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
               </div>
               <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 7 - Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi).<br/>Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
@@ -1202,9 +1202,9 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
                 style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #ccc', display: 'block' }} />
             </div>
           ) : (
-            <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '110mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-              <i style={{ fontSize: '24pt', color: '#000', marginBottom: '4px' }} className="fas fa-satellite"></i>
-              <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
+            <div style={{ marginBottom: '3mm', textAlign: 'center' }}>
+              <img src="/satelite_cafezal.jpg" alt="Localização do empreendimento e corpos d'água" 
+                style={{ width: '100%', height: '110mm', objectFit: 'contain', border: '1px solid #000', display: 'block', margin: '0 auto' }} />
             </div>
           )}
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 8 – Localização do empreendimento e corpos d'água mais próximos. Fonte: Portal Ambiental da Prefeitura de Londrina – SIGLON.</div>
@@ -1239,10 +1239,9 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
             <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
           <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '12mm' }}>8.1.3. SOLO E RELEVO</div>
           <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '4mm' }}>De acordo com o Mapa <span style={{  }}>Simplificado</span> de Solos do Estado do Paraná (BHERING et al., 2007), os principais tipos de solos presentes no município de Londrina são os Latossolos, Nitossolos e Neossolos Litólicos. Conforme o Levantamento de Reconhecimento dos Solos do Estado do Paraná (Embrapa Solos, 2007), os solos predominantes na área urbana são o Latossolo (L) e a associação de Nitossolos com Neossolos Litólicos (N + RL).</p>
-          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '72mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <div style={{ fontSize: '9pt', fontWeight: '700', color: '#000', marginBottom: '6px' }}>MAPA SIMPLIFICADO DE SOLOS DO ESTADO DO PARANÁ</div>
-            <i style={{ fontSize: '22pt', color: '#888' }} className="fas fa-map"></i>
-            <div style={{ fontSize: '8pt', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>inserir imagem</div>
+          <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
+            <img src="/mapa_solos.png" alt="Mapa Simplificado de Solos do Estado do Paraná" 
+              style={{ width: '100%', height: '72mm', objectFit: 'contain', border: '1px solid #000', display: 'block', margin: '0 auto' }} />
           </div>
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic', marginBottom: '4mm' }}>Figura 9 – Mapa de Solos do Estado do Paraná. Fonte: (BHERING, et al., 2007).</div>
           <div style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000' }}>
@@ -1324,10 +1323,9 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
           </div>
           <div style={{ fontSize: '11pt', fontWeight: '700', color: '#000', marginBottom: '3mm', marginLeft: '6mm' }}>9.2. Caracterização Da Flora</div>
           <p style={{ fontSize: '10pt', lineHeight: '1.6', textAlign: 'justify', color: '#000', textIndent: '15mm', marginBottom: '4mm' }}>Em Londrina, a fisionomia vegetal originalmente dominante é a Floresta Estacional Semidecidual, que tem como principal característica o caráter parcialmente decíduo de suas espécies, sendo que de 20 a 50% dos indivíduos do conjunto florestal perdem suas folhas na estação seca (IBGE, 2012).</p>
-          <div style={{ background: '#f5f5f5', border: '1px solid #ccc', borderRadius: '4px', marginBottom: '3mm', height: '70mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-            <div style={{ fontSize: '8pt', fontWeight: '700', color: '#000', marginBottom: '6px' }}>ESTADO DO PARANÁ – COBERTURA VEGETAL NATIVA</div>
-            <i style={{ fontSize: '22pt', color: '#888' }} className="fas fa-tree"></i>
-            <div style={{ fontSize: '8pt', color: '#666', fontStyle: 'italic', marginTop: '4px' }}>inserir imagem</div>
+          <div style={{ textAlign: 'center', marginBottom: '3mm' }}>
+            <img src="/mapa_vegetacao.jpg" alt="Estado do Paraná - Cobertura Vegetal Nativa" 
+              style={{ width: '100%', height: '70mm', objectFit: 'contain', border: '1px solid #000', display: 'block', margin: '0 auto' }} />
           </div>
           <div style={{ fontSize: '8pt', color: '#444', textAlign: 'center', fontStyle: 'italic' }}>Figura 10 – Mapa de vegetação do estado brasileiro do Paraná. Fonte: (IPARDES, 2007).</div>
                       </div>
