@@ -826,8 +826,15 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
 
               <div style={{ textAlign: 'center', marginBottom: '2mm' }}>
-                <img src="/croqui_localizacao.jpg" alt="Planta de localização do empreendimento" 
-                  style={{ width: '100%', height: '110mm', objectFit: 'contain', border: '1px solid #000', display: 'block', margin: '0 auto 2mm auto' }} />
+                {satelliteUrl ? (
+                  <img src={satelliteUrl} alt="Imagem de satélite" crossOrigin="anonymous"
+                    style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #000', display: 'block', marginBottom: '2mm' }} />
+                ) : (
+                  <div style={{ background: '#f5f5f5', border: '1px solid #000', width: '100%', height: '110mm', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column', marginBottom: '2mm' }}>
+                    <i style={{ fontSize: '24pt', color: '#1a3a6b', marginBottom: '4px' }} className="fas fa-satellite"></i>
+                    <div style={{ fontSize: '8pt', color: '#666' }}>Informe as coordenadas UTM para gerar a imagem de satélite</div>
+                  </div>
+                )}
                 <div style={{ fontSize: '10pt', color: '#000', fontWeight: 'bold' }}>Avenida Alcides Turini, Gleba Ribeirão Cafezal – Lote A/2</div>
                 <div style={{ fontSize: '8pt', color: '#000', marginTop: '1mm' }}>Figura 2 - Planta de localização do empreendimento. Fonte: Google Earth.</div>
               </div>
@@ -1040,7 +1047,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
 
             <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column' }}>
               <div style={{ textAlign: 'center', marginBottom: '2mm', marginTop: '4mm' }}>
-                <img src="/temp_parana.jpg" alt="Mapa de temperatura média anual" 
+                <img src="/temp_parana.png" alt="Mapa de temperatura média anual" 
                   style={{ width: '90%', height: '125mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
               </div>
               <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 4 - Temperatura média do ar anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).</div>

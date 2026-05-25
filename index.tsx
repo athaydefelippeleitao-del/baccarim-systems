@@ -17,9 +17,13 @@ if ('serviceWorker' in navigator) {
   });
 }
 
+import ErrorBoundary from './components/ErrorBoundary';
+
 const root = ReactDOM.createRoot(rootElement);
 root.render(
   <React.StrictMode>
-    <App />
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
   </React.StrictMode>
 );
