@@ -744,9 +744,22 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
               
               {/* MAPA REGIONAL (PARANÁ) */}
-              <div style={{ textAlign: 'center', marginBottom: '2mm', width: '100%' }}>
-                <img src="/img_p8_2.png" alt="Mapa de localização regional" 
-                  style={{ width: '100%', height: '80mm', objectFit: 'contain', border: '1px solid #000', background: '#fff' }} />
+              <div style={{ position: 'relative', border: '1px solid #000', padding: '0', marginBottom: '2mm', width: '100%' }}>
+                <img src="/mapa_parana.png" alt="Mapa de localização regional" 
+                  style={{ width: '100%', height: '80mm', objectFit: 'contain', background: '#fff' }} />
+                
+                {/* LEGENDA */}
+                <div style={{ position: 'absolute', bottom: '5mm', right: '5mm', background: '#fff', border: '1px solid #000', padding: '2mm', fontSize: '8pt', minWidth: '45mm' }}>
+                  <div style={{ fontWeight: 'bold', marginBottom: '2mm' }}>LEGENDA:</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2mm', marginBottom: '1mm' }}>
+                    <div style={{ width: '8mm', height: '4mm', background: 'red' }}></div>
+                    <span>Região Metropolitana de Londrina</span>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2mm' }}>
+                    <div style={{ width: '8mm', height: '4mm', background: 'red', backgroundImage: 'repeating-linear-gradient(45deg, transparent, transparent 2px, white 2px, white 4px)' }}></div>
+                    <span>Londrina</span>
+                  </div>
+                </div>
               </div>
               
               <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', lineHeight: '1.2', marginBottom: '8mm' }}>
