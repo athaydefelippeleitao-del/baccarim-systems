@@ -826,13 +826,8 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
 
               <div style={{ textAlign: 'center', marginBottom: '2mm' }}>
-                {satelliteUrl ? (
-                  <img src={satelliteUrl} alt="Imagem de satélite" crossOrigin="anonymous"
-                    style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #000', display: 'block', marginBottom: '2mm' }} />
-                ) : (
                   <img src="/img_p8_2.png" alt="Planta de localização do empreendimento" 
-                    style={{ width: '100%', height: '110mm', objectFit: 'contain', border: '1px solid #000', display: 'block', margin: '0 auto 2mm auto' }} />
-                )}
+                    style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #000', display: 'block', margin: '0 auto 2mm auto' }} />
                 <div style={{ fontSize: '10pt', color: '#000', fontWeight: 'bold' }}>Avenida Alcides Turini, Gleba Ribeirão Cafezal – Lote A/2</div>
                 <div style={{ fontSize: '8pt', color: '#000', marginTop: '1mm' }}>Figura 2 - Planta de localização do empreendimento. Fonte: Google Earth.</div>
               </div>
