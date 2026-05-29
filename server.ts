@@ -34,6 +34,7 @@ import {
   upsertNotifications,
   upsertContracts,
   deleteKeyFromSupabase,
+  savePushSubscriptions
 } from "./services/supabaseService";
 
 // Import OpenAI service (server-side only)
@@ -357,9 +358,19 @@ async function startServer() {
         const exists = user.pushSubscriptions.find((s: any) => s.endpoint === subscription.endpoint);
         if (!exists) {
           user.pushSubscriptions.push(subscription);
+          
+          // Construct the full subscriptions map
+          const subsMap: Record<string, any[]> = {};
+          state.users.forEach((u: any) => {
+            if (u.pushSubscriptions && u.pushSubscriptions.length > 0) {
+              subsMap[u.id] = u.pushSubscriptions;
+            }
+          });
+
           // Broadcast and save
           io.emit("state:changed", { key: 'users', value: state.users });
           await saveKeyToSupabase('users', state.users);
+          await savePushSubscriptions(subsMap);
         }
       }
       res.status(201).json({});
@@ -377,16 +388,16 @@ async function startServer() {
         return res.status(404).json({ error: "Notification not found" });
       }
       console.log(`[Push] Manually triggering alert for notification: ${notif.title}`);
-      sendPushToRelevantUsers(notif, 'Alerta de Notificação');
-      res.json({ success: true });
+      const attempts = await sendPushToRelevantUsers(notif, 'Alerta de Notificação');
+      res.json({ success: true, attempts });
     } catch (error: any) {
       console.error("Manual push error:", error);
       res.status(500).json({ error: "Failed to send manual push notification" });
     }
   });
 
-  // Helper to send push notifications to relevant users
-  function sendPushToRelevantUsers(notif: any, titleOverride?: string) {
+  // Helper to send push notifications to relevant users, returning count of attempts
+  async function sendPushToRelevantUsers(notif: any, titleOverride?: string) {
     const usersToNotify = state.users.filter((u: any) => 
       u.role === 'admin' || u.role === 'engineer' || (u.clientNames && u.clientNames.includes(notif.clientName))
     );
@@ -397,15 +408,46 @@ async function startServer() {
       url: '/notifications'
     });
 
+    let attemptCount = 0;
+    const promises: Promise<any>[] = [];
+    let stateChanged = false;
+
     usersToNotify.forEach((user: any) => {
       if (user.pushSubscriptions && user.pushSubscriptions.length > 0) {
         user.pushSubscriptions.forEach((sub: any) => {
-          webpush.sendNotification(sub, payload).catch(err => {
+          attemptCount++;
+          const p = webpush.sendNotification(sub, payload).catch(err => {
             console.error('Error sending push notification to user', user.name, err);
+            // If the subscription is expired or invalid (410 or 404), remove it
+            if (err.statusCode === 410 || err.statusCode === 404) {
+              console.log(`[Push] Removing expired/invalid subscription for user ${user.name}`);
+              user.pushSubscriptions = user.pushSubscriptions.filter((s: any) => s.endpoint !== sub.endpoint);
+              stateChanged = true;
+            }
           });
+          promises.push(p);
         });
       }
     });
+
+    if (promises.length > 0) {
+      await Promise.all(promises);
+    }
+
+    if (stateChanged) {
+      // Re-save subscriptions map
+      const subsMap: Record<string, any[]> = {};
+      state.users.forEach((u: any) => {
+        if (u.pushSubscriptions && u.pushSubscriptions.length > 0) {
+          subsMap[u.id] = u.pushSubscriptions;
+        }
+      });
+      
+      saveKeyToSupabase('users', state.users).catch(e => console.error("Failed to update users after cleaning sub:", e));
+      savePushSubscriptions(subsMap).catch(e => console.error("Failed to update push subscriptions after cleaning sub:", e));
+    }
+
+    return attemptCount;
   }
 
   // Daily Check for Deadlines exactly 1 week away (or less)

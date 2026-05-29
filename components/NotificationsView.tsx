@@ -154,10 +154,15 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         body: JSON.stringify({ notificationId: notifId })
       });
       if (response.ok) {
-        setPushSentIds(prev => ({ ...prev, [notifId]: true }));
-        setTimeout(() => {
-          setPushSentIds(prev => ({ ...prev, [notifId]: false }));
-        }, 3000);
+        const data = await response.json();
+        if (data.attempts === 0) {
+          alert('Aviso: Nenhum dispositivo/celular está cadastrado para receber notificações push. Vá em Perfil e ative os "Avisos no Celular" primeiro.');
+        } else {
+          setPushSentIds(prev => ({ ...prev, [notifId]: true }));
+          setTimeout(() => {
+            setPushSentIds(prev => ({ ...prev, [notifId]: false }));
+          }, 3000);
+        }
       } else {
         alert('Erro ao disparar push no celular.');
       }
