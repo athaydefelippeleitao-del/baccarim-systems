@@ -559,11 +559,29 @@ export async function upsertClientLogos(logos: Record<string, string>): Promise<
 }
 
 // ─────────────────────────────────────────────
-// LOAD ALL STATE FROM SUPABASE
+// PUSH SUBSCRIPTIONS
+// ─────────────────────────────────────────────
+export async function getPushSubscriptions(): Promise<Record<string, any[]>> {
+  const { data, error } = await supabase.from('checklist_templates').select('template').eq('key', 'USER_PUSH_SUBSCRIPTIONS').single();
+  if (error) {
+    if (error.code !== 'PGRST116') console.error('[Supabase] getPushSubscriptions error:', error);
+    return {};
+  }
+  return data.template || {};
+}
+
+export async function savePushSubscriptions(subscriptionsMap: Record<string, any[]>): Promise<void> {
+  const { error } = await supabase.from('checklist_templates').upsert({ key: 'USER_PUSH_SUBSCRIPTIONS', template: subscriptionsMap }, { onConflict: 'key' });
+  if (error) {
+    console.error('[Supabase] savePushSubscriptions error:', error);
+  }
+}
+
+
 // ─────────────────────────────────────────────
 export async function loadStateFromSupabase() {
   console.log('[Supabase] Loading state from database...');
-  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos] =
+  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos, pushSubs] =
     await Promise.all([
       getUsers(),
       getClients(),
@@ -578,7 +596,13 @@ export async function loadStateFromSupabase() {
       getChecklistTemplates(),
       getAppConfig(),
       getClientLogos(),
+      getPushSubscriptions()
     ]);
+
+  // Merge push subscriptions into users
+  (users || []).forEach(user => {
+    user.pushSubscriptions = pushSubs[user.id] || [];
+  });
 
   console.log(`[Supabase] Loaded: ${projects.length} projects, ${licenses.length} licenses, ${users.length} users`);
   return { users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos };
