@@ -22,6 +22,35 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
   const [showToast, setShowToast] = useState(false);
   const [pushStatus, setPushStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
 
+  React.useEffect(() => {
+    const checkPushSubscription = async () => {
+      if (!('serviceWorker' in navigator && 'PushManager' in window)) {
+        setPushStatus('error');
+        return;
+      }
+      if (window.Notification.permission === 'denied') {
+        setPushStatus('error');
+        return;
+      }
+      if (window.Notification.permission === 'granted') {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            const subscription = await registration.pushManager.getSubscription();
+            if (subscription) {
+              setPushStatus('success');
+              return;
+            }
+          }
+        } catch (e) {
+          console.error("Error checking push subscription on mount:", e);
+        }
+      }
+      setPushStatus('idle');
+    };
+    checkPushSubscription();
+  }, []);
+
   const [isLightMode, setIsLightMode] = useState(() => {
     return document.body.classList.contains('light-theme');
   });
@@ -83,77 +112,91 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
   };
 
   const handleEnablePush = async () => {
-    if ('serviceWorker' in navigator && 'PushManager' in window && window.isSecureContext) {
-      setPushStatus('loading');
-      try {
-        console.log('Registering SW...');
-        const registration = await navigator.serviceWorker.register('/sw.js');
-        console.log('SW Registered!', registration);
+    if (!('serviceWorker' in navigator && 'PushManager' in window)) {
+      console.warn('Push not supported by browser/context');
+      setPushStatus('error');
+      alert('Seu navegador ou dispositivo não suporta notificações push.');
+      return;
+    }
 
-        let permission = window.Notification.permission;
-        if (permission === 'default') {
-          permission = await new Promise((resolve) => {
-            const promise = window.Notification.requestPermission(resolve);
-            if (promise) {
-              promise.then(resolve);
-            }
-          });
-        }
-        
-        if (permission !== 'granted') {
-          console.warn('Permission not granted:', permission);
-          setPushStatus('error');
-          return;
-        }
+    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+      console.warn('Push notifications require HTTPS or localhost');
+      setPushStatus('error');
+      alert('As notificações push requerem uma conexão segura (HTTPS) ou acesso via localhost. Se você está acessando por um endereço de IP externo, configure HTTPS para habilitar os avisos no celular.');
+      return;
+    }
 
-        console.log('Checking subscription...');
-        const existingSub = await registration.pushManager.getSubscription();
-        if (existingSub) {
-          console.log('Existing sub found, sending to server...');
-          await fetch('/api/push/subscribe', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ userId: user.id, subscription: existingSub })
-          });
-          setPushStatus('success');
-          return;
-        }
+    setPushStatus('loading');
+    try {
+      console.log('Registering SW...');
+      const registration = await navigator.serviceWorker.register('/sw.js');
+      console.log('SW Registered!', registration);
 
-        console.log('Fetching VAPID key...');
-        const response = await fetch('/api/vapidPublicKey');
-        const vapidPublicKey = await response.text();
+      let permission = window.Notification.permission;
+      if (permission === 'denied') {
+        alert('As notificações estão bloqueadas no seu navegador. Por favor, acesse as configurações do seu navegador (clicando no cadeado ao lado do link no topo da página) e permita notificações para receber os avisos no celular.');
+        setPushStatus('error');
+        return;
+      }
 
-        function urlBase64ToUint8Array(base64String: string) {
-          const padding = '='.repeat((4 - base64String.length % 4) % 4);
-          const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-          const rawData = window.atob(base64);
-          const outputArray = new Uint8Array(rawData.length);
-          for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
-          return outputArray;
-        }
-
-        console.log('Subscribing to push manager...');
-        const subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+      if (permission === 'default') {
+        permission = await new Promise((resolve) => {
+          const promise = window.Notification.requestPermission(resolve);
+          if (promise) {
+            promise.then(resolve);
+          }
         });
+      }
+      
+      if (permission !== 'granted') {
+        console.warn('Permission not granted:', permission);
+        setPushStatus('error');
+        return;
+      }
 
-        console.log('Sending subscription to server...');
+      console.log('Checking subscription...');
+      const existingSub = await registration.pushManager.getSubscription();
+      if (existingSub) {
+        console.log('Existing sub found, sending to server...');
         await fetch('/api/push/subscribe', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, subscription })
+          body: JSON.stringify({ userId: user.id, subscription: existingSub })
         });
-        
         setPushStatus('success');
-      } catch (err) {
-        console.error('Error setting up push notifications:', err);
-        setPushStatus('error');
+        return;
       }
-    } else {
-      console.warn('Push not supported by browser/context');
+
+      console.log('Fetching VAPID key...');
+      const response = await fetch('/api/vapidPublicKey');
+      const vapidPublicKey = await response.text();
+
+      function urlBase64ToUint8Array(base64String: string) {
+        const padding = '='.repeat((4 - base64String.length % 4) % 4);
+        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+        const rawData = window.atob(base64);
+        const outputArray = new Uint8Array(rawData.length);
+        for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
+        return outputArray;
+      }
+
+      console.log('Subscribing to push manager...');
+      const subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
+      });
+
+      console.log('Sending subscription to server...');
+      await fetch('/api/push/subscribe', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id, subscription })
+      });
+      
+      setPushStatus('success');
+    } catch (err) {
+      console.error('Error setting up push notifications:', err);
       setPushStatus('error');
-      alert('Seu navegador não suporta notificações push neste contexto.');
     }
   };
 
