@@ -76,6 +76,7 @@ export interface Notification {
   severity: NotificationSeverity;
   attachedFiles?: Attachment[];
   responseDraft?: string;
+  sent1WeekAlert?: boolean;
 }
 
 export interface ChecklistItem {

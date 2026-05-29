@@ -392,27 +392,59 @@ async function startServer() {
     });
   }
 
-  // Daily Check for Deadlines exactly 1 week away
-  setInterval(() => {
+  // Daily Check for Deadlines exactly 1 week away (or less)
+  async function checkDeadlinesAndSendAlerts() {
     try {
       if (!state.notifications || state.notifications.length === 0) return;
       
       const today = new Date();
       today.setHours(0, 0, 0, 0);
-      const targetDate = new Date(today);
-      targetDate.setDate(targetDate.getDate() + 7);
-      
-      const targetDateStr = targetDate.toLocaleDateString('pt-BR'); // "dd/mm/yyyy"
+
+      const parseDateStr = (dateStr: string) => {
+        const parts = dateStr.split('/');
+        if (parts.length !== 3) return null;
+        return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+      };
+
+      let stateChanged = false;
 
       state.notifications.forEach((notif: any) => {
-        if (notif.status === 'Open' && notif.deadline === targetDateStr) {
-          sendPushToRelevantUsers(notif, 'Prazo Fatal em 1 Semana!');
+        if (notif.status === 'Open' && !notif.sent1WeekAlert) {
+          const deadlineDate = parseDateStr(notif.deadline);
+          if (deadlineDate) {
+            const timeDiff = deadlineDate.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            
+            // If the deadline is within 7 days and is in the future or today
+            if (daysDiff <= 7 && daysDiff >= 0) {
+              console.log(`[Push] Deadline for "${notif.title}" is ${daysDiff} days away. Sending alert...`);
+              sendPushToRelevantUsers(notif, `Prazo Fatal em ${daysDiff === 7 ? '1 Semana' : `${daysDiff} dias`}!`);
+              notif.sent1WeekAlert = true;
+              stateChanged = true;
+            }
+          }
         }
       });
+
+      if (stateChanged) {
+        // Broadcast change and save to Supabase
+        io.emit("state:changed", { key: 'notifications', value: state.notifications });
+        await saveKeyToSupabase('notifications', state.notifications);
+        console.log("[Push] State updated and saved for notifications sent1WeekAlert flag");
+      }
     } catch (e) {
       console.error("Error running push notification job:", e);
     }
-  }, 1000 * 60 * 60); // Run every hour
+  }
+
+  // Run on startup shortly after state loads
+  setTimeout(() => {
+    console.log("[Push] Running startup deadline check...");
+    checkDeadlinesAndSendAlerts();
+  }, 5000);
+
+  // Periodic check
+  setInterval(checkDeadlinesAndSendAlerts, 1000 * 60 * 60); // Run every hour
 
   const saveTimeouts: Record<string, NodeJS.Timeout> = {};
   const presence: Record<string, any> = {};
@@ -451,14 +483,29 @@ async function startServer() {
       if (update.key === 'notifications' && Array.isArray(update.value)) {
         const oldNotifs = state.notifications || [];
         const newNotifs = update.value;
+        
+        // Handle immediate notifications for new entries and maintain alert flags
         if (newNotifs.length > oldNotifs.length) {
-          // Identify newly added notification(s)
           const addedNotifs = newNotifs.filter((n: any) => !oldNotifs.some((old: any) => old.id === n.id));
           addedNotifs.forEach((notif: any) => {
             console.log(`[Push] New notification detected: ${notif.title}. Triggering immediate push.`);
             sendPushToRelevantUsers(notif, 'Nova Notificação Registrada');
+            notif.sent1WeekAlert = false;
           });
         }
+
+        // Synchronize and preserve alert flags
+        newNotifs.forEach((newNotif: any) => {
+          const oldNotif = oldNotifs.find((o: any) => o.id === newNotif.id);
+          if (oldNotif) {
+            if (oldNotif.deadline !== newNotif.deadline || (oldNotif.status === 'Resolved' && newNotif.status === 'Open')) {
+              console.log(`[Push] Resetting sent1WeekAlert flag for "${newNotif.title}" because deadline or status changed.`);
+              newNotif.sent1WeekAlert = false;
+            } else if (newNotif.sent1WeekAlert === undefined && oldNotif.sent1WeekAlert !== undefined) {
+              newNotif.sent1WeekAlert = oldNotif.sent1WeekAlert;
+            }
+          }
+        });
       }
 
       // ─── SYNC PROTECTION ───
