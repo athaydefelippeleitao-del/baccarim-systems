@@ -329,6 +329,32 @@ const App: React.FC = () => {
     }
   }, [socket, isConnected, currentUser]);
 
+  // Sync push notifications subscription with server if already granted in browser
+  useEffect(() => {
+    if (currentUser && 'serviceWorker' in navigator && 'PushManager' in window) {
+      const syncPushSub = async () => {
+        try {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration) {
+            const subscription = await registration.pushManager.getSubscription();
+            if (subscription) {
+              console.log('[Push] Proactively syncing push subscription with server for user:', currentUser.name);
+              await fetch('/api/push/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: currentUser.id, subscription })
+              });
+            }
+          }
+        } catch (e) {
+          console.error('[Push] Failed to auto-sync push subscription:', e);
+        }
+      };
+      const timer = setTimeout(syncPushSub, 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [currentUser]);
+
   // Sync local state changes to server
   useEffect(() => {
     if (isInitialLoadDone.current) emitUpdate('users', users);

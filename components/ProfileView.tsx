@@ -39,6 +39,12 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
             const subscription = await registration.pushManager.getSubscription();
             if (subscription) {
               setPushStatus('success');
+              // Proactively send to server to ensure it is synchronized!
+              fetch('/api/push/subscribe', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId: user.id, subscription })
+              }).catch(e => console.error("Error auto-syncing push subscription:", e));
               return;
             }
           }
