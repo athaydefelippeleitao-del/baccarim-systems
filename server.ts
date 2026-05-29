@@ -393,44 +393,101 @@ async function startServer() {
   }
 
   // Daily Check for Deadlines exactly 1 week away (or less)
+  // Daily Check for Deadlines exactly 1 week away (or less) and License Expirations (120 days before)
   async function checkDeadlinesAndSendAlerts() {
     try {
-      if (!state.notifications || state.notifications.length === 0) return;
-      
       const today = new Date();
       today.setHours(0, 0, 0, 0);
 
       const parseDateStr = (dateStr: string) => {
+        if (!dateStr) return null;
         const parts = dateStr.split('/');
         if (parts.length !== 3) return null;
         return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
       };
 
-      let stateChanged = false;
+      let notificationsChanged = false;
 
-      state.notifications.forEach((notif: any) => {
-        if (notif.status === 'Open' && !notif.sent1WeekAlert) {
-          const deadlineDate = parseDateStr(notif.deadline);
-          if (deadlineDate) {
-            const timeDiff = deadlineDate.getTime() - today.getTime();
-            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
-            
-            // If the deadline is within 7 days and is in the future or today
-            if (daysDiff <= 7 && daysDiff >= 0) {
-              console.log(`[Push] Deadline for "${notif.title}" is ${daysDiff} days away. Sending alert...`);
-              sendPushToRelevantUsers(notif, `Prazo Fatal em ${daysDiff === 7 ? '1 Semana' : `${daysDiff} dias`}!`);
-              notif.sent1WeekAlert = true;
-              stateChanged = true;
+      // 1. Check existing notifications for 1-week-away deadlines
+      if (state.notifications && Array.isArray(state.notifications)) {
+        state.notifications.forEach((notif: any) => {
+          if (notif.status === 'Open' && !notif.sent1WeekAlert) {
+            const deadlineDate = parseDateStr(notif.deadline);
+            if (deadlineDate) {
+              const timeDiff = deadlineDate.getTime() - today.getTime();
+              const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+              
+              // If the deadline is within 7 days and is in the future or today
+              if (daysDiff <= 7 && daysDiff >= 0) {
+                console.log(`[Push] Deadline for "${notif.title}" is ${daysDiff} days away. Sending alert...`);
+                sendPushToRelevantUsers(notif, `Prazo Fatal em ${daysDiff === 7 ? '1 Semana' : `${daysDiff} dias`}!`);
+                notif.sent1WeekAlert = true;
+                notificationsChanged = true;
+              }
             }
           }
-        }
-      });
+        });
+      }
 
-      if (stateChanged) {
+      // 2. Check licenses for 120-day-away expirations and auto-create/auto-resolve alerts
+      if (state.licenses && Array.isArray(state.licenses)) {
+        if (!state.notifications) state.notifications = [];
+        
+        state.licenses.forEach((license: any) => {
+          if (!license.expiryDate || license.expiryDate === 'Pendente' || license.expiryDate === 'N/A') return;
+          
+          const expiryDate = parseDateStr(license.expiryDate);
+          if (expiryDate) {
+            const timeDiff = expiryDate.getTime() - today.getTime();
+            const daysDiff = Math.ceil(timeDiff / (1000 * 60 * 60 * 24));
+            const autoNotifId = `auto-lic-${license.id}`;
+            
+            // If the license expires in 120 days or less
+            if (daysDiff <= 120 && daysDiff >= 0) {
+              const notifExists = state.notifications.some((n: any) => n.id === autoNotifId);
+              
+              if (!notifExists) {
+                console.log(`[Push] License "${license.name}" is expiring in ${daysDiff} days. Creating automatic notification...`);
+                
+                const newNotif = {
+                  id: autoNotifId,
+                  title: `Vencimento de Licença: ${license.name}`,
+                  clientName: license.clientName,
+                  projectId: license.projectId || '',
+                  description: `A licença "${license.name}" (${license.agency}), número de processo ${license.processNumber || 'N/A'}, vencerá em ${license.expiryDate} (restam ${daysDiff} dias). O pedido de renovação deve ser formalizado com antecedência mínima de 120 dias para garantir a prorrogação automática.`,
+                  dateReceived: new Date().toLocaleDateString('pt-BR'),
+                  deadline: license.expiryDate,
+                  status: 'Open' as const,
+                  agency: license.agency,
+                  severity: 'Alta' as const,
+                  attachedFiles: [],
+                  sent1WeekAlert: true // Skip 1 week alert since this is a 120-day alert
+                };
+                
+                state.notifications.push(newNotif);
+                notificationsChanged = true;
+                
+                // Send push notification immediately
+                sendPushToRelevantUsers(newNotif, `Alerta de Licença: 120 dias para vencer`);
+              }
+            } else if (daysDiff > 120) {
+              // If the license was renewed/updated to be > 120 days, auto-resolve existing open auto-notifications
+              const existingNotifIdx = state.notifications.findIndex((n: any) => n.id === autoNotifId);
+              if (existingNotifIdx !== -1 && state.notifications[existingNotifIdx].status === 'Open') {
+                console.log(`[Push] License "${license.name}" renewed/extended. Automatically resolving alert notification.`);
+                state.notifications[existingNotifIdx].status = 'Resolved';
+                notificationsChanged = true;
+              }
+            }
+          }
+        });
+      }
+
+      if (notificationsChanged) {
         // Broadcast change and save to Supabase
         io.emit("state:changed", { key: 'notifications', value: state.notifications });
         await saveKeyToSupabase('notifications', state.notifications);
-        console.log("[Push] State updated and saved for notifications sent1WeekAlert flag");
+        console.log("[Push] State updated and saved for notifications (1-week alerts or license expiry alerts)");
       }
     } catch (e) {
       console.error("Error running push notification job:", e);
@@ -533,6 +590,11 @@ async function startServer() {
       }
 
       state[update.key] = update.value;
+
+      if (update.key === 'licenses') {
+        console.log("[Push] Licenses updated. Checking for expiry alerts immediately...");
+        checkDeadlinesAndSendAlerts();
+      }
 
       // Record audit log if user info is provided
       if (update.user) {
