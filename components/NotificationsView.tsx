@@ -44,7 +44,16 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   }, [availableProjectsForClient]);
 
   const filtered = useMemo(() => {
-    return notifications.filter(n => filter === 'All' || n.status === filter);
+    const parseDeadline = (d: string) => {
+      // Format: DD/MM/YYYY
+      if (!d) return Infinity;
+      const parts = d.split('/');
+      if (parts.length !== 3) return Infinity;
+      return new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0])).getTime();
+    };
+    return notifications
+      .filter(n => filter === 'All' || n.status === filter)
+      .sort((a, b) => parseDeadline(a.deadline) - parseDeadline(b.deadline));
   }, [notifications, filter]);
 
   const stats = useMemo(() => ({
