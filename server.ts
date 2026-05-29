@@ -369,6 +369,22 @@ async function startServer() {
     }
   });
 
+  app.post("/api/push/send-manual", async (req, res) => {
+    try {
+      const { notificationId } = req.body;
+      const notif = state.notifications.find((n: any) => n.id === notificationId);
+      if (!notif) {
+        return res.status(404).json({ error: "Notification not found" });
+      }
+      console.log(`[Push] Manually triggering alert for notification: ${notif.title}`);
+      sendPushToRelevantUsers(notif, 'Alerta de Notificação');
+      res.json({ success: true });
+    } catch (error: any) {
+      console.error("Manual push error:", error);
+      res.status(500).json({ error: "Failed to send manual push notification" });
+    }
+  });
+
   // Helper to send push notifications to relevant users
   function sendPushToRelevantUsers(notif: any, titleOverride?: string) {
     const usersToNotify = state.users.filter((u: any) => 

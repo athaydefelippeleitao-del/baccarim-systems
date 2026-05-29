@@ -18,6 +18,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const [aiLoadingId, setAiLoadingId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
+  const [pushSendingId, setPushSendingId] = useState<string | null>(null);
+  const [pushSentIds, setPushSentIds] = useState<Record<string, boolean>>({});
   const fileInputRef = React.useRef<HTMLInputElement>(null);
 
   const [newNotifForm, setNewNotifForm] = useState({
@@ -140,6 +142,30 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       console.error("AI Generation failed", e);
     } finally {
       setAiLoadingId(null);
+    }
+  };
+
+  const triggerManualPush = async (notifId: string) => {
+    setPushSendingId(notifId);
+    try {
+      const response = await fetch('/api/push/send-manual', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ notificationId: notifId })
+      });
+      if (response.ok) {
+        setPushSentIds(prev => ({ ...prev, [notifId]: true }));
+        setTimeout(() => {
+          setPushSentIds(prev => ({ ...prev, [notifId]: false }));
+        }, 3000);
+      } else {
+        alert('Erro ao disparar push no celular.');
+      }
+    } catch (e) {
+      console.error(e);
+      alert('Erro ao disparar push no celular.');
+    } finally {
+      setPushSendingId(null);
     }
   };
 
@@ -324,6 +350,35 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                         <>
                           <i className="fas fa-wand-magic-sparkles"></i>
                           <span>Análise Inteligente</span>
+                        </>
+                      )}
+                    </button>
+                  )}
+
+                  {notif.status === 'Open' && (
+                    <button
+                      onClick={() => triggerManualPush(notif.id)}
+                      disabled={pushSendingId === notif.id}
+                      className={`w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center space-x-3 ${
+                        pushSentIds[notif.id]
+                          ? 'bg-baccarim-green text-white shadow-lg shadow-emerald-500/20'
+                          : 'bg-baccarim-amber text-baccarim-dark hover:bg-baccarim-green hover:text-white shadow-lg shadow-baccarim-amber/20'
+                      }`}
+                    >
+                      {pushSendingId === notif.id ? (
+                        <>
+                          <div className="w-3 h-3 border-2 border-baccarim-border/20 border-t-white rounded-full animate-spin"></div>
+                          <span>Disparando...</span>
+                        </>
+                      ) : pushSentIds[notif.id] ? (
+                        <>
+                          <i className="fas fa-check-double"></i>
+                          <span>Notificação Enviada!</span>
+                        </>
+                      ) : (
+                        <>
+                          <i className="fas fa-paper-plane"></i>
+                          <span>Notificar no Celular</span>
                         </>
                       )}
                     </button>
