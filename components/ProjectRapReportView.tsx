@@ -52,8 +52,8 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     if (!isNaN(e) && !isNaN(n) && e > 0 && n > 0) {
       try {
         const { lat, lng } = utmToDecimal(e, n, zone);
-        const delta = 0.003;
-        return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${lng-delta},${lat-delta*0.7},${lng+delta},${lat+delta*0.7}&bboxSR=4326&layers=show&size=600,400&imageSR=4326&transparent=false&format=png32&f=image`;
+        const delta = 0.004;
+        return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/export?bbox=${lng-delta},${lat-delta*0.75},${lng+delta},${lat+delta*0.75}&bboxSR=4326&layers=show&size=800,600&imageSR=4326&transparent=false&format=png32&f=image`;
       } catch { return null; }
     }
     return null;
@@ -826,10 +826,24 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
               </div>
 
               <div style={{ textAlign: 'center', marginBottom: '2mm' }}>
-                  <img src={project.id === 'pr-1774635010400' || project.name.includes('HIRAIWA') || project.name.includes('HIRAWA') ? '/img_p8_hiraiwa.png' : '/img_p8_2.png'} alt="Planta de localização do empreendimento" 
-                    style={{ width: '100%', height: '110mm', objectFit: 'cover', border: '1px solid #000', display: 'block', margin: '0 auto 2mm auto' }} />
-                <div style={{ fontSize: '10pt', color: '#000', fontWeight: 'bold' }}>{empEnderecoFull || 'Avenida Alcides Turini'}{empBairro ? `, ${empBairro}` : ''}</div>
-                <div style={{ fontSize: '8pt', color: '#000', marginTop: '1mm' }}>Figura 2 - Planta de localização do empreendimento. Fonte: Google Earth.</div>
+                <div style={{ position: 'relative', width: '100%', height: '110mm', border: '1px solid #000', overflow: 'hidden', margin: '0 auto 2mm auto' }}>
+                  <img
+                    src={satelliteUrl || '/img_p8_2.png'}
+                    alt="Planta de localização do empreendimento"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                  />
+                  {/* Pin overlay at center */}
+                  <div style={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -100%)', pointerEvents: 'none' }}>
+                    <svg width="32" height="40" viewBox="0 0 32 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M16 0C9.373 0 4 5.373 4 12c0 9 12 28 12 28S28 21 28 12C28 5.373 22.627 0 16 0z" fill="#FF6B00" stroke="white" strokeWidth="2"/>
+                      <circle cx="16" cy="12" r="5" fill="white"/>
+                    </svg>
+                  </div>
+                  {/* Source label */}
+                  <div style={{ position: 'absolute', bottom: '4px', left: '6px', fontSize: '7pt', color: 'white', textShadow: '1px 1px 2px #000', pointerEvents: 'none' }}>Google Earth / ESRI</div>
+                </div>
+                <div style={{ fontSize: '10pt', color: '#000', fontWeight: 'bold' }}>{empEnderecoFull || project.specs?.projectAddress || 'Avenida Alcides Turini'}{empBairro ? `, ${empBairro}` : (project.specs?.projectBairro ? `, ${project.specs.projectBairro}` : '')}</div>
+                <div style={{ fontSize: '8pt', color: '#000', marginTop: '1mm' }}>Figura 2 - Planta de localização do empreendimento. Fonte: Google Earth / ESRI World Imagery.</div>
               </div>
 
               <div style={{ marginTop: '8mm' }}>
