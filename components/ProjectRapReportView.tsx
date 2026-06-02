@@ -11,6 +11,7 @@ interface ProjectRapReportViewProps {
 
 const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, appConfig, onUpdateProject, onClose }) => {
   const reportRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
 
   const rd = project.specs?.rapData || {};
@@ -93,9 +94,14 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     if (!reportRef.current) return;
     setIsGenerating(true);
     
-    // Salvar scroll original e ir para o topo
-    const originalScrollY = window.scrollY;
-    window.scrollTo(0, 0);
+    // O container que scrolla é o overlay fixo (fixed inset-0 overflow-y-auto)
+    // window.scrollY é sempre 0 neste caso — precisamos rolar o containerRef
+    const container = containerRef.current;
+    const originalScrollTop = container ? container.scrollTop : 0;
+    if (container) container.scrollTop = 0;
+    
+    // Aguardar um frame para o browser aplicar o scroll antes do html2canvas capturar
+    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
     
     const opt = {
       margin: 0,
@@ -117,7 +123,8 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
-      window.scrollTo(0, originalScrollY);
+      // Restaurar scroll do container
+      if (container) container.scrollTop = originalScrollTop;
       setIsGenerating(false);
     }
   };
@@ -236,7 +243,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
   ];
 
   return (
-    <div className="fixed inset-0 bg-baccarim-dark/95 backdrop-blur-xl z-[250] flex flex-col md:flex-row items-start justify-center overflow-y-auto p-4 md:p-10 animate-in fade-in duration-300 gap-8">
+    <div ref={containerRef} className="fixed inset-0 bg-baccarim-dark/95 backdrop-blur-xl z-[250] flex flex-col md:flex-row items-start justify-center overflow-y-auto p-4 md:p-10 animate-in fade-in duration-300 gap-8">
 
       {/* Settings Panel */}
       <div className="w-full md:w-80 bg-baccarim-card rounded-[2rem] p-6 shadow-2xl border border-baccarim-border shrink-0 sticky top-10 print:hidden flex flex-col max-h-[90vh] overflow-y-auto custom-scrollbar">
