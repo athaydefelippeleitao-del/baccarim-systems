@@ -96,7 +96,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
       margin: 0,
       filename: `RAP_${project.name.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true, allowTaint: true },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: 'css', before: '.pdf-page-break' }
     };
