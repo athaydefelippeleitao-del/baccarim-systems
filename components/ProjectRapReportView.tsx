@@ -2466,76 +2466,156 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
         </div>
 
         {/* PAGE 45 - Capa Anexo 01 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 01</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            {/* Top Right Logo */}
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 01</div>
+              </div>
+              <div style={{ textAlign: 'center', fontSize: '10pt', color: '#000', marginBottom: '20mm' }}>
+                <p>Anotação de Responsabilidade Técnica ART nº 1720260789180</p>
+                <p>(Engº Civil Alberto Baccarim Junior).</p>
+              </div>
+            </div>
+            {/* Footer */}
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>45</div>
           </div>
-          <div style={{ textAlign: 'center', fontSize: '10pt', color: '#1a3a6b', marginBottom: '20mm' }}>
-            <p>Anotação de Responsabilidade Técnica ART nº 1720260789180</p>
-            <p>(Engº Civil Alberto Baccarim Junior).</p>
-          </div>
-          <Footer pageNum={45} />
         </div>
 
         {/* PAGE 46 - Capa Anexo 02 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 02</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 02</div>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+                <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Planta-Ilustrativa</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>46</div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
-            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Planta-Ilustrativa</div>
-          </div>
-          <Footer pageNum={46} />
         </div>
 
         {/* PAGE 47 - Capa Anexo 03 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 03</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 03</div>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+                <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Planta-Planialtimétrica</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>47</div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
-            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Planta-Planialtimétrica</div>
-          </div>
-          <Footer pageNum={47} />
         </div>
 
         {/* PAGE 48 - Capa Anexo 04 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 04</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 04</div>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+                <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Mapa de declividade</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>48</div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
-            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Mapa de declividade</div>
-          </div>
-          <Footer pageNum={48} />
         </div>
 
         {/* PAGE 49 - Capa Anexo 05 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 05</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 05</div>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+                <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Laudo-Geológico-Geotécnico</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>49</div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
-            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Laudo-Geológico-Geotécnico</div>
-          </div>
-          <Footer pageNum={49} />
         </div>
 
         {/* PAGE 50 - Capa Anexo 06 */}
-        <div className="pdf-page-break" style={{ ...pageStyle, padding: '15mm 20mm 30mm 20mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', justifyContent: 'flex-end' }}><SmallLogo /></div>
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 06</div>
+        <div className="pdf-page-break" style={{ ...pageStyle }}>
+          <div style={{ position: 'absolute', top: '12mm', left: '12mm', right: '12mm', bottom: '12mm', border: '1px solid #000', display: 'flex', flexDirection: 'column', boxSizing: 'border-box' }}>
+            <div style={{ width: '100%', display: 'flex', justifyContent: 'flex-end', padding: '8mm 12mm 0 0' }}>
+              <img src="/logo_baccarim.jpg" alt="Baccarim Logo" style={{ width: '22mm', height: 'auto', objectFit: 'contain' }} />
+            </div>
+            <div style={{ flex: 1, padding: '0 12mm', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+              <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <div style={{ fontSize: '24pt', fontWeight: '900', color: '#000', textAlign: 'center' }}>ANEXO 06</div>
+              </div>
+              <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
+                <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Relatório Fotográfico</div>
+              </div>
+            </div>
+            <div style={{ textAlign: 'center', marginBottom: '8mm', paddingTop: '4mm' }}>
+              <div style={{ fontSize: '7.5pt', color: '#000', lineHeight: 1.4 }}>
+                <span style={{ fontWeight: '700' }}>BACCARIM ENGENHARIA URBANA LTDA</span><br />
+                Avenida Dom Pedro II, 33 – Sala 02. Centro / Ibiporã – PR<br />
+                Contato: (43) 3268-0916 / alberto@baccarimengenharia.com.br
+              </div>
+            </div>
+            <div style={{ position: 'absolute', bottom: '8mm', right: '12mm', fontSize: '9pt', color: '#000' }}>50</div>
           </div>
-          <div style={{ textAlign: 'right', fontSize: '12pt', fontWeight: '700', color: '#000', marginBottom: '10mm' }}>
-            <div style={{ borderBottom: '4px solid #000', paddingBottom: '2mm', display: 'inline-block' }}>Relatório Fotográfico</div>
-          </div>
-          <Footer pageNum={50} />
         </div>
 
       </div>
