@@ -96,13 +96,13 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
       margin: 0,
       filename: `RAP_${project.name.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true, logging: true },
+      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: 'css', before: '.pdf-page-break' }
+      pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page-break' }
     };
     try {
       // @ts-ignore
-      await html2pdf().set(opt).from(reportRef.current).save();
+      await (window.html2pdf || html2pdf)().set(opt).from(reportRef.current).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
@@ -118,10 +118,10 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
   const pageStyle: React.CSSProperties = {
     width: '210mm',
     minHeight: '297mm',
-    backgroundColor: 'white',
+    backgroundColor: '#ffffff',
     position: 'relative',
     fontFamily: 'Arial, Helvetica, sans-serif',
-    color: '#000',
+    color: '#000000',
     boxSizing: 'border-box',
   };
 
@@ -295,7 +295,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
       </div>
 
       {/* A4 Document Preview */}
-      <div ref={reportRef} className="shrink-0" style={{ width: '210mm' }}>
+      <div ref={reportRef} className="shrink-0" style={{ width: '210mm', backgroundColor: 'white' }}>
 
         {/* PAGE 1 - CAPA */}
         <div style={{ ...pageStyle }}>
