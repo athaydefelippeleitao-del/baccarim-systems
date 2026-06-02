@@ -92,11 +92,22 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
   const handleGeneratePDF = async () => {
     if (!reportRef.current) return;
     setIsGenerating(true);
+    
+    // Salvar scroll original e ir para o topo
+    const originalScrollY = window.scrollY;
+    window.scrollTo(0, 0);
+    
     const opt = {
       margin: 0,
       filename: `RAP_${project.name.replace(/ /g, '_')}.pdf`,
       image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { scale: 2, useCORS: true, letterRendering: true },
+      html2canvas: { 
+        scale: 2, 
+        useCORS: true, 
+        letterRendering: true,
+        scrollY: 0,
+        windowWidth: document.documentElement.offsetWidth
+      },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
       pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page-break' }
     };
@@ -106,6 +117,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
+      window.scrollTo(0, originalScrollY);
       setIsGenerating(false);
     }
   };
