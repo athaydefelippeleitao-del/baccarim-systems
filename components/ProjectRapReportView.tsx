@@ -90,41 +90,76 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     setTimeout(() => setIsSaving(false), 1000);
   };
 
-  const handleGeneratePDF = async () => {
+  const handleGeneratePDF = () => {
     if (!reportRef.current) return;
     setIsGenerating(true);
-    
-    // O container que scrolla é o overlay fixo (fixed inset-0 overflow-y-auto)
-    // window.scrollY é sempre 0 neste caso — precisamos rolar o containerRef
-    const container = containerRef.current;
-    const originalScrollTop = container ? container.scrollTop : 0;
-    if (container) container.scrollTop = 0;
-    
-    // Aguardar um frame para o browser aplicar o scroll antes do html2canvas capturar
-    await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));
-    
-    const opt = {
-      margin: 0,
-      filename: `RAP_${project.name.replace(/ /g, '_')}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true, 
-        letterRendering: true,
-        scrollY: 0,
-        windowWidth: document.documentElement.offsetWidth
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-      pagebreak: { mode: ['css', 'legacy'], before: '.pdf-page-break' }
-    };
+
     try {
-      // @ts-ignore
-      await (window.html2pdf || html2pdf)().set(opt).from(reportRef.current).save();
+      const printWindow = window.open('', '_blank', 'width=1200,height=800');
+      if (!printWindow) {
+        alert('Por favor, permita popups neste site para gerar o PDF.');
+        setIsGenerating(false);
+        return;
+      }
+
+      const reportHtml = reportRef.current.innerHTML;
+
+      printWindow.document.write(`<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>RAP - ${project.name}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: Arial, Helvetica, sans-serif; background: white; color: #000; }
+    img { max-width: 100%; display: block; }
+    @media print {
+      @page { size: A4 portrait; margin: 0; }
+      body { margin: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+      .pdf-page-break { page-break-before: always; break-before: page; }
+    }
+    @media screen {
+      .pdf-page-break { display: block; margin-top: 8px; }
+    }
+  </style>
+</head>
+<body>
+  ${reportHtml}
+</body>
+</html>`);
+
+      printWindow.document.close();
+      printWindow.focus();
+
+      // Aguardar imagens carregarem antes de imprimir
+      const images = Array.from(printWindow.document.images);
+      const total = images.length;
+      let loaded = 0;
+
+      const doPrint = () => {
+        setTimeout(() => {
+          printWindow.print();
+          setIsGenerating(false);
+        }, 800);
+      };
+
+      if (total === 0) {
+        doPrint();
+      } else {
+        images.forEach(img => {
+          if (img.complete) {
+            loaded++;
+            if (loaded >= total) doPrint();
+          } else {
+            img.onload = () => { loaded++; if (loaded >= total) doPrint(); };
+            img.onerror = () => { loaded++; if (loaded >= total) doPrint(); };
+          }
+        });
+        // Segurança: imprimir após 5s independente das imagens
+        setTimeout(() => { if (isGenerating) doPrint(); }, 5000);
+      }
     } catch (error) {
-      console.error('Error generating PDF:', error);
-    } finally {
-      // Restaurar scroll do container
-      if (container) container.scrollTop = originalScrollTop;
+      console.error('Erro ao gerar PDF:', error);
       setIsGenerating(false);
     }
   };
