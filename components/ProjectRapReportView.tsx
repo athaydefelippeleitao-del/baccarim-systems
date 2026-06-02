@@ -217,7 +217,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
     { num: 4, title: 'Temperatura média do ar anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).', page: 14 },
     { num: 5, title: 'Precipitação anual no Estado do Paraná. Fonte: Instituto Agronômico do Paraná - IAPAR (1999).', page: 15 },
     { num: 6, title: 'Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi). Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.', page: 16 },
-    { num: 7, title: 'Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi).', page: 17 },
+    { num: 7, title: 'Unidades Aquíferas do Paraná (Unidade Aquífera Serra Geral Norte).', page: 17 },
     { num: 8, title: 'Localização do empreendimento e corpos d\'água mais próximos. Fonte: Portal Ambiental da Prefeitura de Londrina – SIGLON.', page: 18 },
     { num: 9, title: 'Mapa de Solos do Estado do Paraná. Fonte: (BHERING, et al., 2007).', page: 19 },
     { num: 10, title: 'Mapa de vegetação do estado brasileiro do Paraná. Fonte: (IPARDES, 2007).', page: 21 },
@@ -1172,7 +1172,7 @@ const ProjectRapReportView: React.FC<ProjectRapReportViewProps> = ({ project, ap
                 <img src="/unidades_aquiferas_parana.png" alt="Mapa de Unidades Aquíferas do Paraná" 
                   style={{ width: '90%', height: '110mm', objectFit: 'contain', border: '1px solid #000', background: '#fff', margin: '0 auto' }} />
               </div>
-              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 7 - Unidades Hidrográficas do Paraná (Unidade Hidrográfica do Baixo do Tibagi).<br/>Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
+              <div style={{ fontSize: '8pt', color: '#000', textAlign: 'center', marginBottom: '8mm' }}>Figura 7 - Unidades Aquíferas do Paraná (Unidade Aquífera Serra Geral Norte).<br/>Fonte: INSTITUTO DAS ÁGUAS DO PARANÁ, 2007.</div>
             </div>
 
             {/* Footer */}
