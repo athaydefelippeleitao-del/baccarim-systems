@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Contract } from '../types';
+import { Contract, Installment } from '../types';
 
 interface FinanceViewProps {
   clients: string[];
@@ -11,6 +11,7 @@ interface FinanceViewProps {
 const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateContract, onDeleteContract }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [contractToDelete, setContractToDelete] = useState<string | null>(null);
+  const [selectedContractStepsId, setSelectedContractStepsId] = useState<string | null>(null);
 
   const [newProposalForm, setNewProposalForm] = useState({
     title: '', // Nº Proposta
@@ -25,12 +26,17 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
       id: `prop-${Date.now()}`,
       title: newProposalForm.title,
       clientName: newProposalForm.clientName,
-      totalValue: 0, // Removed UI for value, keeping 0 as required by type
+      totalValue: 0, 
       startDate: newProposalForm.startDate,
-      endDate: newProposalForm.startDate, // Not used, but required by type
-      status: 'Pending', // Empty by default (Pending)
+      endDate: newProposalForm.startDate, 
+      status: 'Pending', 
       billingType: 'Fixed',
-      installments: [],
+      installments: [
+        { id: `step-1-${Date.now()}`, title: 'no aceite da proposta', value: 0, dueDate: newProposalForm.startDate, status: 'Pending' },
+        { id: `step-2-${Date.now()}`, title: '30 dias do aceite', value: 0, dueDate: newProposalForm.startDate, status: 'Pending' },
+        { id: `step-3-${Date.now()}`, title: 'no protocolo da LP', value: 0, dueDate: newProposalForm.startDate, status: 'Pending' },
+        { id: `step-4-${Date.now()}`, title: 'no protocolo da LI', value: 0, dueDate: newProposalForm.startDate, status: 'Pending' },
+      ],
       attachedFiles: []
     };
 
@@ -44,7 +50,6 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
   };
 
   const toggleAcceptance = (contract: Contract) => {
-    // Cycle: Pending (Empty) -> Active (SIM) -> Expired (NÃO) -> Pending (Empty)
     let nextStatus: Contract['status'] = 'Pending';
     if (contract.status === 'Pending') nextStatus = 'Active';
     else if (contract.status === 'Active' || contract.status === 'Completed') nextStatus = 'Expired';
@@ -57,6 +62,51 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
     if (status === 'Active' || status === 'Completed') return <span className="text-emerald-600 font-bold">SIM</span>;
     if (status === 'Expired') return <span className="text-rose-600 font-bold">NÃO</span>;
     return <span className="text-gray-400 font-medium">-</span>;
+  };
+
+  const selectedContractForSteps = contracts.find(c => c.id === selectedContractStepsId);
+
+  const toggleStepStatus = (contractId: string, stepId: string) => {
+    const contract = contracts.find(c => c.id === contractId);
+    if (!contract) return;
+    const updatedInstallments = contract.installments.map(inst => {
+      if (inst.id === stepId) {
+        // Treat 'Paid' as Concluído
+        return { ...inst, status: inst.status === 'Pending' ? 'Paid' : 'Pending' }; 
+      }
+      return inst;
+    });
+    onUpdateContract({ ...contract, installments: updatedInstallments });
+  };
+  
+  const updateStepTitle = (contractId: string, stepId: string, title: string) => {
+    const contract = contracts.find(c => c.id === contractId);
+    if (!contract) return;
+    const updatedInstallments = contract.installments.map(inst => {
+      if (inst.id === stepId) return { ...inst, title };
+      return inst;
+    });
+    onUpdateContract({ ...contract, installments: updatedInstallments });
+  };
+
+  const addStep = (contractId: string) => {
+    const contract = contracts.find(c => c.id === contractId);
+    if (!contract) return;
+    const newStep: Installment = {
+      id: `step-${Date.now()}`,
+      title: 'Nova etapa',
+      value: 0,
+      dueDate: new Date().toISOString().split('T')[0],
+      status: 'Pending'
+    };
+    onUpdateContract({ ...contract, installments: [...contract.installments, newStep] });
+  };
+
+  const removeStep = (contractId: string, stepId: string) => {
+    const contract = contracts.find(c => c.id === contractId);
+    if (!contract) return;
+    const updatedInstallments = contract.installments.filter(inst => inst.id !== stepId);
+    onUpdateContract({ ...contract, installments: updatedInstallments });
   };
 
   return (
@@ -126,14 +176,23 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                        {getAcceptanceLabel(contract.status)}
                     </div>
                   </td>
-                  <td className="px-6 md:px-10 py-4 text-center">
-                    <button 
-                      onClick={() => setContractToDelete(contract.id)}
-                      className="w-10 h-10 rounded-xl bg-[#FFF1F1] text-[#FF5A5A] hover:bg-[#FF5A5A] hover:text-baccarim-text flex items-center justify-center transition-all shadow-sm mx-auto"
-                      title="Excluir Proposta"
-                    >
-                      <i className="fas fa-trash-can text-sm"></i>
-                    </button>
+                  <td className="px-6 md:px-10 py-4">
+                    <div className="flex items-center justify-center space-x-2">
+                      <button 
+                        onClick={() => setSelectedContractStepsId(contract.id)}
+                        className="w-10 h-10 rounded-xl bg-baccarim-blue/10 text-baccarim-blue hover:bg-baccarim-blue hover:text-baccarim-text flex items-center justify-center transition-all shadow-sm"
+                        title="Ver Etapas"
+                      >
+                        <i className="fas fa-list-check text-sm"></i>
+                      </button>
+                      <button 
+                        onClick={() => setContractToDelete(contract.id)}
+                        className="w-10 h-10 rounded-xl bg-[#FFF1F1] text-[#FF5A5A] hover:bg-[#FF5A5A] hover:text-baccarim-text flex items-center justify-center transition-all shadow-sm"
+                        title="Excluir Proposta"
+                      >
+                        <i className="fas fa-trash-can text-sm"></i>
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -148,6 +207,70 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
           </table>
         </div>
       </div>
+
+      {/* Modal de Etapas */}
+      {selectedContractForSteps && (
+        <div className="fixed inset-0 bg-baccarim-dark/80 backdrop-blur-md z-[250] flex items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="bg-baccarim-card rounded-[3rem] w-full max-w-2xl shadow-2xl p-8 md:p-12 text-left relative animate-in zoom-in-95 duration-300 flex flex-col max-h-[90vh]">
+            <button onClick={() => setSelectedContractStepsId(null)} className="absolute top-6 right-6 w-10 h-10 rounded-full bg-baccarim-hover flex items-center justify-center text-baccarim-text-muted hover:text-red-500 transition-all">
+              <i className="fas fa-times"></i>
+            </button>
+            
+            <div className="mb-8">
+              <div className="flex items-center space-x-3 text-baccarim-blue text-[10px] font-black uppercase tracking-[0.3em] mb-2">
+                <i className="fas fa-list-check"></i>
+                <span>Etapas da Proposta</span>
+              </div>
+              <h3 className="text-2xl font-black text-baccarim-text truncate pr-12">{selectedContractForSteps.title}</h3>
+              <p className="text-baccarim-text-muted font-bold text-sm mt-1">{selectedContractForSteps.clientName}</p>
+            </div>
+
+            <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-3 mb-8">
+              {selectedContractForSteps.installments.map((step, index) => {
+                const isCompleted = step.status === 'Paid';
+                return (
+                  <div key={step.id} className={`p-4 rounded-2xl border transition-all flex items-center gap-4 ${isCompleted ? 'bg-baccarim-green/10 border-emerald-500/30' : 'bg-baccarim-hover border-baccarim-border'}`}>
+                    <button 
+                      onClick={() => toggleStepStatus(selectedContractForSteps.id, step.id)}
+                      className={`w-8 h-8 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${isCompleted ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 text-transparent hover:border-emerald-500'}`}
+                    >
+                      <i className="fas fa-check text-[10px]"></i>
+                    </button>
+                    
+                    <input 
+                      value={step.title}
+                      onChange={(e) => updateStepTitle(selectedContractForSteps.id, step.id, e.target.value)}
+                      className={`flex-1 bg-transparent border-none outline-none font-bold text-sm md:text-base ${isCompleted ? 'text-emerald-700 line-through opacity-70' : 'text-baccarim-text'}`}
+                      placeholder="Nome da etapa"
+                    />
+
+                    <button 
+                      onClick={() => removeStep(selectedContractForSteps.id, step.id)}
+                      className="w-8 h-8 rounded-xl bg-transparent text-baccarim-text-muted hover:text-red-500 hover:bg-red-50 transition-all flex items-center justify-center shrink-0"
+                    >
+                      <i className="fas fa-trash text-[10px]"></i>
+                    </button>
+                  </div>
+                );
+              })}
+              
+              <button 
+                onClick={() => addStep(selectedContractForSteps.id)}
+                className="w-full py-4 border-2 border-dashed border-baccarim-border rounded-2xl text-baccarim-text-muted font-bold text-[10px] uppercase tracking-widest hover:border-baccarim-blue hover:text-baccarim-blue transition-colors flex items-center justify-center"
+              >
+                <i className="fas fa-plus mr-2"></i> Adicionar Nova Etapa
+              </button>
+            </div>
+
+            <button 
+              onClick={() => setSelectedContractStepsId(null)} 
+              className="w-full py-5 bg-baccarim-blue/10 text-baccarim-text border border-baccarim-border rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] hover:bg-baccarim-blue/20 transition-colors"
+            >
+              Concluir Edição
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Modal Confirmação de Exclusão */}
       {contractToDelete && (
