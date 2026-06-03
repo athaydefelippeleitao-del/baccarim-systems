@@ -11,11 +11,6 @@ interface FinanceViewProps {
 const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateContract, onDeleteContract }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [contractToDelete, setContractToDelete] = useState<string | null>(null);
-  const [expandedRows, setExpandedRows] = useState<string[]>([]);
-
-  const toggleRowExpanded = (id: string) => {
-    setExpandedRows(prev => prev.includes(id) ? prev.filter(rowId => rowId !== id) : [...prev, id]);
-  };
 
   const [newProposalForm, setNewProposalForm] = useState({
     title: '', // Nº Proposta
@@ -47,7 +42,6 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
 
     onUpdateContract(newContract);
     setShowAddModal(false);
-    setExpandedRows(prev => [...prev, newContractId]); // Expand manually created proposal
     setNewProposalForm({
       title: '',
       clientName: clients[0] || '',
@@ -133,132 +127,110 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
 
       <div className="bg-baccarim-card rounded-3xl md:rounded-[3.5rem] shadow-xl border border-baccarim-border overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left min-w-[800px] border-collapse">
+          <table className="w-full text-left min-w-[1000px] border-collapse">
             <thead className="bg-baccarim-hover text-[9px] md:text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest">
               <tr>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">Nº PROPOSTA</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">EMPRESA</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">DATA ENVIADA</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">ACEITE</th>
+                <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">ETAPAS</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">AÇÕES</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-baccarim-border bg-baccarim-card text-baccarim-text text-sm">
               {contracts.map(contract => {
-                const isExpanded = expandedRows.includes(contract.id);
                 return (
-                  <React.Fragment key={contract.id}>
-                    <tr className="hover:bg-baccarim-hover transition-colors">
-                      <td className="px-6 md:px-10 py-4">
-                        <input 
-                          value={contract.title}
-                          onChange={(e) => onUpdateContract({ ...contract, title: e.target.value })}
-                          className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors font-black text-baccarim-text outline-none w-full max-w-[200px] px-2 py-1"
-                          placeholder="Nº da Proposta"
-                        />
-                      </td>
-                      <td className="px-6 md:px-10 py-4">
-                        <div className="flex items-center gap-2">
-                          <select
-                            value={contract.clientName}
-                            onChange={(e) => onUpdateContract({ ...contract, clientName: e.target.value })}
-                            className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm font-bold outline-none flex-1 max-w-[200px] px-1 py-1"
-                          >
-                            {clients.map(c => <option key={c} value={c} className="bg-baccarim-card text-baccarim-text">{c}</option>)}
-                          </select>
-                        </div>
-                      </td>
-                      <td className="px-6 md:px-10 py-4 text-center">
-                        <input 
-                          type="date"
-                          value={contract.startDate}
-                          onChange={(e) => onUpdateContract({ ...contract, startDate: e.target.value, endDate: e.target.value })}
-                          className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm text-baccarim-text-muted font-bold outline-none cursor-pointer px-2 py-1"
-                        />
-                      </td>
-                      <td 
-                        className="px-6 md:px-10 py-4 text-center cursor-pointer hover:bg-baccarim-active transition-colors select-none" 
-                        onClick={() => toggleAcceptance(contract)} 
-                        title="Clique para alterar (SIM/NÃO)"
+                  <tr key={contract.id} className="hover:bg-baccarim-hover transition-colors align-top">
+                    <td className="px-6 md:px-10 py-6">
+                      <input 
+                        value={contract.title}
+                        onChange={(e) => onUpdateContract({ ...contract, title: e.target.value })}
+                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors font-black text-baccarim-text outline-none w-full max-w-[150px] px-2 py-1"
+                        placeholder="Nº da Proposta"
+                      />
+                    </td>
+                    <td className="px-6 md:px-10 py-6">
+                      <select
+                        value={contract.clientName}
+                        onChange={(e) => onUpdateContract({ ...contract, clientName: e.target.value })}
+                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm font-bold outline-none w-full max-w-[180px] px-1 py-1"
                       >
-                        <div className="flex items-center justify-center">
-                           {getAcceptanceLabel(contract.status)}
-                        </div>
-                      </td>
-                      <td className="px-6 md:px-10 py-4">
-                        <div className="flex items-center justify-center space-x-2">
-                          <button 
-                            onClick={() => toggleRowExpanded(contract.id)}
-                            className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-sm ${isExpanded ? 'bg-baccarim-blue text-baccarim-text' : 'bg-baccarim-blue/10 text-baccarim-blue hover:bg-baccarim-blue hover:text-baccarim-text'}`}
-                            title={isExpanded ? "Ocultar Etapas" : "Ver Etapas"}
-                          >
-                            <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-list-check'} text-sm`}></i>
-                          </button>
-                          <button 
-                            onClick={() => setContractToDelete(contract.id)}
-                            className="w-10 h-10 rounded-xl bg-[#FFF1F1] text-[#FF5A5A] hover:bg-[#FF5A5A] hover:text-baccarim-text flex items-center justify-center transition-all shadow-sm"
-                            title="Excluir Proposta"
-                          >
-                            <i className="fas fa-trash-can text-sm"></i>
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                    
-                    {/* Linha Expandida: Etapas da Proposta */}
-                    {isExpanded && (
-                      <tr className="bg-baccarim-hover/30 border-b border-baccarim-border">
-                        <td colSpan={5} className="px-6 md:px-10 py-6">
-                          <div className="max-w-4xl mx-auto space-y-3">
-                            <div className="flex items-center space-x-2 mb-4 text-[10px] font-black uppercase tracking-[0.2em] text-baccarim-blue">
-                              <i className="fas fa-turn-down"></i>
-                              <span>Etapas da Proposta ({contract.title})</span>
-                            </div>
-                            
-                            {contract.installments.map((step, index) => {
-                              const isCompleted = step.status === 'Paid';
-                              return (
-                                <div key={step.id} className={`p-3 rounded-xl border transition-all flex items-center gap-4 ${isCompleted ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-baccarim-card border-baccarim-border'}`}>
-                                  <button 
-                                    onClick={() => toggleStepStatus(contract.id, step.id)}
-                                    className={`w-6 h-6 rounded-full flex items-center justify-center border-2 transition-all shrink-0 ${isCompleted ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-300 text-transparent hover:border-emerald-500'}`}
-                                  >
-                                    <i className="fas fa-check text-[8px]"></i>
-                                  </button>
-                                  
-                                  <input 
-                                    value={step.title}
-                                    onChange={(e) => updateStepTitle(contract.id, step.id, e.target.value)}
-                                    className={`flex-1 bg-transparent border-none outline-none font-bold text-xs md:text-sm ${isCompleted ? 'text-emerald-700 line-through opacity-70' : 'text-baccarim-text'}`}
-                                    placeholder="Nome da etapa"
-                                  />
+                        {clients.map(c => <option key={c} value={c} className="bg-baccarim-card text-baccarim-text">{c}</option>)}
+                      </select>
+                    </td>
+                    <td className="px-6 md:px-10 py-6 text-center">
+                      <input 
+                        type="date"
+                        value={contract.startDate}
+                        onChange={(e) => onUpdateContract({ ...contract, startDate: e.target.value, endDate: e.target.value })}
+                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm text-baccarim-text-muted font-bold outline-none cursor-pointer px-2 py-1"
+                      />
+                    </td>
+                    <td 
+                      className="px-6 md:px-10 py-6 text-center cursor-pointer hover:bg-baccarim-active transition-colors select-none" 
+                      onClick={() => toggleAcceptance(contract)} 
+                      title="Clique para alterar (SIM/NÃO)"
+                    >
+                      <div className="flex items-center justify-center pt-1">
+                         {getAcceptanceLabel(contract.status)}
+                      </div>
+                    </td>
+                    <td className="px-6 md:px-10 py-4 min-w-[300px]">
+                      <div className="flex flex-col gap-2">
+                        {contract.installments.map((step, index) => {
+                          const isCompleted = step.status === 'Paid';
+                          return (
+                            <div key={step.id} className="flex items-center gap-2 group">
+                              <button 
+                                onClick={() => toggleStepStatus(contract.id, step.id)}
+                                className={`w-4 h-4 rounded-full flex items-center justify-center border transition-all shrink-0 ${isCompleted ? 'bg-emerald-500 border-emerald-500 text-white' : 'border-gray-400 text-transparent hover:border-emerald-500'}`}
+                              >
+                                <i className="fas fa-check text-[6px]"></i>
+                              </button>
+                              
+                              <input 
+                                value={step.title}
+                                onChange={(e) => updateStepTitle(contract.id, step.id, e.target.value)}
+                                className={`flex-1 bg-transparent border-b border-transparent group-hover:border-baccarim-border focus:border-baccarim-blue outline-none text-[11px] md:text-xs font-bold px-1 transition-colors ${isCompleted ? 'text-emerald-700 line-through opacity-70' : 'text-baccarim-text'}`}
+                                placeholder="Nome da etapa"
+                              />
 
-                                  <button 
-                                    onClick={() => removeStep(contract.id, step.id)}
-                                    className="w-8 h-8 rounded-lg bg-transparent text-baccarim-text-muted hover:text-red-500 hover:bg-red-50 transition-all flex items-center justify-center shrink-0"
-                                  >
-                                    <i className="fas fa-trash text-[10px]"></i>
-                                  </button>
-                                </div>
-                              );
-                            })}
-                            
-                            <button 
-                              onClick={() => addStep(contract.id)}
-                              className="w-full py-3 mt-2 border border-dashed border-baccarim-border rounded-xl text-baccarim-text-muted font-bold text-[9px] uppercase tracking-widest hover:border-baccarim-blue hover:text-baccarim-blue transition-colors flex items-center justify-center"
-                            >
-                              <i className="fas fa-plus mr-2"></i> Adicionar Etapa
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    )}
-                  </React.Fragment>
+                              <button 
+                                onClick={() => removeStep(contract.id, step.id)}
+                                className="w-5 h-5 rounded hover:bg-red-100 text-transparent group-hover:text-red-400 hover:!text-red-600 transition-all flex items-center justify-center shrink-0"
+                                title="Excluir"
+                              >
+                                <i className="fas fa-times text-[10px]"></i>
+                              </button>
+                            </div>
+                          );
+                        })}
+                        <button 
+                          onClick={() => addStep(contract.id)}
+                          className="w-fit text-[9px] font-black uppercase tracking-widest text-baccarim-blue hover:text-baccarim-green transition-colors mt-1 flex items-center"
+                        >
+                          <i className="fas fa-plus mr-1"></i> Adicionar
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 md:px-10 py-6">
+                      <div className="flex items-center justify-center pt-1">
+                        <button 
+                          onClick={() => setContractToDelete(contract.id)}
+                          className="w-10 h-10 rounded-xl bg-[#FFF1F1] text-[#FF5A5A] hover:bg-[#FF5A5A] hover:text-baccarim-text flex items-center justify-center transition-all shadow-sm"
+                          title="Excluir Proposta"
+                        >
+                          <i className="fas fa-trash-can text-sm"></i>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
                 );
               })}
               {contracts.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="px-6 py-12 text-center text-baccarim-text-muted font-bold">
+                  <td colSpan={6} className="px-6 py-12 text-center text-baccarim-text-muted font-bold">
                     Nenhuma proposta encontrada.
                   </td>
                 </tr>
