@@ -1,6 +1,6 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { Project } from '../types';
+import { utmToDecimal } from '../utils/geoUtils';
 
 interface MapViewProps {
   projects: Project[];
@@ -64,8 +64,17 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
 
     const initMap = () => {
       try {
-        const initialLat = projects.find(p => p.specs.lat)?.specs.lat || -23.3106;
-        const initialLng = projects.find(p => p.specs.lng)?.specs.lng || -51.1628;
+        // Determine initial center using lat/lng if available, otherwise convert UTM coordinates.
+        const firstProj = projects[0];
+        let initLat = firstProj?.specs?.lat;
+        let initLng = firstProj?.specs?.lng;
+        if ((initLat == null || initLng == null) && firstProj?.specs?.coordE && firstProj?.specs?.coordN) {
+          const { lat, lng } = utmToDecimal(parseFloat(firstProj.specs.coordE), parseFloat(firstProj.specs.coordN), firstProj.specs.zone || 22);
+          initLat = lat;
+          initLng = lng;
+        }
+        const initialLat = initLat ?? -23.3106;
+        const initialLng = initLng ?? -51.1628;
 
         mapInstanceRef.current = L.map(mapContainerRef.current, {
           center: [initialLat, initialLng],
@@ -164,7 +173,16 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
           iconAnchor: [16, 32]
         });
 
-        const marker = L.marker([project.specs.lat, project.specs.lng], { icon: customIcon }).addTo(mapInstanceRef.current);
+        // Use lat/lng if present, otherwise convert UTM coordinates for marker position.
+        const [markerLat, markerLng] = (project.specs.lat != null && project.specs.lng != null)
+          ? [project.specs.lat, project.specs.lng]
+          : (project.specs.coordE && project.specs.coordN
+            ? (() => {
+                const { lat, lng } = utmToDecimal(parseFloat(project.specs.coordE), parseFloat(project.specs.coordN), project.specs.zone || 22);
+                return [lat, lng];
+              })()
+            : [0, 0]);
+        const marker = L.marker([markerLat, markerLng], { icon: customIcon }).addTo(mapInstanceRef.current);
         
         const popupContent = `
           <div style="padding: 10px; min-width: 220px; font-family: 'Plus Jakarta Sans', sans-serif;">
