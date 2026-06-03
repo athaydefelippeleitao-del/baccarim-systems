@@ -15,24 +15,17 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
   const [newProposalForm, setNewProposalForm] = useState({
     title: '', // Nº Proposta
     clientName: clients[0] || '', // Empresa
-    totalValue: '', // Valor
     startDate: new Date().toISOString().split('T')[0] // Data Enviada
   });
 
-  const formatCurrency = (val: number) => {
-    return val.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-  };
-
   const handleCreateProposal = (e: React.FormEvent) => {
     e.preventDefault();
-    const totalVal = parseFloat(newProposalForm.totalValue);
-    if (isNaN(totalVal)) return;
 
     const newContract: Contract = {
       id: `prop-${Date.now()}`,
       title: newProposalForm.title,
       clientName: newProposalForm.clientName,
-      totalValue: totalVal,
+      totalValue: 0, // Removed UI for value, keeping 0 as required by type
       startDate: newProposalForm.startDate,
       endDate: newProposalForm.startDate, // Not used, but required by type
       status: 'Pending', // Empty by default (Pending)
@@ -46,7 +39,6 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
     setNewProposalForm({
       title: '',
       clientName: clients[0] || '',
-      totalValue: '',
       startDate: new Date().toISOString().split('T')[0]
     });
   };
@@ -92,7 +84,6 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
               <tr>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">Nº PROPOSTA</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">EMPRESA</th>
-                <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">VALOR</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">DATA ENVIADA</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">ACEITE</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">AÇÕES</th>
@@ -101,20 +92,33 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
             <tbody className="divide-y divide-baccarim-border bg-baccarim-card text-baccarim-text text-sm">
               {contracts.map(contract => (
                 <tr key={contract.id} className="hover:bg-baccarim-hover transition-colors">
-                  <td className="px-6 md:px-10 py-6 font-black text-baccarim-text truncate max-w-[200px]" title={contract.title}>
-                    {contract.title}
+                  <td className="px-6 md:px-10 py-4">
+                    <input 
+                      value={contract.title}
+                      onChange={(e) => onUpdateContract({ ...contract, title: e.target.value })}
+                      className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors font-black text-baccarim-text outline-none w-full max-w-[200px] px-2 py-1"
+                      placeholder="Nº da Proposta"
+                    />
                   </td>
-                  <td className="px-6 md:px-10 py-6 text-xs md:text-sm font-bold truncate max-w-[250px]" title={contract.clientName}>
-                    {contract.clientName}
+                  <td className="px-6 md:px-10 py-4">
+                    <select
+                      value={contract.clientName}
+                      onChange={(e) => onUpdateContract({ ...contract, clientName: e.target.value })}
+                      className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm font-bold outline-none w-full max-w-[250px] px-1 py-1"
+                    >
+                      {clients.map(c => <option key={c} value={c} className="bg-baccarim-card text-baccarim-text">{c}</option>)}
+                    </select>
                   </td>
-                  <td className="px-6 md:px-10 py-6 text-xs md:text-sm font-black text-baccarim-text">
-                    {formatCurrency(contract.totalValue)}
-                  </td>
-                  <td className="px-6 md:px-10 py-6 text-center text-xs md:text-sm text-baccarim-text-muted font-bold">
-                    {new Date(contract.startDate).toLocaleDateString('pt-BR')}
+                  <td className="px-6 md:px-10 py-4 text-center">
+                    <input 
+                      type="date"
+                      value={contract.startDate}
+                      onChange={(e) => onUpdateContract({ ...contract, startDate: e.target.value, endDate: e.target.value })}
+                      className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm text-baccarim-text-muted font-bold outline-none cursor-pointer px-2 py-1"
+                    />
                   </td>
                   <td 
-                    className="px-6 md:px-10 py-6 text-center cursor-pointer hover:bg-baccarim-active transition-colors select-none" 
+                    className="px-6 md:px-10 py-4 text-center cursor-pointer hover:bg-baccarim-active transition-colors select-none" 
                     onClick={() => toggleAcceptance(contract)} 
                     title="Clique para alterar (SIM/NÃO)"
                   >
@@ -122,7 +126,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                        {getAcceptanceLabel(contract.status)}
                     </div>
                   </td>
-                  <td className="px-6 md:px-10 py-6 text-center">
+                  <td className="px-6 md:px-10 py-4 text-center">
                     <button 
                       onClick={() => setContractToDelete(contract.id)}
                       className="w-10 h-10 rounded-xl bg-[#FFF1F1] text-[#FF5A5A] hover:bg-[#FF5A5A] hover:text-baccarim-text flex items-center justify-center transition-all shadow-sm mx-auto"
@@ -135,7 +139,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
               ))}
               {contracts.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-baccarim-text-muted font-bold">
+                  <td colSpan={5} className="px-6 py-12 text-center text-baccarim-text-muted font-bold">
                     Nenhuma proposta encontrada.
                   </td>
                 </tr>
@@ -196,11 +200,6 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                 >
                   {clients.map(c => <option key={c} value={c} className="bg-baccarim-card">{c}</option>)}
                 </select>
-              </div>
-              
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Valor (R$)</label>
-                <input type="number" step="0.01" required value={newProposalForm.totalValue} onChange={e => setNewProposalForm({...newProposalForm, totalValue: e.target.value})} className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-2xl outline-none font-bold text-baccarim-text" placeholder="0.00" />
               </div>
               
               <div className="space-y-1">
