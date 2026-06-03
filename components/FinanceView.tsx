@@ -127,7 +127,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
 
       <div className="bg-baccarim-card rounded-3xl md:rounded-[3.5rem] shadow-xl border border-baccarim-border overflow-hidden">
         <div className="overflow-x-auto custom-scrollbar">
-          <table className="w-full text-left min-w-[1000px] border-collapse">
+          <table className="w-full text-left min-w-[1300px] border-collapse">
             <thead className="bg-baccarim-hover text-[9px] md:text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest">
               <tr>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">Nº PROPOSTA</th>
@@ -146,7 +146,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                       <input 
                         value={contract.title}
                         onChange={(e) => onUpdateContract({ ...contract, title: e.target.value })}
-                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors font-black text-baccarim-text outline-none w-full max-w-[150px] px-2 py-1"
+                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors font-black text-baccarim-text outline-none w-full min-w-[200px] px-2 py-1"
                         placeholder="Nº da Proposta"
                       />
                     </td>
@@ -154,7 +154,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                       <select
                         value={contract.clientName}
                         onChange={(e) => onUpdateContract({ ...contract, clientName: e.target.value })}
-                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm font-bold outline-none w-full max-w-[180px] px-1 py-1"
+                        className="bg-transparent border-b border-transparent focus:border-baccarim-blue hover:border-gray-300 transition-colors text-xs md:text-sm font-bold outline-none w-full min-w-[220px] px-1 py-1"
                       >
                         {clients.map(c => <option key={c} value={c} className="bg-baccarim-card text-baccarim-text">{c}</option>)}
                       </select>
