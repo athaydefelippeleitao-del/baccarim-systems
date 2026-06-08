@@ -11,6 +11,23 @@ interface FinanceViewProps {
 const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateContract, onDeleteContract }) => {
   const [showAddModal, setShowAddModal] = useState(false);
   const [contractToDelete, setContractToDelete] = useState<string | null>(null);
+  const [pdfViewUrl, setPdfViewUrl] = useState<string | null>(null);
+
+  const handlePdfUpload = (contractId: string, file: File) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const base64 = e.target?.result as string;
+      const contract = contracts.find(c => c.id === contractId);
+      if (!contract) return;
+      const attachment = { id: `pdf-${Date.now()}`, name: file.name, url: base64, type: 'pdf' };
+      const otherFiles = (contract.attachedFiles || []).filter((f: any) => f.type !== 'pdf');
+      onUpdateContract({ ...contract, attachedFiles: [...otherFiles, attachment] });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const getPdf = (contract: Contract) =>
+    (contract.attachedFiles || []).find((f: any) => f.type === 'pdf');
 
   const [newProposalForm, setNewProposalForm] = useState({
     title: '', // Nº Proposta
@@ -135,6 +152,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">DATA ENVIADA</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">ACEITE</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border">ETAPAS</th>
+                <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">PDF</th>
                 <th className="px-6 md:px-10 py-4 md:py-5 border-b border-baccarim-border text-center">AÇÕES</th>
               </tr>
             </thead>
@@ -214,6 +232,58 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                         </button>
                       </div>
                     </td>
+                    {/* PDF Column */}
+                    <td className="px-6 md:px-10 py-6 text-center">
+                      <div className="flex items-center justify-center gap-2">
+                        {getPdf(contract) ? (
+                          <>
+                            <button
+                              onClick={() => setPdfViewUrl(getPdf(contract)!.url)}
+                              className="w-9 h-9 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm"
+                              title="Visualizar PDF"
+                            >
+                              <i className="fas fa-file-pdf text-sm"></i>
+                            </button>
+                            <a
+                              href={getPdf(contract)!.url}
+                              download={getPdf(contract)!.name}
+                              className="w-9 h-9 rounded-xl bg-blue-50 text-baccarim-blue hover:bg-baccarim-blue hover:text-white flex items-center justify-center transition-all shadow-sm"
+                              title="Baixar PDF"
+                            >
+                              <i className="fas fa-download text-sm"></i>
+                            </a>
+                            <label
+                              htmlFor={`pdf-replace-${contract.id}`}
+                              className="w-9 h-9 rounded-xl bg-gray-100 text-gray-400 hover:bg-gray-200 hover:text-gray-600 flex items-center justify-center transition-all shadow-sm cursor-pointer"
+                              title="Substituir PDF"
+                            >
+                              <i className="fas fa-arrow-up-from-bracket text-sm"></i>
+                              <input
+                                id={`pdf-replace-${contract.id}`}
+                                type="file" accept="application/pdf" className="hidden"
+                                onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePdfUpload(contract.id, f); e.target.value = ''; }}
+                              />
+                            </label>
+                          </>
+                        ) : (
+                          <label
+                            htmlFor={`pdf-upload-${contract.id}`}
+                            className="flex items-center gap-2 px-3 py-2 rounded-xl border-2 border-dashed border-gray-200 text-gray-400 hover:border-baccarim-blue hover:text-baccarim-blue transition-all cursor-pointer text-[9px] font-black uppercase tracking-widest"
+                            title="Anexar PDF"
+                          >
+                            <i className="fas fa-paperclip text-sm"></i>
+                            <span>Anexar</span>
+                            <input
+                              id={`pdf-upload-${contract.id}`}
+                              type="file" accept="application/pdf" className="hidden"
+                              onChange={(e) => { const f = e.target.files?.[0]; if (f) handlePdfUpload(contract.id, f); e.target.value = ''; }}
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </td>
+
+                    {/* Delete Column */}
                     <td className="px-6 md:px-10 py-6">
                       <div className="flex items-center justify-center pt-1">
                         <button 
@@ -230,7 +300,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
               })}
               {contracts.length === 0 && (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-baccarim-text-muted font-bold">
+                  <td colSpan={7} className="px-6 py-12 text-center text-baccarim-text-muted font-bold">
                     Nenhuma proposta encontrada.
                   </td>
                 </tr>
@@ -239,6 +309,28 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
           </table>
         </div>
       </div>
+
+      {/* Modal Visualização de PDF */}
+      {pdfViewUrl && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md z-[400] flex flex-col items-center justify-center p-4 animate-in fade-in duration-300">
+          <div className="w-full max-w-5xl flex flex-col" style={{ height: '90vh' }}>
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-white font-black text-sm uppercase tracking-widest"><i className="fas fa-file-pdf mr-2 text-red-400"></i>Visualizador de Proposta</p>
+              <button
+                onClick={() => setPdfViewUrl(null)}
+                className="w-10 h-10 rounded-xl bg-white/10 text-white hover:bg-white/20 flex items-center justify-center transition-all"
+              >
+                <i className="fas fa-times"></i>
+              </button>
+            </div>
+            <iframe
+              src={pdfViewUrl}
+              className="flex-1 w-full rounded-2xl border-2 border-white/10"
+              title="Proposta PDF"
+            />
+          </div>
+        </div>
+      )}
 
       {/* Modal Confirmação de Exclusão */}
       {contractToDelete && (
