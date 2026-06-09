@@ -25,7 +25,25 @@ export async function suggestExcelMapping(headers: string[]): Promise<Record<str
 }
 
 export async function analyzeLicensePortfolio(licenses: any[], notifications: any[]): Promise<string> {
-  const result = await post<string>('/analyze-portfolio', { licenses, notifications });
+  // Map and strip out heavy fields (like documentation arrays or base64) to prevent 413 payload limit errors on Vercel
+  const cleanLicenses = (licenses || []).map(l => ({
+    name: l.name,
+    clientName: l.clientName,
+    type: l.type,
+    status: l.status,
+    expiryDate: l.expiryDate,
+    agency: l.agency
+  }));
+
+  const cleanNotifications = (notifications || []).map(n => ({
+    title: n.title,
+    clientName: n.clientName,
+    severity: n.severity,
+    deadline: n.deadline,
+    status: n.status
+  }));
+
+  const result = await post<string>('/analyze-portfolio', { licenses: cleanLicenses, notifications: cleanNotifications });
   return result || 'Nenhuma análise disponível.';
 }
 
