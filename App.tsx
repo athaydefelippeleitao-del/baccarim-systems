@@ -1,6 +1,5 @@
 
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
-import { io, Socket } from 'socket.io-client';
 import { MOCK_LICENSES, MOCK_NOTIFICATIONS, MOCK_PROJECTS, MOCK_MEETINGS, MOCK_VIDEOS, MOCK_CONTRACTS, CLIENTS, getChecklistTemplate, PROJECT_CATEGORIES } from './constants';
 import { EnvironmentalLicense, LicenseStatus, Notification, User, Project, Contract, Meeting, ProductionVideo, LicenseType, ChecklistItem, PhotoReport, AppConfig } from './types';
 import { AppLogo } from './components/AppLogo';
@@ -21,7 +20,7 @@ import AIDocumentsView from './components/AIDocumentsView';
 import LoadingScreen from './components/LoadingScreen';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import ProjectStatusSummary from './components/ProjectStatusSummary';
-import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb } from './services/supabaseService';
+import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb, loadStateFromSupabase, saveKeyToSupabase, deleteKeyFromSupabase, getUsers } from './services/supabaseService';
 
 
 const App: React.FC = () => {
@@ -42,8 +41,7 @@ const App: React.FC = () => {
     } catch (e) { return 'dark'; }
   });
   const [isLoading, setIsLoading] = useState(true);
-  const [socket, setSocket] = useState<Socket | null>(null);
-  const [isConnected, setIsConnected] = useState(false);
+  const [dataLoaded, setDataLoaded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
@@ -69,12 +67,9 @@ const App: React.FC = () => {
   const [clientLogos, setClientLogos] = useState<Record<string, string>>({});
 
   // Track which collections have been successfully loaded from the server
-  // to prevent syncing an empty local state back to the server.
   const loadedKeysRef = useRef<Set<string>>(new Set());
   const isInitialLoadDone = useRef(false);
   const syncTimeoutRef = useRef<Record<string, any>>({});
-  const socketRef = useRef<Socket | null>(null);
-  const isConnectedRef = useRef(false);
 
   // Theme effect
   useEffect(() => {
@@ -86,101 +81,41 @@ const App: React.FC = () => {
     localStorage.setItem('baccarim_theme', theme);
   }, [theme]);
 
-  // Socket connection and initial sync
+  // Initial Data Load
   useEffect(() => {
-    const newSocket = io();
-    setSocket(newSocket);
+    const fetchInitialState = async () => {
+      try {
+        console.log("Fetching initial state from Supabase...");
+        const state = await loadStateFromSupabase();
+        
+        Object.keys(state).forEach(key => {
+          lastServerState.current[key] = JSON.stringify(state[key as keyof typeof state]);
+          loadedKeysRef.current.add(key);
+        });
 
-    newSocket.on('connect', () => setIsConnected(true));
-    newSocket.on('disconnect', () => setIsConnected(false));
-    newSocket.on('presence:update', (data: any) => setPresence(data));
-
-    newSocket.on('state:init', (state: any) => {
-      console.log("Initial state received from server");
-      if (!state || typeof state !== 'object') {
-        console.error("Invalid state received from server, skipping init.");
+        if (state.users.length > 0) setUsers(state.users);
+        if (state.clients.length > 0) setClients(state.clients);
+        if (state.projects.length > 0) setProjects(state.projects);
+        if (state.licenses.length > 0) setLicenses(state.licenses);
+        if (state.notifications.length > 0) setNotifications(state.notifications);
+        if (state.contracts.length > 0) setContracts(state.contracts);
+        if (state.reports.length > 0) setReports(state.reports);
+        if (state.checklistTemplates) setChecklistTemplates(state.checklistTemplates);
+        if (state.meetings.length > 0) setMeetings(state.meetings);
+        if (state.videos.length > 0) setVideos(state.videos);
+        if (state.appConfig) setAppConfig(state.appConfig);
+        if (state.clientLogos) setClientLogos(state.clientLogos);
+        
         isInitialLoadDone.current = true;
-        return;
+        setDataLoaded(true);
+        console.log("State initialization complete.");
+      } catch (error) {
+        console.error("Error loading initial state:", error);
+        setDataLoaded(true); // Still mark as loaded so user can attempt login
       }
-      // Clear all pending syncs to prevent overwriting the new state with old local data
-      Object.values(syncTimeoutRef.current).forEach(timeout => clearTimeout(timeout));
-      syncTimeoutRef.current = {};
-
-      Object.keys(state).forEach(key => {
-        lastServerState.current[key] = JSON.stringify(state[key]);
-        loadedKeysRef.current.add(key);
-      });
-
-      if (Array.isArray(state.users) && state.users.length > 0) setUsers(state.users);
-      if (Array.isArray(state.clients) && state.clients.length > 0) setClients(state.clients);
-      if (Array.isArray(state.projects) && state.projects.length > 0) setProjects(state.projects);
-      if (Array.isArray(state.licenses) && state.licenses.length > 0) setLicenses(state.licenses);
-      if (Array.isArray(state.notifications) && state.notifications.length > 0) setNotifications(state.notifications);
-      if (Array.isArray(state.contracts) && state.contracts.length > 0) setContracts(state.contracts);
-      if (Array.isArray(state.reports) && state.reports.length > 0) setReports(state.reports);
-      if (state.checklistTemplates && typeof state.checklistTemplates === 'object') setChecklistTemplates(state.checklistTemplates);
-      if (Array.isArray(state.meetings) && state.meetings.length > 0) setMeetings(state.meetings);
-      if (Array.isArray(state.videos) && state.videos.length > 0) setVideos(state.videos);
-      if (Array.isArray(state.projectCategories) && state.projectCategories.length > 0) {
-        setProjectCategories(state.projectCategories);
-      } else {
-        setProjectCategories(PROJECT_CATEGORIES);
-      }
-      if (Array.isArray(state.auditLog)) setAuditLog(state.auditLog);
-      if (state.appConfig && typeof state.appConfig === 'object') setAppConfig(state.appConfig);
-      if (state.clientLogos && typeof state.clientLogos === 'object') {
-        const logoKeys = Object.keys(state.clientLogos);
-        console.log(`[Socket] Received ${logoKeys.length} client logos. Keys:`, logoKeys);
-        setClientLogos(state.clientLogos);
-      } else {
-        console.warn('[Socket] No client logos received in state:init or invalid type:', typeof state.clientLogos);
-      }
-      
-      console.log("State initialization complete. Loaded keys:", Array.from(loadedKeysRef.current));
-      isInitialLoadDone.current = true;
-    });
-
-    newSocket.on('state:changed', (update: { key: string, value: any }) => {
-      // Clear pending sync for this specific key to prevent race conditions
-      if (syncTimeoutRef.current[update.key]) {
-        clearTimeout(syncTimeoutRef.current[update.key]);
-        delete syncTimeoutRef.current[update.key];
-      }
-
-      lastServerState.current[update.key] = JSON.stringify(update.value);
-      loadedKeysRef.current.add(update.key);
-
-      switch (update.key) {
-        case 'users': setUsers(update.value); break;
-        case 'clients': setClients([...update.value].sort((a, b) => a.localeCompare(b))); break;
-        case 'projects': setProjects(update.value); break;
-        case 'licenses': setLicenses(update.value); break;
-        case 'notifications': setNotifications(update.value); break;
-        case 'contracts': setContracts(update.value); break;
-        case 'reports': setReports(update.value); break;
-        case 'checklistTemplates': setChecklistTemplates(update.value); break;
-        case 'meetings': setMeetings(update.value); break;
-        case 'videos': setVideos(update.value); break;
-        case 'projectCategories': setProjectCategories(update.value); break;
-        case 'auditLog': setAuditLog(update.value); break;
-        case 'appConfig': setAppConfig(update.value); break;
-        case 'clientLogos': setClientLogos(update.value); break;
-      }
-    });
-
-    newSocket.on('state:deleted', (data: { key: string, id: string }) => {
-      console.log(`Deleção recebida do servidor: ${data.key}:${data.id}`);
-      switch (data.key) {
-        case 'users': setUsers(prev => prev.filter(u => u.id !== data.id)); break;
-        case 'projects': setProjects(prev => prev.filter(p => p.id !== data.id)); break;
-        case 'licenses': setLicenses(prev => prev.filter(l => l.id !== data.id)); break;
-        case 'notifications': setNotifications(prev => prev.filter(n => n.id !== data.id)); break;
-        case 'contracts': setContracts(prev => prev.filter(c => c.id !== data.id)); break;
-        case 'reports': setReports(prev => prev.filter(r => r.id !== data.id)); break;
-        case 'meetings': setMeetings(prev => prev.filter(m => m.id !== data.id)); break;
-        case 'videos': setVideos(prev => prev.filter(v => v.id !== data.id)); break;
-      }
-    });
+    };
+    
+    fetchInitialState();
 
     // ──────────────────────────────────────────────────────────────────────
     // SUPABASE REALTIME SUBSCRIPTIONS
@@ -208,8 +143,6 @@ const App: React.FC = () => {
             return newState;
           });
         }
-
-
       })
       .subscribe();
 
@@ -236,8 +169,6 @@ const App: React.FC = () => {
             return newState;
           });
         }
-
-
       })
       .subscribe();
 
@@ -264,13 +195,10 @@ const App: React.FC = () => {
             return newState;
           });
         }
-
-
       })
       .subscribe();
 
     return () => {
-      newSocket.disconnect();
       supabase.removeChannel(projectsChannel);
       supabase.removeChannel(licensesChannel);
       supabase.removeChannel(notificationsChannel);
@@ -278,24 +206,14 @@ const App: React.FC = () => {
 
   }, [currentUser]); // Run only on login/logout
 
-
-  useEffect(() => {
-    socketRef.current = socket;
-    isConnectedRef.current = isConnected;
-  }, [socket, isConnected]);
-
   const emitUpdate = useCallback((key: string, value: any) => {
-    if (!socketRef.current || !isConnectedRef.current) return;
-
     // Clear existing timeout for this key
     if (syncTimeoutRef.current[key]) {
       clearTimeout(syncTimeoutRef.current[key]);
     }
 
     // Debounce the sync to prevent hammering the server and sync loops
-    syncTimeoutRef.current[key] = setTimeout(() => {
-      // CRITICAL: Do not sync back if we haven't successfully loaded this key from the server yet.
-      // This prevents wiping the server state with empty local state during initialization.
+    syncTimeoutRef.current[key] = setTimeout(async () => {
       if (!loadedKeysRef.current.has(key)) {
         console.warn(`Attempted to sync ${key} before it was loaded. Sync blocked.`);
         return;
@@ -304,30 +222,29 @@ const App: React.FC = () => {
       const stringified = JSON.stringify(value);
       if (lastServerState.current[key] === stringified) return;
 
-      console.log(`Syncing ${key} to server...`);
+      console.log(`Saving ${key} directly to Supabase...`);
       setIsSyncing(true);
       lastServerState.current[key] = stringified;
-      socketRef.current?.emit('state:update', { key, value, user: currentUser });
+      
+      try {
+        await saveKeyToSupabase(key, value);
+      } catch (err) {
+        console.error(`Error saving ${key} to Supabase:`, err);
+      }
 
       // Reset syncing indicator after a short delay
       setTimeout(() => setIsSyncing(false), 1000);
-    }, 500); // 500ms debounce
-  }, [currentUser]); // Depend only on currentUser identity
-
-  const emitDelete = useCallback((key: string, id: string) => {
-    if (!socketRef.current || !isConnectedRef.current) return;
-    console.log(`Emitting delete for ${key}:${id}`);
-    socketRef.current?.emit('state:delete', { key, id, user: currentUser });
+    }, 1000); // 1s debounce
   }, [currentUser]);
 
-
-
-  // Join presence when logged in
-  useEffect(() => {
-    if (socket && isConnected && currentUser) {
-      socket.emit('presence:join', currentUser);
+  const emitDelete = useCallback(async (key: string, id: string) => {
+    console.log(`Deleting ${key}:${id} directly from Supabase`);
+    try {
+      await deleteKeyFromSupabase(key, id);
+    } catch (err) {
+      console.error(`Error deleting ${key}:${id} from Supabase:`, err);
     }
-  }, [socket, isConnected, currentUser]);
+  }, [currentUser]);
 
   // Sync push notifications subscription with server if already granted in browser
   useEffect(() => {
@@ -384,12 +301,22 @@ const App: React.FC = () => {
   }, [clientLogos, emitUpdate]);
 
   useEffect(() => {
-    // Ensure loading screen lasts at least 1.5 seconds for branding
+    // Ensure loading screen lasts at least 1.5 seconds for branding AND data is loaded
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      if (dataLoaded) {
+        setIsLoading(false);
+      }
     }, 1500);
     return () => clearTimeout(timer);
-  }, []);
+  }, [dataLoaded]);
+
+  // If data loads after the 1.5s timer already fired, stop loading immediately
+  useEffect(() => {
+    if (dataLoaded) {
+      const timer = setTimeout(() => setIsLoading(false), 100);
+      return () => clearTimeout(timer);
+    }
+  }, [dataLoaded]);
 
 
 
@@ -465,11 +392,27 @@ const App: React.FC = () => {
 
   const [adminClientFilter, setAdminClientFilter] = useState<string | null>(null);
 
-  const handleLogin = (userLogin: string, pass: string) => {
+  const handleLogin = async (userLogin: string, pass: string) => {
     const loginLower = userLogin.toLowerCase().trim();
     setLoginError(undefined);
 
-    const foundUser = users.find(u => {
+    // If users array is empty, try fetching directly from Supabase as fallback
+    let usersList = users;
+    if (usersList.length === 0) {
+      console.log('[Login] Users array is empty, fetching directly from Supabase...');
+      try {
+        const freshUsers = await getUsers();
+        if (freshUsers.length > 0) {
+          setUsers(freshUsers);
+          usersList = freshUsers;
+          console.log(`[Login] Fetched ${freshUsers.length} users from Supabase`);
+        }
+      } catch (err) {
+        console.error('[Login] Failed to fetch users from Supabase:', err);
+      }
+    }
+
+    const foundUser = usersList.find(u => {
       const emailLower = (u.email || '').toLowerCase().trim();
       const nameLower = (u.name || '').toLowerCase().trim();
       const emailPrefix = emailLower.split('@')[0];
@@ -483,7 +426,6 @@ const App: React.FC = () => {
       return loginMatches && (u.password === pass);
     });
 
-
     if (foundUser) {
       const { password, ...userData } = foundUser;
       localStorage.setItem('baccarim_user', JSON.stringify(userData));
@@ -495,7 +437,6 @@ const App: React.FC = () => {
   };
 
   const confirmLogout = () => {
-    if (socket) socket.emit('presence:leave');
     localStorage.removeItem('baccarim_user');
     setCurrentUser(null);
     setAdminClientFilter(null);

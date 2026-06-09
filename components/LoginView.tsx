@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { AppLogo } from './AppLogo';
 
 interface LoginViewProps {
-  onLogin: (user: string, pass: string) => void;
+  onLogin: (user: string, pass: string) => void | Promise<void>;
   error?: string;
   appIcon?: string;
 }
@@ -13,10 +13,16 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, error, appIcon }) => {
   const [pass, setPass] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [iconError, setIconError] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onLogin(user.trim(), pass.trim());
+    setIsLoggingIn(true);
+    try {
+      await onLogin(user.trim(), pass.trim());
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -75,7 +81,8 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, error, appIcon }) => {
                 value={user}
                 onChange={(e) => setUser(e.target.value)}
                 placeholder="Identificação"
-                className="w-full bg-white/50 border border-baccarim-border rounded-2xl py-4 px-6 text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all placeholder:text-baccarim-text-subtle"
+                disabled={isLoggingIn}
+                className="w-full bg-white/50 border border-baccarim-border rounded-2xl py-4 px-6 text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all placeholder:text-baccarim-text-subtle disabled:opacity-50"
               />
             </div>
             <div className="space-y-2">
@@ -88,7 +95,8 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, error, appIcon }) => {
                   value={pass}
                   onChange={(e) => setPass(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full bg-white/50 border border-baccarim-border rounded-2xl py-4 px-6 pr-14 text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all placeholder:text-baccarim-text-subtle"
+                  disabled={isLoggingIn}
+                  className="w-full bg-white/50 border border-baccarim-border rounded-2xl py-4 px-6 pr-14 text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all placeholder:text-baccarim-text-subtle disabled:opacity-50"
                 />
                 <button
                   type="button"
@@ -107,8 +115,15 @@ const LoginView: React.FC<LoginViewProps> = ({ onLogin, error, appIcon }) => {
               </div>
             )}
 
-            <button type="submit" className="w-full bg-baccarim-navy text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-xs">
-              ENTRAR NO PORTAL
+            <button type="submit" disabled={isLoggingIn} className="w-full bg-baccarim-navy text-white font-black py-5 rounded-2xl shadow-xl transition-all active:scale-95 uppercase tracking-widest text-xs disabled:opacity-70 flex items-center justify-center space-x-3">
+              {isLoggingIn ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>AUTENTICANDO...</span>
+                </>
+              ) : (
+                <span>ENTRAR NO PORTAL</span>
+              )}
             </button>
           </form>
         </div>
