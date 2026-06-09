@@ -43,7 +43,7 @@ app.post("/api/openai/analyze-portfolio", async (req, res) => {
     res.json({ result });
   } catch (e: any) {
     console.error("OpenAI analyze-portfolio error:", e);
-    res.status(500).json({ error: e.message || "Erro ao analisar portfólio" });
+    res.status(200).json({ error: e.message || "Erro ao analisar portfólio" });
   }
 });
 
@@ -55,7 +55,7 @@ app.post("/api/openai/analyze-image", async (req, res) => {
     res.json({ result });
   } catch (e: any) {
     console.error("OpenAI analyze-image error:", e);
-    res.status(500).json({ error: e.message || "Erro ao analisar imagem" });
+    res.status(200).json({ error: e.message || "Erro ao analisar imagem" });
   }
 });
 
@@ -66,7 +66,7 @@ app.post("/api/openai/notification-draft", async (req, res) => {
     res.json({ result });
   } catch (e: any) {
     console.error("OpenAI notification-draft error:", e);
-    res.status(500).json({ error: e.message || "Erro ao gerar rascunho" });
+    res.status(200).json({ error: e.message || "Erro ao gerar rascunho" });
   }
 });
 
@@ -77,7 +77,7 @@ app.post("/api/openai/suggest-mapping", async (req, res) => {
     res.json({ result });
   } catch (e: any) {
     console.error("OpenAI suggest-mapping error:", e);
-    res.status(500).json({ error: e.message || "Erro ao sugerir mapeamento" });
+    res.status(200).json({ error: e.message || "Erro ao sugerir mapeamento" });
   }
 });
 
@@ -88,7 +88,7 @@ app.post("/api/openai/generate-document", async (req, res) => {
     res.json({ result });
   } catch (e: any) {
     console.error("OpenAI generate-document error:", e);
-    res.status(500).json({ error: e.message || "Erro ao gerar documento" });
+    res.status(200).json({ error: e.message || "Erro ao gerar documento" });
   }
 });
 
