@@ -851,9 +851,9 @@ const App: React.FC = () => {
                   </div>
                 )}
                 <div className="flex items-center space-x-2">
-                  <div className={`w-1.5 h-1.5 rounded-full ${isConnected ? 'bg-baccarim-green shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500 animate-pulse'}`}></div>
-                  <span className={`text-[7px] font-black uppercase tracking-widest ${isConnected ? 'text-baccarim-green' : 'text-red-500'}`}>
-                    {isConnected ? 'Online' : 'Offline'}
+                  <div className={`w-1.5 h-1.5 rounded-full bg-baccarim-green shadow-[0_0_8px_rgba(16,185,129,0.5)]`}></div>
+                  <span className={`text-[7px] font-black uppercase tracking-widest text-baccarim-green`}>
+                    Online
                   </span>
                 </div>
               </div>

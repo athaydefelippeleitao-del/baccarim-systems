@@ -21,7 +21,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
       if (!contract) return;
       const attachment = { id: `pdf-${Date.now()}`, name: file.name, url: base64, type: 'pdf' };
       const otherFiles = (contract.attachedFiles || []).filter((f: any) => f.type !== 'pdf');
-      onUpdateContract({ ...contract, attachedFiles: [...otherFiles, attachment] });
+      onUpdateContract({ ...contract, attachedFiles: [...otherFiles, attachment] as any });
     };
     reader.readAsDataURL(file);
   };
@@ -90,7 +90,7 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
         return { ...inst, status: inst.status === 'Pending' ? 'Paid' : 'Pending' }; 
       }
       return inst;
-    });
+    }) as Installment[];
     onUpdateContract({ ...contract, installments: updatedInstallments });
   };
   
@@ -238,15 +238,15 @@ const FinanceView: React.FC<FinanceViewProps> = ({ clients, contracts, onUpdateC
                         {getPdf(contract) ? (
                           <>
                             <button
-                              onClick={() => setPdfViewUrl(getPdf(contract)!.url)}
+                              onClick={() => setPdfViewUrl((getPdf(contract) as any)!.url)}
                               className="w-9 h-9 rounded-xl bg-red-50 text-red-500 hover:bg-red-500 hover:text-white flex items-center justify-center transition-all shadow-sm"
                               title="Visualizar PDF"
                             >
                               <i className="fas fa-file-pdf text-sm"></i>
                             </button>
                             <a
-                              href={getPdf(contract)!.url}
-                              download={getPdf(contract)!.name}
+                              href={(getPdf(contract) as any)!.url}
+                              download={(getPdf(contract) as any)!.name}
                               className="w-9 h-9 rounded-xl bg-blue-50 text-baccarim-blue hover:bg-baccarim-blue hover:text-white flex items-center justify-center transition-all shadow-sm"
                               title="Baixar PDF"
                             >
