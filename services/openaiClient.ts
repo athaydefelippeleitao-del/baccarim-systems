@@ -12,11 +12,17 @@ async function post<T>(endpoint: string, body: object): Promise<T> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: res.statusText }));
-    throw new Error(err.error || `Erro ${res.status}`);
+  
+  let data;
+  try {
+    data = await res.json();
+  } catch (e) {
+    throw new Error(`Erro do servidor (${res.status})`);
   }
-  const data = await res.json();
+
+  if (data && data.error) {
+    throw new Error(data.error);
+  }
   return data.result as T;
 }
 
