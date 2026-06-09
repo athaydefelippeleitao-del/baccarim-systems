@@ -13,11 +13,12 @@ async function post<T>(endpoint: string, body: object): Promise<T> {
     body: JSON.stringify(body),
   });
   
+  const text = await res.text();
   let data;
   try {
-    data = await res.json();
+    data = JSON.parse(text);
   } catch (e) {
-    throw new Error(`Erro do servidor (${res.status})`);
+    throw new Error(`Erro do servidor (${res.status}): ${text.slice(0, 120)}`);
   }
 
   if (data && data.error) {
