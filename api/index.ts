@@ -19,13 +19,13 @@ import {
   generateNotificationDraft,
   suggestExcelMapping,
   generateAIDocument,
-} from "../services/openaiService";
+} from "../services/openaiService.js";
 
 import {
   saveKeyToSupabase,
   loadStateFromSupabase,
   savePushSubscriptions
-} from "../services/supabaseService";
+} from "../services/supabaseService.js";
 
 const app = express();
 

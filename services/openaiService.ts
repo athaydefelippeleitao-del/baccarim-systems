@@ -1,6 +1,6 @@
 import OpenAI from "openai";
 import { EnvironmentalLicense, Notification } from "../types";
-import { utmToDecimal } from "../utils/geoUtils";
+import { utmToDecimal } from "../utils/geoUtils.js";
 
 function getAI() {
     const apiKey = process.env.OPENAI_API_KEY || process.env.VITE_OPENAI_API_KEY || (process.env as any).API_KEY;
