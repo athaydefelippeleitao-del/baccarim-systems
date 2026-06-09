@@ -8,8 +8,8 @@ function getAI() {
     return new OpenAI({ apiKey });
 }
 
-// Timeout wrapper
-function withTimeout<T>(promise: Promise<T>, ms = 25000): Promise<T> {
+// Timeout wrapper (Vercel hobby limit is 10s, so we must timeout earlier)
+function withTimeout<T>(promise: Promise<T>, ms = 8000): Promise<T> {
     const timeout = new Promise<never>((_, reject) =>
         setTimeout(() => reject(new Error(`Timeout após ${ms / 1000}s`)), ms)
     );
@@ -74,6 +74,7 @@ NOTIFICAÇÕES: ${JSON.stringify(notifSummary)}`;
     const response = await withRetry(() => openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [{ role: 'user', content: prompt }],
+        max_tokens: 1000
     }));
     return response.choices[0]?.message?.content || "Nenhuma análise disponível.";
 }
