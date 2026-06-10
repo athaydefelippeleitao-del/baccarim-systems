@@ -15,6 +15,8 @@ interface NotificationsViewProps {
 
 const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, clients, projects, onAddNotification, onUpdateNotification, onDeleteNotification }) => {
   const [filter, setFilter] = useState<'All' | 'Open' | 'Resolved'>('Open');
+  const [categoryFilter, setCategoryFilter] = useState<'All' | 'Notificação' | 'Licença'>('All');
+  const [editingNotifId, setEditingNotifId] = useState<string | null>(null);
   const [aiLoadingId, setAiLoadingId] = useState<string | null>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
@@ -56,8 +58,9 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     };
     return notifications
       .filter(n => filter === 'All' || n.status === filter)
+      .filter(n => categoryFilter === 'All' || n.category === categoryFilter || (!n.category && categoryFilter === 'Notificação'))
       .sort((a, b) => parseDeadline(a.deadline) - parseDeadline(b.deadline));
-  }, [notifications, filter]);
+  }, [notifications, filter, categoryFilter]);
 
   const stats = useMemo(() => ({
     open: notifications.filter(n => n.status === 'Open').length,
@@ -103,27 +106,45 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     });
   };
 
-  const handleCreateNotification = (e: React.FormEvent) => {
+  const handleCreateOrUpdateNotification = (e: React.FormEvent) => {
     e.preventDefault();
     const formattedDeadline = newNotifForm.deadline.split('-').reverse().join('/');
 
-    const newNotif: Notification = {
-      id: `n-${Date.now()}`,
-      title: newNotifForm.title,
-      clientName: newNotifForm.clientName,
-      projectId: newNotifForm.projectId,
-      agency: newNotifForm.agency,
-      severity: newNotifForm.severity,
-      category: newNotifForm.category,
-      deadline: formattedDeadline,
-      description: newNotifForm.description,
-      dateReceived: new Date().toLocaleDateString('pt-BR'),
-      status: 'Open',
-      attachedFiles: []
-    };
+    if (editingNotifId) {
+      const existingNotif = notifications.find(n => n.id === editingNotifId);
+      if (existingNotif) {
+        onUpdateNotification({
+          ...existingNotif,
+          title: newNotifForm.title,
+          clientName: newNotifForm.clientName,
+          projectId: newNotifForm.projectId,
+          agency: newNotifForm.agency,
+          severity: newNotifForm.severity,
+          category: newNotifForm.category,
+          deadline: formattedDeadline,
+          description: newNotifForm.description
+        });
+      }
+    } else {
+      const newNotif: Notification = {
+        id: `n-${Date.now()}`,
+        title: newNotifForm.title,
+        clientName: newNotifForm.clientName,
+        projectId: newNotifForm.projectId,
+        agency: newNotifForm.agency,
+        severity: newNotifForm.severity,
+        category: newNotifForm.category,
+        deadline: formattedDeadline,
+        description: newNotifForm.description,
+        dateReceived: new Date().toLocaleDateString('pt-BR'),
+        status: 'Open',
+        attachedFiles: []
+      };
+      onAddNotification(newNotif);
+    }
 
-    onAddNotification(newNotif);
     setShowAddModal(false);
+    setEditingNotifId(null);
     setNewNotifForm({
       title: '',
       clientName: clients[0] || '',
@@ -134,6 +155,27 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       deadline: '',
       description: ''
     });
+  };
+
+  const handleEditClick = (notif: Notification) => {
+    let formattedDeadline = '';
+    if (notif.deadline) {
+      // Convert DD/MM/YYYY to YYYY-MM-DD
+      const parts = notif.deadline.split('/');
+      if (parts.length === 3) formattedDeadline = `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+    setNewNotifForm({
+      title: notif.title,
+      clientName: notif.clientName,
+      projectId: notif.projectId || '',
+      agency: notif.agency,
+      severity: notif.severity,
+      category: notif.category || 'Notificação',
+      deadline: formattedDeadline,
+      description: notif.description
+    });
+    setEditingNotifId(notif.id);
+    setShowAddModal(true);
   };
 
   const generateAiDraft = async (notif: Notification) => {
@@ -205,6 +247,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
           <p className="text-baccarim-text-muted font-medium">Controle de exigências e complementações da SEMA/IAT.</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 items-center">
+          <div className="flex bg-baccarim-hover p-1 rounded-2xl shadow-sm border border-baccarim-border-hover">
+            {(['All', 'Notificação', 'Licença'] as const).map(f => (
+              <button
+                key={f}
+                onClick={() => setCategoryFilter(f)}
+                className={`px-4 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${categoryFilter === f ? 'bg-baccarim-amber text-baccarim-dark shadow-md' : 'text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-hover'}`}
+              >
+                {f === 'All' ? 'Todos' : f === 'Notificação' ? 'Notificações' : 'Licenças'}
+              </button>
+            ))}
+          </div>
           <div className="flex bg-baccarim-hover p-1 rounded-2xl shadow-sm border border-baccarim-border-hover">
             {(['All', 'Open', 'Resolved'] as const).map(f => (
               <button
@@ -397,6 +450,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     </button>
                   )}
 
+                  <button onClick={() => handleEditClick(notif)} className="w-full py-3 text-baccarim-blue hover:text-baccarim-text text-[10px] font-black uppercase tracking-widest transition-colors">Editar Registro</button>
                   <button onClick={() => onDeleteNotification(notif.id)} className="w-full py-3 text-baccarim-text-muted hover:text-red-500 text-[10px] font-black uppercase tracking-widest transition-colors">Excluir Registro</button>
                 </div>
               </div>
@@ -416,8 +470,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       {showAddModal && (
         <div className="fixed inset-0 bg-baccarim-dark/95 backdrop-blur-xl z-[200] flex items-center justify-center p-4 animate-in fade-in duration-300">
           <div className="bg-baccarim-card rounded-[3rem] w-full max-w-lg shadow-2xl p-10 md:p-12 relative overflow-y-auto max-h-[90vh] border border-baccarim-border-hover pb-safe">
-            <h3 className="text-2xl font-black text-baccarim-text mb-8">Nova Notificação SEMA/IAT</h3>
-            <form onSubmit={handleCreateNotification} className="space-y-6 pb-20">
+            <h3 className="text-2xl font-black text-baccarim-text mb-8">{editingNotifId ? 'Editar Registro' : 'Nova Notificação SEMA/IAT'}</h3>
+            <form onSubmit={handleCreateOrUpdateNotification} className="space-y-6 pb-20">
               <div className="space-y-1">
                 <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título da Exigência</label>
                 <input
@@ -535,8 +589,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               </div>
 
               <div className="flex gap-4 pt-6">
-                <button type="submit" className="flex-1 bg-baccarim-blue text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all">Registrar Notificação</button>
-                <button type="button" onClick={() => setShowAddModal(false)} className="px-8 bg-baccarim-hover text-baccarim-text-muted py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-baccarim-active transition-all">Cancelar</button>
+                <button type="submit" className="flex-1 bg-baccarim-blue text-white py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all">{editingNotifId ? 'Salvar Alterações' : 'Registrar Notificação'}</button>
+                <button type="button" onClick={() => { setShowAddModal(false); setEditingNotifId(null); }} className="px-8 bg-baccarim-hover text-baccarim-text-muted py-5 rounded-2xl font-black uppercase tracking-widest text-[10px] hover:bg-baccarim-active transition-all">Cancelar</button>
               </div>
             </form>
           </div>
