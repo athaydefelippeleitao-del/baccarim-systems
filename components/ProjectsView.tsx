@@ -528,8 +528,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                   className="mx-6 md:mx-8 mb-6 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
                   onClick={(e) => {
                     e.stopPropagation();
-                    // Interação: apenas um clique visual para indicar que é importante.
-                    // Idealmente, isso poderia mudar a aba ativa, mas mantemos como um alerta visual interativo.
+                    window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'notifications' }));
                   }}
                   title="Vá para o Centro de Notificações para gerenciar."
                 >
