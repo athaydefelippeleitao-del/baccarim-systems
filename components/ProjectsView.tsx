@@ -583,8 +583,28 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       </button>
                     </div>
                   </div>
-
                   <div className="space-y-12">
+                    {(() => {
+                      const activeNotif = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category !== 'Licença');
+                      if (!activeNotif) return null;
+                      return (
+                        <div className="mb-2 bg-baccarim-rose/5 border border-baccarim-rose/20 rounded-[1.5rem] p-5 flex items-start space-x-5 shadow-inner animate-in fade-in zoom-in-95">
+                          <div className="w-12 h-12 rounded-2xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 shadow-sm">
+                            <i className="fas fa-triangle-exclamation text-xl"></i>
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center justify-between mb-1">
+                              <p className="text-[9px] font-black text-baccarim-rose uppercase tracking-[0.2em]">Notificação SEMA Ativa</p>
+                              <span className="text-[9px] font-black bg-baccarim-rose/10 text-baccarim-rose px-2 py-1 rounded-lg uppercase tracking-widest">
+                                Prazo: {activeNotif.deadline}
+                              </span>
+                            </div>
+                            <h5 className="text-sm font-bold text-baccarim-text mb-1">{activeNotif.title}</h5>
+                            <p className="text-xs text-baccarim-text-muted italic line-clamp-2">"{activeNotif.description}"</p>
+                          </div>
+                        </div>
+                      );
+                    })()}
                     {/* I - IDENTIFICAÇÃO DO REQUERENTE */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 border-b border-baccarim-border pb-3">
