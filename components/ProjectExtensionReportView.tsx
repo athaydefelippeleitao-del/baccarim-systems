@@ -60,8 +60,8 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
 
     const diasExtensoText = DIAS_EXTENSO[days] || '';
 
-    // Find latest notification
-    const projectNotifs = notifications?.filter(n => n.projectId === project.id) || [];
+    // Find latest notification (excluding licenses)
+    const projectNotifs = notifications?.filter(n => n.projectId === project.id && n.category !== 'Licença') || [];
     projectNotifs.sort((a, b) => new Date(b.dateReceived).getTime() - new Date(a.dateReceived).getTime());
     const lastNotif = projectNotifs[0];
     

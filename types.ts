@@ -74,6 +74,7 @@ export interface Notification {
   status: 'Open' | 'Resolved';
   agency: string;
   severity: NotificationSeverity;
+  category?: 'Notificação' | 'Licença';
   attachedFiles?: Attachment[];
   responseDraft?: string;
   sent1WeekAlert?: boolean;

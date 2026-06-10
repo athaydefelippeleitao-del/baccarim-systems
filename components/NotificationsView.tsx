@@ -28,6 +28,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     projectId: '',
     agency: 'SEMA',
     severity: 'Média' as NotificationSeverity,
+    category: 'Notificação' as 'Notificação' | 'Licença',
     deadline: '',
     description: ''
   });
@@ -113,6 +114,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       projectId: newNotifForm.projectId,
       agency: newNotifForm.agency,
       severity: newNotifForm.severity,
+      category: newNotifForm.category,
       deadline: formattedDeadline,
       description: newNotifForm.description,
       dateReceived: new Date().toLocaleDateString('pt-BR'),
@@ -128,6 +130,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       projectId: '',
       agency: 'SEMA',
       severity: 'Média',
+      category: 'Notificação',
       deadline: '',
       description: ''
     });
@@ -256,6 +259,9 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 <div className="flex items-center space-x-3">
                   <span className="bg-baccarim-hover px-3 py-1 rounded-lg text-[8px] font-black uppercase text-baccarim-text-muted">{notif.agency}</span>
                   <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase text-white ${getSeverityColor(notif.severity)}`}>Severidade {notif.severity}</span>
+                  {notif.category && (
+                    <span className="bg-baccarim-hover px-3 py-1 rounded-lg text-[8px] font-black uppercase text-baccarim-text-muted border border-baccarim-border">{notif.category}</span>
+                  )}
                 </div>
                 <div>
                   <h3 className="text-xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors">{notif.title}</h3>
@@ -477,22 +483,43 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                 </div>
               </div>
 
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Severidade</label>
-                <div className="flex gap-2">
-                  {(['Baixa', 'Média', 'Alta'] as NotificationSeverity[]).map(sev => (
-                    <button
-                      key={sev}
-                      type="button"
-                      onClick={() => setNewNotifForm({ ...newNotifForm, severity: sev })}
-                      className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newNotifForm.severity === sev
-                        ? `${getSeverityColor(sev)} text-baccarim-text border-transparent shadow-lg`
-                        : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
-                        }`}
-                    >
-                      {sev}
-                    </button>
-                  ))}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Severidade</label>
+                  <div className="flex gap-2">
+                    {(['Baixa', 'Média', 'Alta'] as NotificationSeverity[]).map(sev => (
+                      <button
+                        key={sev}
+                        type="button"
+                        onClick={() => setNewNotifForm({ ...newNotifForm, severity: sev })}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newNotifForm.severity === sev
+                          ? `${getSeverityColor(sev)} text-baccarim-text border-transparent shadow-lg`
+                          : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
+                          }`}
+                      >
+                        {sev}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Categoria</label>
+                  <div className="flex gap-2">
+                    {(['Notificação', 'Licença'] as const).map(cat => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setNewNotifForm({ ...newNotifForm, category: cat })}
+                        className={`flex-1 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all ${newNotifForm.category === cat
+                          ? 'bg-baccarim-blue text-white border-transparent shadow-lg'
+                          : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border'
+                          }`}
+                      >
+                        {cat}
+                      </button>
+                    ))}
+                  </div>
                 </div>
               </div>
 
