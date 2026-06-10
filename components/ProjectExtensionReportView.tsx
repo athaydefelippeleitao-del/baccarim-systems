@@ -4,6 +4,7 @@ import { Project, AppConfig } from '../types';
 interface ProjectExtensionReportViewProps {
   project: Project;
   appConfig?: AppConfig;
+  notifications?: any[];
   onUpdateProject: (project: Project) => void;
   onClose: () => void;
 }
@@ -17,7 +18,7 @@ const DIAS_EXTENSO: Record<string, string> = {
   '120': '(cento e vinte)'
 };
 
-const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({ project, appConfig, onUpdateProject, onClose }) => {
+const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({ project, appConfig, notifications, onUpdateProject, onClose }) => {
   const reportRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -30,17 +31,21 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
 
   const updateExtensionDays = (days: string) => {
     setExtensionDays(days);
+    const newContent = getInitialContent(days, extensionReason);
+    setContent(newContent);
     onUpdateProject({
       ...project,
-      specs: { ...project.specs, extensionDays: days }
+      specs: { ...project.specs, extensionDays: days, customExtensionReport: newContent }
     });
   };
 
   const updateExtensionReason = (reason: string) => {
     setExtensionReason(reason);
+    const newContent = getInitialContent(extensionDays, reason);
+    setContent(newContent);
     onUpdateProject({
       ...project,
-      specs: { ...project.specs, extensionReason: reason }
+      specs: { ...project.specs, extensionReason: reason, customExtensionReport: newContent }
     });
   };
 
@@ -55,6 +60,14 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
 
     const diasExtensoText = DIAS_EXTENSO[days] || '';
 
+    // Find latest notification
+    const projectNotifs = notifications?.filter(n => n.projectId === project.id) || [];
+    projectNotifs.sort((a, b) => new Date(b.dateReceived).getTime() - new Date(a.dateReceived).getTime());
+    const lastNotif = projectNotifs[0];
+    
+    // Fallback if no notification is found
+    const notifString = lastNotif ? `Notificação Administrativa ${lastNotif.title.split(':').pop()?.trim() || lastNotif.title}` : (project.specs?.notificationNumber ? `Notificação Administrativa nº ${project.specs.notificationNumber}` : 'Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026');
+
     return `
       <div style="text-align: right; margin-bottom: 25px; font-size: 11pt;">Londrina, ${today}.</div>
       
@@ -65,7 +78,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
       </div>
 
       <div style="margin-bottom: 30px; font-size: 11pt; line-height: 1.3; text-align: justify;">
-        <p><strong>Ref.:</strong> Processo SEI ${processNumber} | Solicitação de prorrogação de prazo (${days} dias) para envio de complementação solicitada através da Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026.</p>
+        <p><strong>Ref.:</strong> Processo SEI ${processNumber} | Solicitação de prorrogação de prazo (${days} dias) para envio de complementação solicitada através da ${notifString}.</p>
       </div>
 
       <div style="text-align: justify; line-height: 1.4; font-size: 11pt;">
@@ -74,7 +87,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
         </p>
 
         <p style="text-indent: 50px; margin-bottom: 15px;">
-          Em atenção à Notificação Administrativa nº 2110/2025 e prorrogada pela Notificação Administrativa nº 173/2026, e considerando ${reason}, gostaríamos de formalizar nossa solicitação de prorrogação de <strong>${days} ${diasExtensoText} dias do prazo</strong> originalmente estabelecido.
+          Em atenção à ${notifString}, e considerando ${reason}, gostaríamos de formalizar nossa solicitação de prorrogação de <strong>${days} ${diasExtensoText} dias do prazo</strong> originalmente estabelecido.
         </p>
 
         <p style="text-indent: 50px; margin-bottom: 15px;">

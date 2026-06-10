@@ -407,6 +407,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       {extensionProject && (
         <ProjectExtensionReportView
           project={extensionProject}
+          notifications={notifications}
           onUpdateProject={onUpdateProject}
           appConfig={appConfig}
           onClose={() => setExtensionProject(null)}
