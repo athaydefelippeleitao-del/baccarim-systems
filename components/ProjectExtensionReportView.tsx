@@ -25,8 +25,24 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
   const [localSignatureImage, setLocalSignatureImage] = useState<string | undefined>(appConfig?.signatureImage);
 
   // States for easily alterable fields
-  const [extensionDays, setExtensionDays] = useState('60');
-  const [extensionReason, setExtensionReason] = useState('a necessidade de maior prazo para o envio da complementação solicitada');
+  const [extensionDays, setExtensionDays] = useState(project.specs?.extensionDays || '60');
+  const [extensionReason, setExtensionReason] = useState(project.specs?.extensionReason || 'a necessidade de maior prazo para o envio da complementação solicitada');
+
+  const updateExtensionDays = (days: string) => {
+    setExtensionDays(days);
+    onUpdateProject({
+      ...project,
+      specs: { ...project.specs, extensionDays: days }
+    });
+  };
+
+  const updateExtensionReason = (reason: string) => {
+    setExtensionReason(reason);
+    onUpdateProject({
+      ...project,
+      specs: { ...project.specs, extensionReason: reason }
+    });
+  };
 
   // Generate HTML content
   const getInitialContent = (days: string, reason: string) => {
@@ -155,7 +171,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
               <label className="block text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-2">Prazo (Dias)</label>
               <select 
                 value={extensionDays}
-                onChange={(e) => setExtensionDays(e.target.value)}
+                onChange={(e) => updateExtensionDays(e.target.value)}
                 className="w-full bg-baccarim-dark border border-baccarim-border rounded-xl px-4 py-3 text-sm text-baccarim-text focus:outline-none focus:border-baccarim-blue transition-all"
               >
                 <option value="15">15 Dias</option>
@@ -171,7 +187,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
               <label className="block text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-2">Motivo da Dilação</label>
               <textarea 
                 value={extensionReason}
-                onChange={(e) => setExtensionReason(e.target.value)}
+                onChange={(e) => updateExtensionReason(e.target.value)}
                 className="w-full bg-baccarim-dark border border-baccarim-border rounded-xl px-4 py-3 text-sm text-baccarim-text focus:outline-none focus:border-baccarim-blue transition-all min-h-[100px] resize-y"
                 placeholder="Ex: a necessidade de maior prazo..."
               />

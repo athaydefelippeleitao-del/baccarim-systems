@@ -196,6 +196,8 @@ export interface ProjectTechnicalSpecs {
   customSpecs?: CustomSpec[];
   rapData?: Record<string, string>;
   customExtensionReport?: string;
+  extensionDays?: string;
+  extensionReason?: string;
 }
 
 export interface ProjectMeetingMinute {
