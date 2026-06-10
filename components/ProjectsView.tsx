@@ -519,6 +519,42 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
               </div>
             </div>
 
+            {/* NOTIFICAÇÃO ATIVA SEMPRE EXPOSTA */}
+            {(() => {
+              const activeNotif = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category !== 'Licença');
+              if (!activeNotif) return null;
+              return (
+                <div 
+                  className="mx-6 md:mx-8 mb-6 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    // Interação: apenas um clique visual para indicar que é importante.
+                    // Idealmente, isso poderia mudar a aba ativa, mas mantemos como um alerta visual interativo.
+                  }}
+                  title="Vá para o Centro de Notificações para gerenciar."
+                >
+                  <div className="w-10 h-10 rounded-xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                    <i className="fas fa-triangle-exclamation text-lg animate-pulse"></i>
+                  </div>
+                  <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="overflow-hidden">
+                      <p className="text-[9px] font-black text-baccarim-rose uppercase tracking-[0.2em] mb-0.5">Atenção: Notificação Ativa</p>
+                      <h5 className="text-xs font-bold text-baccarim-text truncate" title={activeNotif.title}>{activeNotif.title}</h5>
+                    </div>
+                    <div className="flex items-center gap-3 shrink-0">
+                      <span className="text-[10px] font-black bg-baccarim-rose/10 text-baccarim-rose px-3 py-1.5 rounded-xl uppercase tracking-widest whitespace-nowrap shadow-sm">
+                        Prazo: {activeNotif.deadline}
+                      </span>
+                      <div className="hidden sm:flex text-[9px] font-black text-baccarim-rose uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-baccarim-rose/5 px-2 py-1 rounded-lg">
+                         <span>Ir para Notificações</span>
+                         <i className="fas fa-arrow-right ml-2"></i>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              );
+            })()}
+
             {isExpanded && (
               <div className="px-6 md:px-10 pb-10 space-y-10 animate-in slide-in-from-top-4 duration-500">
 
@@ -584,27 +620,6 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                     </div>
                   </div>
                   <div className="space-y-12">
-                    {(() => {
-                      const activeNotif = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category !== 'Licença');
-                      if (!activeNotif) return null;
-                      return (
-                        <div className="mb-2 bg-baccarim-rose/5 border border-baccarim-rose/20 rounded-[1.5rem] p-5 flex items-start space-x-5 shadow-inner animate-in fade-in zoom-in-95">
-                          <div className="w-12 h-12 rounded-2xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 shadow-sm">
-                            <i className="fas fa-triangle-exclamation text-xl"></i>
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between mb-1">
-                              <p className="text-[9px] font-black text-baccarim-rose uppercase tracking-[0.2em]">Notificação SEMA Ativa</p>
-                              <span className="text-[9px] font-black bg-baccarim-rose/10 text-baccarim-rose px-2 py-1 rounded-lg uppercase tracking-widest">
-                                Prazo: {activeNotif.deadline}
-                              </span>
-                            </div>
-                            <h5 className="text-sm font-bold text-baccarim-text mb-1">{activeNotif.title}</h5>
-                            <p className="text-xs text-baccarim-text-muted italic line-clamp-2">"{activeNotif.description}"</p>
-                          </div>
-                        </div>
-                      );
-                    })()}
                     {/* I - IDENTIFICAÇÃO DO REQUERENTE */}
                     <div className="space-y-6">
                       <div className="flex items-center gap-3 border-b border-baccarim-border pb-3">
