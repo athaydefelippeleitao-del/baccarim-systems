@@ -1,8 +1,20 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User } from '../types';
 import { downloadFile } from '../utils/fileUtils';
 import { exportAllDataAsZip } from '../utils/zipUtils';
+
+// VAPID public key (safe to expose — private key stays on server)
+const VAPID_PUBLIC_KEY = 'BFpvQ56vvUjnZVB-BsjsLtJyObMMGnuR672bTBIDQl9laRUDtx8-2IfrKONOoq1PUtqxkh-x-i4bV8Va8B5ua-o';
+
+function urlBase64ToUint8Array(base64String: string) {
+  const padding = '='.repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
+  const rawData = window.atob(base64);
+  const outputArray = new Uint8Array(rawData.length);
+  for (let i = 0; i < rawData.length; ++i) outputArray[i] = rawData.charCodeAt(i);
+  return outputArray;
+}
 
 interface ProfileViewProps {
   user: User;
@@ -21,8 +33,30 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
   const [isSaving, setIsSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [pushStatus, setPushStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isInstalled, setIsInstalled] = useState(false);
 
-  React.useEffect(() => {
+  // Captura o evento de instalação do PWA
+  useEffect(() => {
+    const handler = (e: any) => { e.preventDefault(); setInstallPrompt(e); };
+    window.addEventListener('beforeinstallprompt', handler);
+    // Verifica se já está instalado (standalone)
+    if (window.matchMedia('(display-mode: standalone)').matches) setIsInstalled(true);
+    return () => window.removeEventListener('beforeinstallprompt', handler);
+  }, []);
+
+  const handleInstallApp = async () => {
+    if (installPrompt) {
+      installPrompt.prompt();
+      const { outcome } = await installPrompt.userChoice;
+      if (outcome === 'accepted') { setIsInstalled(true); setInstallPrompt(null); }
+    } else {
+      // iOS Safari — mostrar instrução manual
+      alert('Para instalar no iPhone/iPad:\n1. Toque no ícone de compartilhar (□↑)\n2. Selecione "Adicionar à Tela de Início"');
+    }
+  };
+
+  useEffect(() => {
     const checkPushSubscription = async () => {
       if (!('serviceWorker' in navigator && 'PushManager' in window)) {
         setPushStatus('error');
@@ -119,90 +153,54 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
 
   const handleEnablePush = async () => {
     if (!('serviceWorker' in navigator && 'PushManager' in window)) {
-      console.warn('Push not supported by browser/context');
       setPushStatus('error');
-      alert('Seu navegador ou dispositivo não suporta notificações push.');
-      return;
-    }
-
-    if (!window.isSecureContext && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
-      console.warn('Push notifications require HTTPS or localhost');
-      setPushStatus('error');
-      alert('As notificações push requerem uma conexão segura (HTTPS) ou acesso via localhost. Se você está acessando por um endereço de IP externo, configure HTTPS para habilitar os avisos no celular.');
+      alert('Seu navegador não suporta notificações push. Use Chrome ou Edge.');
       return;
     }
 
     setPushStatus('loading');
     try {
-      console.log('Registering SW...');
+      // Garante que o SW está registrado
       const registration = await navigator.serviceWorker.register('/sw.js');
-      console.log('SW Registered!', registration);
+      await navigator.serviceWorker.ready;
 
+      // Pede permissão
       let permission = window.Notification.permission;
       if (permission === 'denied') {
-        alert('As notificações estão bloqueadas no seu navegador. Por favor, acesse as configurações do seu navegador (clicando no cadeado ao lado do link no topo da página) e permita notificações para receber os avisos no celular.');
+        alert('Notificações bloqueadas. Vá nas configurações do navegador e permita notificações para este site.');
         setPushStatus('error');
         return;
       }
-
       if (permission === 'default') {
-        permission = await new Promise((resolve) => {
-          const promise = window.Notification.requestPermission(resolve);
-          if (promise) {
-            promise.then(resolve);
-          }
-        });
+        permission = await window.Notification.requestPermission();
       }
-      
       if (permission !== 'granted') {
-        console.warn('Permission not granted:', permission);
         setPushStatus('error');
         return;
       }
 
-      console.log('Checking subscription...');
-      const existingSub = await registration.pushManager.getSubscription();
-      if (existingSub) {
-        console.log('Existing sub found, sending to server...');
-        await fetch('/api/push/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, subscription: existingSub })
+      // Verifica se já tem subscrição
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        // Cria nova subscrição usando a VAPID key pública hardcoded
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
         });
-        setPushStatus('success');
-        return;
       }
 
-      console.log('Fetching VAPID key...');
-      const response = await fetch('/api/vapidPublicKey');
-      const vapidPublicKey = await response.text();
-
-      function urlBase64ToUint8Array(base64String: string) {
-        const padding = '='.repeat((4 - base64String.length % 4) % 4);
-        const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
-        const rawData = window.atob(base64);
-        const outputArray = new Uint8Array(rawData.length);
-        for (let i = 0; i < rawData.length; ++i) { outputArray[i] = rawData.charCodeAt(i); }
-        return outputArray;
-      }
-
-      console.log('Subscribing to push manager...');
-      const subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
-      });
-
-      console.log('Sending subscription to server...');
-      await fetch('/api/push/subscribe', {
+      // Envia ao backend (não bloqueia se falhar)
+      fetch('/api/push/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId: user.id, subscription })
-      });
-      
+      }).catch(e => console.warn('Push subscribe sync error (non-fatal):', e));
+
       setPushStatus('success');
-    } catch (err) {
-      console.error('Error setting up push notifications:', err);
+    } catch (err: any) {
+      console.error('Push setup error:', err);
       setPushStatus('error');
+      alert(`Erro ao ativar notificações: ${err?.message || err}`);
     }
   };
 
@@ -459,6 +457,30 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
               </div>
             </div>
           )}
+
+          {/* Instalar App */}
+          <div className="bg-gradient-to-br from-baccarim-navy to-baccarim-blue rounded-[2.5rem] p-8 border border-baccarim-border-hover shadow-2xl text-center text-white relative overflow-hidden">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+            <div className="relative z-10">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-[1.5rem] flex items-center justify-center mx-auto mb-4 text-3xl border border-white/20">
+                <i className="fas fa-mobile-screen-button"></i>
+              </div>
+              <p className="text-sm font-black">Instalar no Celular</p>
+              <p className="text-[10px] text-white/60 mt-2 mb-6">Acesse como app, sem abrir o navegador</p>
+              {isInstalled ? (
+                <div className="py-3 px-4 bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-baccarim-green border border-baccarim-green/30">
+                  <i className="fas fa-check mr-2"></i>App Instalado ✓
+                </div>
+              ) : (
+                <button
+                  onClick={handleInstallApp}
+                  className="w-full py-4 bg-white text-baccarim-navy rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-green hover:text-white transition-all"
+                >
+                  <i className="fas fa-download mr-2"></i>Baixar App
+                </button>
+              )}
+            </div>
+          </div>
         </div>
       </div>
     </div>

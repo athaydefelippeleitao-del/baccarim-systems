@@ -1,7 +1,7 @@
 /**
- * geminiClient.ts
- * Frontend client that calls the server-side Gemini API routes.
- * The API key stays on the server — never exposed in the browser bundle.
+ * openaiClient.ts
+ * Frontend client que chama as Vercel Serverless Functions de IA (OpenAI no backend).
+ * A chave fica no servidor — nunca exposta no bundle do navegador.
  */
 
 const BASE = '/api/openai';
@@ -12,13 +12,13 @@ async function post<T>(endpoint: string, body: object): Promise<T> {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
-  
+
   const text = await res.text();
   let data;
   try {
     data = JSON.parse(text);
   } catch (e) {
-    throw new Error(`Erro do servidor (${res.status}): ${text.slice(0, 120)}`);
+    throw new Error(`Erro do servidor (${res.status}): ${text.slice(0, 200)}`);
   }
 
   if (data && data.error) {
@@ -27,12 +27,7 @@ async function post<T>(endpoint: string, body: object): Promise<T> {
   return data.result as T;
 }
 
-export async function suggestExcelMapping(headers: string[]): Promise<Record<string, string>> {
-  return post('/suggest-mapping', { headers });
-}
-
 export async function analyzeLicensePortfolio(licenses: any[], notifications: any[]): Promise<string> {
-  // Map and strip out heavy fields (like documentation arrays or base64) to prevent 413 payload limit errors on Vercel
   const cleanLicenses = (licenses || []).map(l => ({
     name: l.name,
     clientName: l.clientName,
@@ -50,7 +45,10 @@ export async function analyzeLicensePortfolio(licenses: any[], notifications: an
     status: n.status
   }));
 
-  const result = await post<string>('/analyze-portfolio', { licenses: cleanLicenses, notifications: cleanNotifications });
+  const result = await post<string>('/analyze-portfolio', {
+    licenses: cleanLicenses,
+    notifications: cleanNotifications
+  });
   return result || 'Nenhuma análise disponível.';
 }
 
@@ -65,6 +63,10 @@ export async function generateNotificationDraft(
 ): Promise<string> {
   const result = await post<string>('/notification-draft', { agency, description, clientName });
   return result || 'Não foi possível gerar o rascunho.';
+}
+
+export async function suggestExcelMapping(headers: string[]): Promise<Record<string, string>> {
+  return post('/suggest-mapping', { headers });
 }
 
 export async function generateAIDocument(

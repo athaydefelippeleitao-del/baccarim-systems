@@ -4,6 +4,7 @@ import { Project, AppConfig } from '../types';
 interface ProjectExtensionReportViewProps {
   project: Project;
   appConfig?: AppConfig;
+  onUpdateProject: (project: Project) => void;
   onClose: () => void;
 }
 
@@ -16,7 +17,7 @@ const DIAS_EXTENSO: Record<string, string> = {
   '120': '(cento e vinte)'
 };
 
-const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({ project, appConfig, onClose }) => {
+const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({ project, appConfig, onUpdateProject, onClose }) => {
   const reportRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -71,10 +72,26 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
     `;
   };
 
-  const [content, setContent] = useState(getInitialContent(extensionDays, extensionReason));
+  const [content, setContent] = useState(project.specs?.customExtensionReport || getInitialContent(extensionDays, extensionReason));
 
   const handleApplyChanges = () => {
-    setContent(getInitialContent(extensionDays, extensionReason));
+    if (confirm('Isso irá substituir todas as suas edições manuais pelo texto padrão com as novas variáveis. Deseja continuar?')) {
+      const newContent = getInitialContent(extensionDays, extensionReason);
+      setContent(newContent);
+      onUpdateProject({
+        ...project,
+        specs: { ...project.specs, customExtensionReport: newContent }
+      });
+    }
+  };
+
+  const handleContentBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    const newContent = e.currentTarget.innerHTML;
+    setContent(newContent);
+    onUpdateProject({
+      ...project,
+      specs: { ...project.specs, customExtensionReport: newContent }
+    });
   };
 
   const handleGeneratePDF = async () => {
@@ -90,7 +107,7 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
 
     try {
       // @ts-ignore
-      await html2pdf().set(opt).from(reportRef.current).save();
+      await (window as any).html2pdf().set(opt).from(reportRef.current).save();
     } catch (error) {
       console.error('Error generating PDF:', error);
     } finally {
@@ -162,10 +179,13 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
 
             <button 
               onClick={handleApplyChanges}
-              className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-blue text-white rounded-xl hover:bg-baccarim-green transition-all shadow-lg"
+              className="w-full py-3 text-[10px] font-black uppercase tracking-widest bg-baccarim-amber text-baccarim-dark rounded-xl hover:bg-baccarim-green hover:text-white transition-all shadow-lg"
             >
-              Aplicar Mudanças no Texto
+              Regerar Texto Padrão
             </button>
+            <p className="text-[9px] text-baccarim-text-muted italic text-center mt-2">
+              Edições feitas direto no texto do Ofício são salvas automaticamente.
+            </p>
           </div>
 
           <div className="w-full h-px bg-baccarim-border"></div>
@@ -230,7 +250,8 @@ const ProjectExtensionReportView: React.FC<ProjectExtensionReportViewProps> = ({
             contentEditable 
             suppressContentEditableWarning
             dangerouslySetInnerHTML={{ __html: content }}
-            className="outline-none focus:ring-0"
+            onBlur={handleContentBlur}
+            className="outline-none focus:ring-0 custom-editable-area"
           />
 
           {/* Signature Area (Properly Aligned & Embedded) */}

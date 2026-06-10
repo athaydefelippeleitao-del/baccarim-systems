@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Baccarim Systems</string>
+    <string name="title_activity_main">Baccarim Systems</string>
+    <string name="package_name">com.baccarim.systems</string>
+    <string name="custom_url_scheme">com.baccarim.systems</string>
+</resources>

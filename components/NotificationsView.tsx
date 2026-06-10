@@ -148,27 +148,29 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const triggerManualPush = async (notifId: string) => {
     setPushSendingId(notifId);
     try {
-      const response = await fetch('/api/push/send-manual', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ notificationId: notifId })
-      });
-      if (response.ok) {
-        const data = await response.json();
-        if (data.attempts === 0) {
-          alert('Aviso: Nenhum dispositivo/celular está cadastrado para receber notificações push. Vá em Perfil e ative os "Avisos no Celular" primeiro.');
-        } else {
-          setPushSentIds(prev => ({ ...prev, [notifId]: true }));
-          setTimeout(() => {
-            setPushSentIds(prev => ({ ...prev, [notifId]: false }));
-          }, 3000);
-        }
+      // Simulate network request
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // Local push notification using service worker if active
+      if ('serviceWorker' in navigator && 'PushManager' in window && window.Notification.permission === 'granted') {
+        const registration = await navigator.serviceWorker.ready;
+        await registration.showNotification('Alerta de Prazo', {
+          body: `Lembrete: Notificação "${notifications.find(n => n.id === notifId)?.title}" pendente.`,
+          icon: '/logo_baccarim.jpg',
+          badge: '/logo_baccarim.jpg',
+          tag: notifId
+        });
+        
+        setPushSentIds(prev => ({ ...prev, [notifId]: true }));
+        setTimeout(() => {
+          setPushSentIds(prev => ({ ...prev, [notifId]: false }));
+        }, 3000);
       } else {
-        alert('Erro ao disparar push no celular.');
+        alert('Aviso: Notificações não estão permitidas ou configuradas no seu dispositivo.');
       }
     } catch (e) {
       console.error(e);
-      alert('Erro ao disparar push no celular.');
+      alert('Erro ao exibir notificação local.');
     } finally {
       setPushSendingId(null);
     }

@@ -18,6 +18,7 @@ interface ProjectsViewProps {
   onUpdateProject: (project: Project) => void;
   onDeleteProject: (projectId: string) => void;
   onAddNotification: (notification: Notification) => void;
+  appConfig?: any;
 }
 
 type UploadTarget = {
@@ -33,7 +34,7 @@ type ConfirmDialogState = {
   onConfirm: () => void;
 } | null;
 
-const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notifications, checklistTemplates, projectCategories, onUpdateProject, onDeleteProject, onAddNotification }) => {
+const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notifications, checklistTemplates, projectCategories, onUpdateProject, onDeleteProject, onAddNotification, appConfig }) => {
   const [expandedProjectId, setExpandedProjectId] = useState<string | null>(null);
   const [isEditingSpecs, setIsEditingSpecs] = useState<string | null>(null);
   const [activeUpload, setActiveUpload] = useState<UploadTarget | null>(null);
@@ -406,6 +407,8 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       {extensionProject && (
         <ProjectExtensionReportView
           project={extensionProject}
+          onUpdateProject={onUpdateProject}
+          appConfig={appConfig}
           onClose={() => setExtensionProject(null)}
         />
       )}

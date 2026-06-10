@@ -195,6 +195,7 @@ export interface ProjectTechnicalSpecs {
   qtdLotes?: number | string; // Kept for compatibility
   customSpecs?: CustomSpec[];
   rapData?: Record<string, string>;
+  customExtensionReport?: string;
 }
 
 export interface ProjectMeetingMinute {
