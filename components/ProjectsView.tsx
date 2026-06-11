@@ -616,6 +616,15 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       >
                         {isEditing ? 'SALVAR DADOS' : 'EDITAR DADOS'}
                       </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDeleteProject(project); }}
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-widest hover:bg-red-500 hover:text-white hover:border-red-500 transition-all flex items-center space-x-2"
+                        title="Excluir este processo permanentemente"
+                      >
+                        <i className="fas fa-trash-can"></i>
+                        <span>Excluir Processo</span>
+                      </button>
+
                     </div>
                   </div>
                   <div className="space-y-12">
