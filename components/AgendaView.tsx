@@ -34,8 +34,10 @@ const AgendaView: React.FC<AgendaViewProps> = ({
   const [confirmConfig, setConfirmConfig] = useState<ConfirmConfig>(null);
 
   const availableProjectsForClient = useMemo(() => {
-    return projects.filter(p => p.clientName === taskForm.clientName);
+    const normalize = (s: string) => s.trim().toLowerCase();
+    return projects.filter(p => normalize(p.clientName) === normalize(taskForm.clientName));
   }, [projects, taskForm.clientName]);
+
 
   // Auto-select first project when client changes in form
   useEffect(() => {

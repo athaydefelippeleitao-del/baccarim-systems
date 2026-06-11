@@ -36,7 +36,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   });
 
   const availableProjectsForClient = useMemo(() => {
-    return projects.filter(p => p.clientName === newNotifForm.clientName);
+    const normalize = (s: string) => s.trim().toLowerCase();
+    return projects.filter(p => normalize(p.clientName) === normalize(newNotifForm.clientName));
   }, [projects, newNotifForm.clientName]);
 
   // Auto-select first project when client changes
