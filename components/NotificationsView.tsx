@@ -118,7 +118,10 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
 
   const handleCreateOrUpdateNotification = (e: React.FormEvent) => {
     e.preventDefault();
-    const formattedDeadline = newNotifForm.deadline.split('-').reverse().join('/');
+    let formattedDeadline = newNotifForm.deadline;
+    if (newNotifForm.deadline.includes('-')) {
+      formattedDeadline = newNotifForm.deadline.split('-').reverse().join('/');
+    }
 
     if (editingNotifId) {
       const existingNotif = notifications.find(n => n.id === editingNotifId);
