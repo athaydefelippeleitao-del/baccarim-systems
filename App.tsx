@@ -520,22 +520,11 @@ const App: React.FC = () => {
         attachedFiles: updatedNotif.attachedFiles || []
       };
 
-      // 1. Adiciona nas Licenças
-      setLicenses(prev => {
-        const newLicenses = [newLicense, ...prev];
-        saveKeyToSupabase('licenses', newLicenses).catch(err => console.error('Erro ao criar licença:', err));
-        return newLicenses;
-      });
+      // 1. Adiciona nas Licenças (disparará o sync automático de licenses)
+      setLicenses(prev => [newLicense, ...prev]);
 
-      // 2. Remove das Notificações
-      setNotifications(prev => {
-        const newNotifs = prev.filter(n => n.id !== updatedNotif.id);
-        saveKeyToSupabase('notifications', newNotifs).catch(err => console.error('Erro ao salvar notificações:', err));
-        return newNotifs;
-      });
-
-      // 3. Exclui a notificação original do Supabase
-      emitDelete('notifications', updatedNotif.id);
+      // 2. Remove das Notificações (disparará o sync automático de notifications)
+      setNotifications(prev => prev.filter(n => n.id !== updatedNotif.id));
       
       alert('Notificação convertida e movida com sucesso para a aba de Licenças!');
       return;
@@ -543,10 +532,6 @@ const App: React.FC = () => {
 
     setNotifications(prev => {
       const newState = prev.map(n => n.id === updatedNotif.id ? updatedNotif : n);
-      saveKeyToSupabase('notifications', newState).catch(err => {
-        console.error('Erro ao salvar atualização da notificação:', err);
-        alert('Erro ao salvar no Supabase. Detalhes: ' + (err.message || JSON.stringify(err)));
-      });
       return newState;
     });
   };
