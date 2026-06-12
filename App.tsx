@@ -525,8 +525,6 @@ const App: React.FC = () => {
 
       // 2. Remove das Notificações (disparará o sync automático de notifications)
       setNotifications(prev => prev.filter(n => n.id !== updatedNotif.id));
-      
-      alert('Notificação convertida e movida com sucesso para a aba de Licenças!');
       return;
     }
 
