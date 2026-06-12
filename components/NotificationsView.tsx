@@ -59,7 +59,16 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     };
     return notifications
       .filter(n => filter === 'All' || n.status === filter)
-      .filter(n => categoryFilter === 'All' || n.category === categoryFilter || (!n.category && categoryFilter === 'Notificação'))
+      .filter(n => {
+        if (categoryFilter === 'All') {
+          // 'Todos' mostra apenas Notificações. Licenças ficam separadas.
+          return n.category === 'Notificação' || !n.category;
+        }
+        if (categoryFilter === 'Notificação') {
+          return n.category === 'Notificação' || !n.category;
+        }
+        return n.category === 'Licença';
+      })
       .sort((a, b) => parseDeadline(a.deadline) - parseDeadline(b.deadline));
   }, [notifications, filter, categoryFilter]);
 

@@ -105,18 +105,18 @@ const App: React.FC = () => {
           loadedKeysRef.current.add(key);
         });
 
-        if (state.users.length > 0) setUsers(state.users);
-        if (state.clients.length > 0) setClients(state.clients);
-        if (state.projects.length > 0) setProjects(state.projects);
-        if (state.licenses.length > 0) setLicenses(state.licenses);
-        if (state.notifications.length > 0) setNotifications(state.notifications);
-        if (state.contracts.length > 0) setContracts(state.contracts);
-        if (state.reports.length > 0) setReports(state.reports);
-        if (state.checklistTemplates) setChecklistTemplates(state.checklistTemplates);
-        if (state.meetings.length > 0) setMeetings(state.meetings);
-        if (state.videos.length > 0) setVideos(state.videos);
-        if (state.appConfig) setAppConfig(state.appConfig);
-        if (state.clientLogos) setClientLogos(state.clientLogos);
+        setUsers(state.users || []);
+        setClients(state.clients || []);
+        setProjects(state.projects || []);
+        setLicenses(state.licenses || []);
+        setNotifications(state.notifications || []);
+        setContracts(state.contracts || []);
+        setReports(state.reports || []);
+        setChecklistTemplates(state.checklistTemplates || {});
+        setMeetings(state.meetings || []);
+        setVideos(state.videos || []);
+        setAppConfig(state.appConfig || {});
+        setClientLogos(state.clientLogos || {});
         
         isInitialLoadDone.current = true;
         setDataLoaded(true);
@@ -225,6 +225,8 @@ const App: React.FC = () => {
     }
 
     // Debounce the sync to prevent hammering the server and sync loops
+    const delay = (key === 'notifications' || key === 'licenses' || key === 'projects') ? 50 : 1000;
+
     syncTimeoutRef.current[key] = setTimeout(async () => {
       if (!loadedKeysRef.current.has(key)) {
         console.warn(`Attempted to sync ${key} before it was loaded. Sync blocked.`);
@@ -246,7 +248,7 @@ const App: React.FC = () => {
 
       // Reset syncing indicator after a short delay
       setTimeout(() => setIsSyncing(false), 1000);
-    }, 1000); // 1s debounce
+    }, delay);
   }, [currentUser]);
 
   const emitDelete = useCallback(async (key: string, id: string) => {
@@ -472,26 +474,73 @@ const App: React.FC = () => {
   };
 
   const handleUpdateNotification = (updatedNotif: Notification) => {
-    setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
+    // Se a categoria foi mudada para Licença, vamos criar uma Licença real e excluir a notificação.
+    if (updatedNotif.category === 'Licença') {
+      const newLicense: EnvironmentalLicense = {
+        id: `l-conv-${updatedNotif.id}-${Date.now()}`,
+        name: updatedNotif.title,
+        clientName: updatedNotif.clientName,
+        type: updatedNotif.title.includes('LI') ? LicenseType.LI : updatedNotif.title.includes('LO') ? LicenseType.LO : updatedNotif.title.includes('LAS') ? LicenseType.LAS : LicenseType.LP,
+        agency: updatedNotif.agency || 'SEMA',
+        issueDate: updatedNotif.dateReceived || new Date().toLocaleDateString('pt-BR'),
+        expiryDate: updatedNotif.deadline || 'Pendente',
+        status: LicenseStatus.ACTIVE,
+        processNumber: updatedNotif.title,
+        documentation: [],
+        detailedStatus: 'Licença Deferida/Convertida',
+        attachedFiles: updatedNotif.attachedFiles || []
+      };
+
+      // 1. Adiciona nas Licenças
+      setLicenses(prev => {
+        const newLicenses = [newLicense, ...prev];
+        saveKeyToSupabase('licenses', newLicenses).catch(err => console.error('Erro ao criar licença:', err));
+        return newLicenses;
+      });
+
+      // 2. Remove das Notificações
+      setNotifications(prev => {
+        const newNotifs = prev.filter(n => n.id !== updatedNotif.id);
+        saveKeyToSupabase('notifications', newNotifs).catch(err => console.error('Erro ao salvar notificações:', err));
+        return newNotifs;
+      });
+
+      // 3. Exclui a notificação original do Supabase
+      emitDelete('notifications', updatedNotif.id);
+      
+      alert('Notificação convertida e movida com sucesso para a aba de Licenças!');
+      return;
+    }
+
+    setNotifications(prev => {
+      const newState = prev.map(n => n.id === updatedNotif.id ? updatedNotif : n);
+      saveKeyToSupabase('notifications', newState).catch(err => {
+        console.error('Erro ao salvar atualização da notificação:', err);
+        alert('Erro ao salvar no Supabase. Detalhes: ' + (err.message || JSON.stringify(err)));
+      });
+      return newState;
+    });
   };
 
   const handleUpdateReport = (updatedReport: PhotoReport) => {
     setReports(prev => {
       const exists = prev.find(r => r.id === updatedReport.id);
-      if (exists) {
-        return prev.map(r => r.id === updatedReport.id ? updatedReport : r);
-      }
-      return [updatedReport, ...prev];
+      const newState = exists ? prev.map(r => r.id === updatedReport.id ? updatedReport : r) : [updatedReport, ...prev];
+      saveKeyToSupabase('reports', newState).catch(err => {
+        console.error('Erro ao salvar relatório:', err);
+      });
+      return newState;
     });
   };
 
   const handleUpdateContract = (updatedContract: Contract) => {
     setContracts(prev => {
       const exists = prev.find(c => c.id === updatedContract.id);
-      if (exists) {
-        return prev.map(c => c.id === updatedContract.id ? updatedContract : c);
-      }
-      return [updatedContract, ...prev];
+      const newState = exists ? prev.map(c => c.id === updatedContract.id ? updatedContract : c) : [updatedContract, ...prev];
+      saveKeyToSupabase('contracts', newState).catch(err => {
+        console.error('Erro ao salvar contrato:', err);
+      });
+      return newState;
     });
   };
 
@@ -506,7 +555,14 @@ const App: React.FC = () => {
   };
 
   const handleAddNotification = (newNotif: Notification) => {
-    setNotifications(prev => [newNotif, ...prev]);
+    setNotifications(prev => {
+      const newState = [newNotif, ...prev];
+      saveKeyToSupabase('notifications', newState).catch(err => {
+        console.error('Erro ao salvar nova notificação:', err);
+        alert('Erro ao criar notificação no banco. Detalhes: ' + (err.message || JSON.stringify(err)));
+      });
+      return newState;
+    });
   };
 
 

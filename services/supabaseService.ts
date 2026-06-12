@@ -228,7 +228,10 @@ export async function upsertNotifications(notifications: Notification[]): Promis
   for (let i = 0; i < rows.length; i += 5) {
     const chunk = rows.slice(i, i + 5);
     const { error } = await supabase.from('notifications').upsert(chunk, { onConflict: 'id' });
-    if (error) console.error('upsertNotifications error on chunk:', error);
+    if (error) {
+      console.error('upsertNotifications error on chunk:', error);
+      throw error;
+    }
   }
 }
 
@@ -249,6 +252,7 @@ export function mapNotificationFromDb(row: any): Notification {
     status: row.status,
     agency: row.agency || '',
     severity: row.severity,
+    category: row.category || 'Notificação',
     attachedFiles: row.attached_files || [],
     responseDraft: row.response_draft,
   };
@@ -266,6 +270,7 @@ function mapNotificationToDb(n: Notification): any {
     status: n.status,
     agency: n.agency || null,
     severity: n.severity,
+    category: n.category || 'Notificação',
     attached_files: n.attachedFiles || [],
     response_draft: n.responseDraft || null,
     updated_at: new Date().toISOString(),
