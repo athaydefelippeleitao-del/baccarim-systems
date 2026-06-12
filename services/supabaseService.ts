@@ -584,9 +584,9 @@ export async function savePushSubscriptions(subscriptionsMap: Record<string, any
 
 
 // ─────────────────────────────────────────────
-export async function loadStateFromSupabase() {
-  console.log('[Supabase] Loading state from database...');
-  const [users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos, pushSubs] =
+export async function loadEssentialStateFromSupabase() {
+  console.log('[Supabase] Loading essential state from database...');
+  const [users, clients, projects, licenses, notifications, contracts, meetings, videos] =
     await Promise.all([
       getUsers(),
       getClients(),
@@ -595,7 +595,15 @@ export async function loadStateFromSupabase() {
       getNotifications(),
       getContracts(),
       getMeetings(),
-      getVideos(),
+      getVideos()
+    ]);
+  return { users, clients, projects, licenses, notifications, contracts, meetings, videos };
+}
+
+export async function loadHeavyStateFromSupabase() {
+  console.log('[Supabase] Loading heavy state from database in background...');
+  const [reports, auditLog, checklistTemplates, appConfig, clientLogos, pushSubs] =
+    await Promise.all([
       getReports(),
       getAuditLog(),
       getChecklistTemplates(),
@@ -603,14 +611,17 @@ export async function loadStateFromSupabase() {
       getClientLogos(),
       getPushSubscriptions()
     ]);
+  return { reports, auditLog, checklistTemplates, appConfig, clientLogos, pushSubs };
+}
 
-  // Merge push subscriptions into users
-  (users || []).forEach(user => {
-    user.pushSubscriptions = pushSubs[user.id] || [];
+export async function loadStateFromSupabase() {
+  // Mantido para compatibilidade, caso necessário
+  const essentials = await loadEssentialStateFromSupabase();
+  const heavy = await loadHeavyStateFromSupabase();
+  (essentials.users || []).forEach((user: any) => {
+    user.pushSubscriptions = heavy.pushSubs[user.id] || [];
   });
-
-  console.log(`[Supabase] Loaded: ${projects.length} projects, ${licenses.length} licenses, ${users.length} users`);
-  return { users, clients, projects, licenses, notifications, contracts, meetings, videos, reports, auditLog, checklistTemplates, appConfig, clientLogos };
+  return { ...essentials, ...heavy };
 }
 
 // ─────────────────────────────────────────────

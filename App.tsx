@@ -20,7 +20,7 @@ import AIDocumentsView from './components/AIDocumentsView';
 import LoadingScreen from './components/LoadingScreen';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
 import ProjectStatusSummary from './components/ProjectStatusSummary';
-import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb, loadStateFromSupabase, saveKeyToSupabase, deleteKeyFromSupabase, getUsers } from './services/supabaseService';
+import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb, loadEssentialStateFromSupabase, loadHeavyStateFromSupabase, saveKeyToSupabase, deleteKeyFromSupabase, getUsers } from './services/supabaseService';
 
 
 const App: React.FC = () => {
@@ -97,30 +97,59 @@ const App: React.FC = () => {
   useEffect(() => {
     const fetchInitialState = async () => {
       try {
-        console.log("Fetching initial state from Supabase...");
-        const state = await loadStateFromSupabase();
+        console.log("Fetching essential state from Supabase...");
+        // Carrega dados leves principais
+        const essentialState = await loadEssentialStateFromSupabase();
         
-        Object.keys(state).forEach(key => {
-          lastServerState.current[key] = JSON.stringify(state[key as keyof typeof state]);
+        Object.keys(essentialState).forEach(key => {
+          lastServerState.current[key] = JSON.stringify(essentialState[key as keyof typeof essentialState]);
           loadedKeysRef.current.add(key);
         });
 
-        setUsers(state.users || []);
-        setClients(state.clients || []);
-        setProjects(state.projects || []);
-        setLicenses(state.licenses || []);
-        setNotifications(state.notifications || []);
-        setContracts(state.contracts || []);
-        setReports(state.reports || []);
-        setChecklistTemplates(state.checklistTemplates || {});
-        setMeetings(state.meetings || []);
-        setVideos(state.videos || []);
-        setAppConfig(state.appConfig || {});
-        setClientLogos(state.clientLogos || {});
+        setUsers(essentialState.users || []);
+        setClients(essentialState.clients || []);
+        setProjects(essentialState.projects || []);
+        setLicenses(essentialState.licenses || []);
+        setNotifications(essentialState.notifications || []);
+        setContracts(essentialState.contracts || []);
+        setMeetings(essentialState.meetings || []);
+        setVideos(essentialState.videos || []);
         
+        // Libera a tela de loading imediatamente!
         isInitialLoadDone.current = true;
         setDataLoaded(true);
-        console.log("State initialization complete.");
+        console.log("Essential state loaded. Releasing screen.");
+
+        // Carrega dados pesados em background (sem travar a tela)
+        setTimeout(async () => {
+          try {
+            console.log("Fetching heavy background state from Supabase...");
+            const heavyState = await loadHeavyStateFromSupabase();
+            
+            Object.keys(heavyState).forEach(key => {
+              if (key === 'pushSubs') return;
+              lastServerState.current[key] = JSON.stringify(heavyState[key as keyof typeof heavyState]);
+              loadedKeysRef.current.add(key);
+            });
+
+            setReports(heavyState.reports || []);
+            setChecklistTemplates(heavyState.checklistTemplates || {});
+            setClientLogos(heavyState.clientLogos || {});
+            setAppConfig(heavyState.appConfig || {});
+            
+            // Merge push subscriptions
+            if (heavyState.pushSubs) {
+              setUsers(prev => prev.map(user => ({
+                ...user,
+                pushSubscriptions: heavyState.pushSubs[user.id] || []
+              })));
+            }
+            console.log("Heavy background state load complete.");
+          } catch (e) {
+            console.error("Error loading heavy state in background:", e);
+          }
+        }, 50);
+
       } catch (error) {
         console.error("Error loading initial state:", error);
         setDataLoaded(true); // Still mark as loaded so user can attempt login
