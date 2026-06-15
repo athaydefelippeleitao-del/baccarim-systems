@@ -503,35 +503,7 @@ const App: React.FC = () => {
   };
 
   const handleUpdateNotification = (updatedNotif: Notification) => {
-    // Se a categoria foi mudada para Licença, vamos criar uma Licença real e excluir a notificação.
-    if (updatedNotif.category === 'Licença') {
-      const newLicense: EnvironmentalLicense = {
-        id: `l-conv-${updatedNotif.id}-${Date.now()}`,
-        name: updatedNotif.title,
-        clientName: updatedNotif.clientName,
-        type: updatedNotif.title.includes('LI') ? LicenseType.LI : updatedNotif.title.includes('LO') ? LicenseType.LO : updatedNotif.title.includes('LAS') ? LicenseType.LAS : LicenseType.LP,
-        agency: updatedNotif.agency || 'SEMA',
-        issueDate: updatedNotif.dateReceived || new Date().toLocaleDateString('pt-BR'),
-        expiryDate: updatedNotif.deadline || 'Pendente',
-        status: LicenseStatus.ACTIVE,
-        processNumber: updatedNotif.title,
-        documentation: [],
-        detailedStatus: 'Licença Deferida/Convertida',
-        attachedFiles: updatedNotif.attachedFiles || []
-      };
-
-      // 1. Adiciona nas Licenças (disparará o sync automático de licenses)
-      setLicenses(prev => [newLicense, ...prev]);
-
-      // 2. Remove das Notificações (disparará o sync automático de notifications)
-      setNotifications(prev => prev.filter(n => n.id !== updatedNotif.id));
-      return;
-    }
-
-    setNotifications(prev => {
-      const newState = prev.map(n => n.id === updatedNotif.id ? updatedNotif : n);
-      return newState;
-    });
+    setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
   };
 
   const handleUpdateReport = (updatedReport: PhotoReport) => {

@@ -61,8 +61,8 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       .filter(n => filter === 'All' || n.status === filter)
       .filter(n => {
         if (categoryFilter === 'All') {
-          // 'Todos' mostra apenas Notificações. Licenças ficam separadas.
-          return n.category === 'Notificação' || !n.category;
+          // 'Todos' mostra tudo (Notificações e Licenças)
+          return true;
         }
         if (categoryFilter === 'Notificação') {
           return n.category === 'Notificação' || !n.category;
