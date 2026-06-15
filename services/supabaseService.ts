@@ -217,9 +217,25 @@ function mapLicenseToDb(l: EnvironmentalLicense): any {
 // NOTIFICATIONS
 // ─────────────────────────────────────────────
 export async function getNotifications(): Promise<Notification[]> {
-  const { data, error } = await supabase.from('notifications').select('*').order('created_at', { ascending: false });
+  // Exclude attached_files from list query to reduce egress (~7MB per load).
+  // Files are lazy-loaded per notification via getNotificationFiles().
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('id, title, client_name, project_id, description, date_received, deadline, status, agency, severity, category, response_draft, updated_at, created_at')
+    .order('created_at', { ascending: false });
   if (error) { console.error('getNotifications error:', error); return []; }
   return (data || []).map(mapNotificationFromDb);
+}
+
+/** Lazy-load attached files for a single notification (call only when user needs to see files) */
+export async function getNotificationFiles(id: string): Promise<import('../types').Attachment[]> {
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('attached_files')
+    .eq('id', id)
+    .single();
+  if (error) { console.error('getNotificationFiles error:', error); return []; }
+  return data?.attached_files || [];
 }
 
 export async function upsertNotifications(notifications: Notification[]): Promise<void> {
@@ -253,7 +269,7 @@ export function mapNotificationFromDb(row: any): Notification {
     agency: row.agency || '',
     severity: row.severity,
     category: row.category || 'Notificação',
-    attachedFiles: row.attached_files || [],
+    attachedFiles: row.attached_files || [], // May be [] if loaded from list query (lazy-load via getNotificationFiles)
     responseDraft: row.response_draft,
   };
 }

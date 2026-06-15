@@ -1,8 +1,9 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Notification, NotificationSeverity, Attachment, Project } from '../types';
 import { generateNotificationDraft } from '../services/openaiClient';
 import { downloadFile } from '../utils/fileUtils';
+import { getNotificationFiles } from '../services/supabaseService';
 
 interface NotificationsViewProps {
   notifications: Notification[];
@@ -23,6 +24,9 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const [pushSendingId, setPushSendingId] = useState<string | null>(null);
   const [pushSentIds, setPushSentIds] = useState<Record<string, boolean>>({});
   const fileInputRef = React.useRef<HTMLInputElement>(null);
+  // Track which notifications have had their files loaded from Supabase
+  const [loadedFiles, setLoadedFiles] = useState<Record<string, Attachment[]>>({});
+  const [loadingFilesId, setLoadingFilesId] = useState<string | null>(null);
 
   const [newNotifForm, setNewNotifForm] = useState({
     title: '',
@@ -108,6 +112,23 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     };
     reader.readAsDataURL(file);
   };
+
+  // Lazy-load files for a notification then trigger file picker
+  const handleAddFileClick = useCallback(async (notif: Notification) => {
+    setActiveUploadId(notif.id);
+    // If files not yet loaded for this notif, fetch from DB
+    if (!(notif.id in loadedFiles)) {
+      setLoadingFilesId(notif.id);
+      const files = await getNotificationFiles(notif.id);
+      setLoadedFiles(prev => ({ ...prev, [notif.id]: files }));
+      // Merge loaded files into the notification state
+      if (files.length > 0 && (notif.attachedFiles || []).length === 0) {
+        onUpdateNotification({ ...notif, attachedFiles: files });
+      }
+      setLoadingFilesId(null);
+    }
+    fileInputRef.current?.click();
+  }, [loadedFiles, onUpdateNotification]);
 
   const handleRemoveAttachment = (notif: Notification, fileName: string) => {
     onUpdateNotification({
@@ -354,10 +375,11 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                   <div className="flex items-center justify-between">
                     <h4 className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Documentos Anexos</h4>
                     <button
-                      onClick={() => { setActiveUploadId(notif.id); fileInputRef.current?.click(); }}
-                      className="text-[9px] font-black text-baccarim-blue hover:underline uppercase tracking-widest"
+                      onClick={() => handleAddFileClick(notif)}
+                      disabled={loadingFilesId === notif.id}
+                      className="text-[9px] font-black text-baccarim-blue hover:underline uppercase tracking-widest disabled:opacity-50"
                     >
-                      + Adicionar Arquivo
+                      {loadingFilesId === notif.id ? '⏳ Carregando...' : '+ Adicionar Arquivo'}
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
@@ -379,7 +401,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                       </div>
                     ))}
                     {(!notif.attachedFiles || notif.attachedFiles.length === 0) && (
-                      <p className="text-[9px] text-baccarim-text-muted italic">Nenhum documento anexado.</p>
+                      <p className="text-[9px] text-baccarim-text-muted italic">Nenhum documento anexado. Clique em "+ Adicionar Arquivo" para carregar.</p>
                     )}
                   </div>
                 </div>
