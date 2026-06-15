@@ -503,7 +503,13 @@ const App: React.FC = () => {
   };
 
   const handleUpdateNotification = (updatedNotif: Notification) => {
-    setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
+    setNotifications(prev => {
+      const newState = prev.map(n => n.id === updatedNotif.id ? updatedNotif : n);
+      saveKeyToSupabase('notifications', newState).catch(err => {
+        console.error('Erro ao salvar notificação atualizada:', err);
+      });
+      return newState;
+    });
   };
 
   const handleUpdateReport = (updatedReport: PhotoReport) => {
