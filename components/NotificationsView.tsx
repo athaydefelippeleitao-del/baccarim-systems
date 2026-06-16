@@ -103,10 +103,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         fileDate: dateStr
       };
 
+      const currentFiles = loadedFiles[notif.id] !== undefined ? loadedFiles[notif.id] : (notif.attachedFiles || []);
+      const updatedFiles = [...currentFiles, newAttachment];
+
+      // Update both local loaded files and main state
+      setLoadedFiles(prev => ({ ...prev, [notif.id]: updatedFiles }));
+      
       onUpdateNotification({
         ...notif,
-        attachedFiles: [...(notif.attachedFiles || []), newAttachment]
+        attachedFiles: updatedFiles
       });
+      
       setActiveUploadId(null);
       if (fileInputRef.current) fileInputRef.current.value = '';
     };

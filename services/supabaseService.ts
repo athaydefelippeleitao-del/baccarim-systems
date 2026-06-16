@@ -269,13 +269,13 @@ export function mapNotificationFromDb(row: any): Notification {
     agency: row.agency || '',
     severity: row.severity,
     category: row.category || 'Notificação',
-    attachedFiles: row.attached_files || [], // May be [] if loaded from list query (lazy-load via getNotificationFiles)
+    attachedFiles: row.attached_files, // undefined if not loaded in query
     responseDraft: row.response_draft,
   };
 }
 
 function mapNotificationToDb(n: Notification): any {
-  return {
+  const result: any = {
     id: n.id,
     title: n.title,
     client_name: n.clientName,
@@ -287,10 +287,15 @@ function mapNotificationToDb(n: Notification): any {
     agency: n.agency || null,
     severity: n.severity,
     category: n.category || 'Notificação',
-    attached_files: n.attachedFiles || [],
     response_draft: n.responseDraft || null,
     updated_at: new Date().toISOString(),
   };
+
+  if (n.attachedFiles !== undefined) {
+    result.attached_files = n.attachedFiles;
+  }
+
+  return result;
 }
 
 // ─────────────────────────────────────────────
