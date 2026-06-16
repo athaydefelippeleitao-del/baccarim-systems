@@ -389,6 +389,8 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[...clients].sort((a, b) => a.localeCompare(b)).map(client => {
           const clientLicenses = licenses.filter(l => l.clientName === client);
+          const clientLicenseNotifs = notifications.filter(n => n.clientName === client && n.category === 'Licença');
+          const totalLicensesCount = clientLicenses.length + clientLicenseNotifs.length;
           const clientProjectsCount = projects.filter(p => p.clientName === client).length;
 
           return (
@@ -494,7 +496,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
               <div className="mb-8 md:mb-10 relative z-10">
                 <div className="bg-baccarim-hover p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-baccarim-border group-hover:bg-baccarim-active group-hover:border-baccarim-blue/10 transition-all duration-500">
                   <p className="text-[8px] md:text-[9px] text-baccarim-text-muted font-black uppercase tracking-widest mb-1">Total Licenças</p>
-                  <p className="text-xl md:text-2xl font-black text-baccarim-text">{clientLicenses.length}</p>
+                  <p className="text-xl md:text-2xl font-black text-baccarim-text">{totalLicensesCount}</p>
                 </div>
               </div>
 
