@@ -522,34 +522,69 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
             {/* NOTIFICAÇÃO ATIVA SEMPRE EXPOSTA */}
             {(() => {
               const activeNotif = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category !== 'Licença');
-              if (!activeNotif) return null;
+              const activeLicense = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category === 'Licença');
+              
               return (
-                <div 
-                  className="mx-6 md:mx-8 mb-6 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'notifications' }));
-                  }}
-                  title="Vá para o Centro de Notificações para gerenciar."
-                >
-                  <div className="w-10 h-10 rounded-xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                    <i className="fas fa-triangle-exclamation text-lg animate-pulse"></i>
-                  </div>
-                  <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                    <div className="overflow-hidden">
-                      <p className="text-[9px] font-black text-baccarim-rose uppercase tracking-[0.2em] mb-0.5">Atenção: Notificação Ativa</p>
-                      <h5 className="text-xs font-bold text-baccarim-text truncate" title={activeNotif.title}>{activeNotif.title}</h5>
-                    </div>
-                    <div className="flex items-center gap-3 shrink-0">
-                      <span className="text-[10px] font-black bg-baccarim-rose/10 text-baccarim-rose px-3 py-1.5 rounded-xl uppercase tracking-widest whitespace-nowrap shadow-sm">
-                        Prazo: {activeNotif.deadline}
-                      </span>
-                      <div className="hidden sm:flex text-[9px] font-black text-baccarim-rose uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-baccarim-rose/5 px-2 py-1 rounded-lg">
-                         <span>Ir para Notificações</span>
-                         <i className="fas fa-arrow-right ml-2"></i>
+                <div className="flex flex-col">
+                  {activeNotif && (
+                    <div 
+                      className="mx-6 md:mx-8 mb-6 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'notifications' }));
+                      }}
+                      title="Vá para o Centro de Notificações para gerenciar."
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-triangle-exclamation text-lg animate-pulse"></i>
+                      </div>
+                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="overflow-hidden">
+                          <p className="text-[9px] font-black text-baccarim-rose uppercase tracking-[0.2em] mb-0.5">Atenção: Notificação Ativa</p>
+                          <h5 className="text-xs font-bold text-baccarim-text truncate" title={activeNotif.title}>{activeNotif.title}</h5>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[10px] font-black bg-baccarim-rose/10 text-baccarim-rose px-3 py-1.5 rounded-xl uppercase tracking-widest whitespace-nowrap shadow-sm">
+                            Prazo: {activeNotif.deadline}
+                          </span>
+                          <div className="hidden sm:flex text-[9px] font-black text-baccarim-rose uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-baccarim-rose/5 px-2 py-1 rounded-lg">
+                            <span>Ir para Notificações</span>
+                            <i className="fas fa-arrow-right ml-2"></i>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  )}
+
+                  {activeLicense && (
+                    <div 
+                      className="mx-6 md:mx-8 mb-6 bg-baccarim-blue/5 hover:bg-baccarim-blue/10 transition-all border border-baccarim-blue/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'notifications' }));
+                      }}
+                      title="Vá para o Centro de Notificações para gerenciar licenças."
+                    >
+                      <div className="w-10 h-10 rounded-xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-file-shield text-lg animate-pulse"></i>
+                      </div>
+                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                        <div className="overflow-hidden">
+                          <p className="text-[9px] font-black text-baccarim-blue uppercase tracking-[0.2em] mb-0.5">Licença Pendente / Ativa</p>
+                          <h5 className="text-xs font-bold text-baccarim-text truncate" title={activeLicense.title}>{activeLicense.title}</h5>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                          <span className="text-[10px] font-black bg-baccarim-blue/10 text-baccarim-blue px-3 py-1.5 rounded-xl uppercase tracking-widest whitespace-nowrap shadow-sm">
+                            Prazo: {activeLicense.deadline}
+                          </span>
+                          <div className="hidden sm:flex text-[9px] font-black text-baccarim-blue uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-baccarim-blue/5 px-2 py-1 rounded-lg">
+                            <span>Ir para Notificações</span>
+                            <i className="fas fa-arrow-right ml-2"></i>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               );
             })()}
