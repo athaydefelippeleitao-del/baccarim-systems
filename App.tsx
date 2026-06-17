@@ -502,13 +502,36 @@ const App: React.FC = () => {
     setLicenses(prev => prev.map(l => l.id === updatedLicense.id ? updatedLicense : l));
   };
 
+  const handleAddNotification = (newNotif: Notification) => {
+    setNotifications(prev => [newNotif, ...prev]);
+    import('./services/supabaseService').then(s => {
+      s.upsertNotifications([newNotif]).catch(err => {
+        console.error('Erro ao salvar nova notificação:', err);
+        alert('Erro ao criar notificação no banco. Detalhes: ' + (err.message || JSON.stringify(err)));
+      });
+    });
+  };
+
+  const handleUpdateClientLogo = useCallback((clientName: string, logoBase64: string) => {
+    setClientLogos(prev => ({ ...prev, [clientName]: logoBase64 }));
+  }, []);
+
+  const handleDeleteNotification = useCallback((id: string) => {
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    emitDelete('notifications', id);
+  }, [emitDelete]);
+
+  const handleDeleteLicense = useCallback((id: string) => {
+    setLicenses(prev => prev.filter(l => l.id !== id));
+    emitDelete('licenses', id);
+  }, [emitDelete]);
+
   const handleUpdateNotification = (updatedNotif: Notification) => {
-    setNotifications(prev => {
-      const newState = prev.map(n => n.id === updatedNotif.id ? updatedNotif : n);
-      saveKeyToSupabase('notifications', newState).catch(err => {
+    setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
+    import('./services/supabaseService').then(s => {
+      s.upsertNotifications([updatedNotif]).catch(err => {
         console.error('Erro ao salvar notificação atualizada:', err);
       });
-      return newState;
     });
   };
 
@@ -544,31 +567,6 @@ const App: React.FC = () => {
     emitDelete('contracts', id);
   };
 
-  const handleAddNotification = (newNotif: Notification) => {
-    setNotifications(prev => {
-      const newState = [newNotif, ...prev];
-      saveKeyToSupabase('notifications', newState).catch(err => {
-        console.error('Erro ao salvar nova notificação:', err);
-        alert('Erro ao criar notificação no banco. Detalhes: ' + (err.message || JSON.stringify(err)));
-      });
-      return newState;
-    });
-  };
-
-
-  const handleUpdateClientLogo = useCallback((clientName: string, logoBase64: string) => {
-    setClientLogos(prev => ({ ...prev, [clientName]: logoBase64 }));
-  }, []);
-
-  const handleDeleteNotification = useCallback((id: string) => {
-    setNotifications(prev => prev.filter(n => n.id !== id));
-    emitDelete('notifications', id);
-  }, [emitDelete]);
-
-  const handleDeleteLicense = useCallback((id: string) => {
-    setLicenses(prev => prev.filter(l => l.id !== id));
-    emitDelete('licenses', id);
-  }, [emitDelete]);
 
   const handleAddClient = (clientName: string) => {
     if (!clients.includes(clientName)) {
