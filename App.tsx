@@ -133,6 +133,7 @@ const App: React.FC = () => {
             });
 
             setReports(heavyState.reports || []);
+            setAuditLog(heavyState.auditLog || []);
             setChecklistTemplates(heavyState.checklistTemplates || {});
             setClientLogos(heavyState.clientLogos || {});
             setAppConfig(heavyState.appConfig || {});
