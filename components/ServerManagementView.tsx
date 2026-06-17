@@ -15,9 +15,19 @@ interface ServerStats {
 interface ServerManagementProps {
   auditLog: any[];
   presence: any[];
+  allData?: {
+    projects: any[];
+    licenses: any[];
+    notifications: any[];
+    contracts: any[];
+    meetings: any[];
+    videos: any[];
+    reports: any[];
+    checklistTemplates: any[];
+  };
 }
 
-const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, presence }) => {
+const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, presence, allData }) => {
   const [stats, setStats] = useState<ServerStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [activeSubTab, setActiveSubTab] = useState<'stats' | 'logs' | 'presence' | 'backup'>('stats');
@@ -26,72 +36,36 @@ const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, prese
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [pendingFile, setPendingFile] = useState<File | null>(null);
 
+  // Restore now disabled in UI, but kept here for fallback
   const handleRestore = async (file: File) => {
-    setIsRestoring(true);
-    try {
-      let json;
-      if (file.name.endsWith('.zip')) {
-        const zip = await JSZip.loadAsync(file);
-        const dbFile = zip.file("db.json");
-        if (!dbFile) throw new Error("Arquivo db.json não encontrado no ZIP");
-        const text = await dbFile.async("string");
-        json = JSON.parse(text);
-      } else {
-        const text = await file.text();
-        json = JSON.parse(text);
-      }
-      
-      const res = await fetch('/api/restore', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(json)
-      });
-      
-      if (res.ok) {
-        alert('Backup restaurado com sucesso! O sistema será recarregado.');
-        window.location.reload();
-      } else {
-        const errData = await res.json();
-        alert(`Erro ao restaurar backup: ${errData.error || 'Erro no servidor'}`);
-      }
-    } catch (err) {
-      console.error("Erro na restauração:", err);
-      alert('Arquivo inválido ou erro na leitura do backup.');
-    } finally {
-      setIsRestoring(false);
-      setShowConfirmModal(false);
-      setPendingFile(null);
-    }
+    alert('A restauração direta foi desativada na nuvem (Supabase). Utilize o painel de administração da Baccarim Cloud.');
   };
 
-  const fetchStats = async () => {
-    try {
-      const res = await fetch('/api/server-stats');
-      if (!res.ok) {
-        if (res.status === 429) {
-          console.warn("Limite de requisições atingido (Rate limit)");
-          return;
-        }
-        throw new Error(`Server error: ${res.status}`);
-      }
-      const contentType = res.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        throw new Error("Resposta do servidor não é JSON");
-      }
-      const data = await res.json();
-      setStats(data);
-    } catch (e) {
-      console.error("Erro ao buscar stats do servidor", e);
-    } finally {
-      setLoading(false);
-    }
+  const fetchStats = () => {
+    // Calcular estatísticas localmente com base nos dados carregados
+    if (!allData) return;
+    
+    // Estimativa grosseira de tamanho da base (soma do tamanho das strings JSON)
+    const jsonString = JSON.stringify(allData);
+    const estimatedSize = new Blob([jsonString]).size;
+    
+    setStats({
+      projects: allData.projects.length,
+      licenses: allData.licenses.length,
+      notifications: allData.notifications.length,
+      reports: allData.reports.length,
+      dbSize: estimatedSize,
+      uptime: performance.now(),
+      lastUpdate: new Date().toISOString()
+    });
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchStats();
     const interval = setInterval(fetchStats, 10000);
     return () => clearInterval(interval);
-  }, []);
+  }, [allData]);
 
   const formatSize = (bytes: number) => {
     if (bytes === 0) return '0 B';

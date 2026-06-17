@@ -1190,6 +1190,16 @@ const App: React.FC = () => {
           <ServerManagementView
             auditLog={auditLog}
             presence={presence}
+            allData={{
+              projects,
+              licenses,
+              notifications,
+              contracts,
+              meetings,
+              videos,
+              reports,
+              checklistTemplates
+            }}
           />
         )}
       </main>
