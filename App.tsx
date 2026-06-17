@@ -505,7 +505,7 @@ const App: React.FC = () => {
   const handleAddNotification = (newNotif: Notification) => {
     setNotifications(prev => [newNotif, ...prev]);
     import('./services/supabaseService').then(s => {
-      s.upsertNotifications([newNotif]).catch(err => {
+      s.insertNotifications([newNotif]).catch(err => {
         console.error('Erro ao salvar nova notificação:', err);
         alert('Erro ao criar notificação no banco. Detalhes: ' + (err.message || JSON.stringify(err)));
       });
@@ -529,7 +529,7 @@ const App: React.FC = () => {
   const handleUpdateNotification = (updatedNotif: Notification) => {
     setNotifications(prev => prev.map(n => n.id === updatedNotif.id ? updatedNotif : n));
     import('./services/supabaseService').then(s => {
-      s.upsertNotifications([updatedNotif]).catch(err => {
+      s.updateNotification(updatedNotif).catch(err => {
         console.error('Erro ao salvar notificação atualizada:', err);
         alert('Atenção: Falha ao salvar os dados no servidor. Pode ser que o arquivo anexado seja muito grande. Detalhes: ' + (err.message || 'Erro desconhecido'));
       });

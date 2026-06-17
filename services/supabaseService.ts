@@ -238,16 +238,26 @@ export async function getNotificationFiles(id: string): Promise<import('../types
   return data?.attached_files || [];
 }
 
-export async function upsertNotifications(notifications: Notification[]): Promise<void> {
+export async function insertNotifications(notifications: Notification[]): Promise<void> {
   if (!notifications.length) return;
   const rows = notifications.map(mapNotificationToDb);
   for (let i = 0; i < rows.length; i += 5) {
     const chunk = rows.slice(i, i + 5);
-    const { error } = await supabase.from('notifications').upsert(chunk, { onConflict: 'id' });
+    const { error } = await supabase.from('notifications').insert(chunk);
     if (error) {
-      console.error('upsertNotifications error on chunk:', error);
+      console.error('insertNotifications error on chunk:', error);
       throw error;
     }
+  }
+}
+
+export async function updateNotification(notification: Notification): Promise<void> {
+  const row = mapNotificationToDb(notification);
+  const { id, ...updatePayload } = row;
+  const { error } = await supabase.from('notifications').update(updatePayload).eq('id', id);
+  if (error) {
+    console.error('updateNotification error:', error);
+    throw error;
   }
 }
 
