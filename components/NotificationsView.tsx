@@ -93,6 +93,14 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Supabase has a request size limit. Base64 adds ~33% overhead.
+    // Limit files to 3MB to prevent silent backend failures.
+    if (file.size > 3 * 1024 * 1024) {
+      alert(`O arquivo "${file.name}" é muito grande! Por favor, anexe arquivos de até 3MB. (Seu arquivo tem ${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+      return;
+    }
+
     const reader = new FileReader();
     reader.onload = (event) => {
       const base64Data = event.target?.result as string;

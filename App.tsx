@@ -531,6 +531,7 @@ const App: React.FC = () => {
     import('./services/supabaseService').then(s => {
       s.upsertNotifications([updatedNotif]).catch(err => {
         console.error('Erro ao salvar notificação atualizada:', err);
+        alert('Atenção: Falha ao salvar os dados no servidor. Pode ser que o arquivo anexado seja muito grande. Detalhes: ' + (err.message || 'Erro desconhecido'));
       });
     });
   };
