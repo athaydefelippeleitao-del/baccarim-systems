@@ -521,13 +521,14 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
             {/* NOTIFICAÇÃO ATIVA SEMPRE EXPOSTA */}
             {(() => {
-              const activeNotif = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category !== 'Licença');
-              const activeLicense = notifications?.find(n => n.projectId === project.id && n.status === 'Open' && n.category === 'Licença');
+              const activeNotifs = notifications?.filter(n => n.projectId === project.id && n.status === 'Open' && n.category !== 'Licença') || [];
+              const activeLicenses = notifications?.filter(n => n.projectId === project.id && n.status === 'Open' && n.category === 'Licença') || [];
               
               return (
                 <div className="flex flex-col">
-                  {activeNotif && (
+                  {activeNotifs.map(activeNotif => (
                     <div 
+                      key={activeNotif.id}
                       className="mx-6 md:mx-8 mb-6 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -554,10 +555,11 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                         </div>
                       </div>
                     </div>
-                  )}
+                  ))}
 
-                  {activeLicense && (
+                  {activeLicenses.map(activeLicense => (
                     <div 
+                      key={activeLicense.id}
                       className="mx-6 md:mx-8 mb-6 bg-baccarim-blue/5 hover:bg-baccarim-blue/10 transition-all border border-baccarim-blue/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -584,7 +586,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                         </div>
                       </div>
                     </div>
-                  )}
+                  ))}
                 </div>
               );
             })()}
