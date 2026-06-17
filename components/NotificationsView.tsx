@@ -390,25 +390,45 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     </button>
                   </div>
                   <div className="flex flex-wrap gap-2">
-                    {notif.attachedFiles?.map((file, fIdx) => (
-                      <div key={fIdx} className="flex items-center space-x-2 bg-baccarim-hover border border-baccarim-border px-3 py-1.5 rounded-xl shadow-sm animate-in slide-in-from-left-2">
-                        <i className="fas fa-file-pdf text-baccarim-rose text-[10px]"></i>
-                        <button
-                          onClick={() => downloadFile(file)}
-                          className="text-[9px] font-bold text-baccarim-text hover:text-baccarim-blue truncate max-w-[120px]"
-                        >
-                          {file.fileName}
-                        </button>
-                        <button
-                          onClick={() => handleRemoveAttachment(notif, file.fileName)}
-                          className="text-baccarim-text-muted hover:text-red-500 transition-colors"
-                        >
-                          <i className="fas fa-times-circle text-[10px]"></i>
-                        </button>
-                      </div>
-                    ))}
-                    {(!notif.attachedFiles || notif.attachedFiles.length === 0) && (
-                      <p className="text-[9px] text-baccarim-text-muted italic">Nenhum documento anexado. Clique em "+ Adicionar Arquivo" para carregar.</p>
+                    {notif.attachedFiles !== undefined ? (
+                      <>
+                        {notif.attachedFiles.map((file, fIdx) => (
+                          <div key={fIdx} className="flex items-center space-x-2 bg-baccarim-hover border border-baccarim-border px-3 py-1.5 rounded-xl shadow-sm animate-in slide-in-from-left-2">
+                            <i className="fas fa-file-pdf text-baccarim-rose text-[10px]"></i>
+                            <button
+                              onClick={() => downloadFile(file)}
+                              className="text-[9px] font-bold text-baccarim-text hover:text-baccarim-blue truncate max-w-[120px]"
+                            >
+                              {file.fileName}
+                            </button>
+                            <button
+                              onClick={() => handleRemoveAttachment(notif, file.fileName)}
+                              className="text-baccarim-text-muted hover:text-red-500 transition-colors"
+                            >
+                              <i className="fas fa-times-circle text-[10px]"></i>
+                            </button>
+                          </div>
+                        ))}
+                        {notif.attachedFiles.length === 0 && (
+                          <p className="text-[9px] text-baccarim-text-muted italic">Nenhum documento anexado. Clique em "+ Adicionar Arquivo" para carregar.</p>
+                        )}
+                      </>
+                    ) : (
+                      <button
+                        onClick={async () => {
+                          setLoadingFilesId(notif.id);
+                          import('../services/supabaseService').then(async (s) => {
+                            const files = await s.getNotificationFiles(notif.id);
+                            setLoadedFiles(prev => ({ ...prev, [notif.id]: files }));
+                            onUpdateNotification({ ...notif, attachedFiles: files });
+                            setLoadingFilesId(null);
+                          });
+                        }}
+                        disabled={loadingFilesId === notif.id}
+                        className="text-[9px] font-black text-baccarim-amber hover:bg-baccarim-hover px-3 py-1.5 rounded-xl border border-baccarim-amber/30 transition-colors uppercase tracking-widest disabled:opacity-50 flex items-center"
+                      >
+                        <i className="fas fa-cloud-download-alt mr-2"></i> {loadingFilesId === notif.id ? 'Carregando arquivos...' : 'Visualizar Anexos do Servidor'}
+                      </button>
                     )}
                   </div>
                 </div>
