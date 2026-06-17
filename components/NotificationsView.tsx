@@ -137,10 +137,15 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     fileInputRef.current?.click();
   }, [loadedFiles, onUpdateNotification]);
 
-  const handleRemoveAttachment = (notif: Notification, fileName: string) => {
+  const handleRemoveAttachment = (notif: Notification, fileIndex: number) => {
+    const currentFiles = notif.attachedFiles || [];
+    const updatedFiles = currentFiles.filter((_, idx) => idx !== fileIndex);
+    
+    setLoadedFiles(prev => ({ ...prev, [notif.id]: updatedFiles }));
+    
     onUpdateNotification({
       ...notif,
-      attachedFiles: notif.attachedFiles?.filter(f => f.fileName !== fileName)
+      attachedFiles: updatedFiles
     });
   };
 
@@ -402,7 +407,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                               {file.fileName}
                             </button>
                             <button
-                              onClick={() => handleRemoveAttachment(notif, file.fileName)}
+                              onClick={() => handleRemoveAttachment(notif, fIdx)}
                               className="text-baccarim-text-muted hover:text-red-500 transition-colors"
                             >
                               <i className="fas fa-times-circle text-[10px]"></i>
