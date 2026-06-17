@@ -664,7 +664,7 @@ export async function saveKeyToSupabase(key: string, value: any): Promise<void> 
     case 'clients': return upsertClients(value);
     case 'projects': return upsertProjects(value);
     case 'licenses': return upsertLicenses(value);
-    case 'notifications': return upsertNotifications(value);
+    case 'notifications': return Promise.resolve(); // Notifications are saved individually in App.tsx
     case 'contracts': return upsertContracts(value);
     case 'meetings': return upsertMeetings(value);
     case 'videos': return upsertVideos(value);
