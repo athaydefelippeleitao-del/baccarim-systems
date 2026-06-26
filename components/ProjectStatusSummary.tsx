@@ -204,12 +204,12 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   let statusColor = 'bg-baccarim-green border-emerald-600';
                   let statusTitle = 'Tudo OK (Clique para ver)';
                   
-                  if (hasPending) {
-                    statusColor = 'bg-red-500 border-red-600';
-                    statusTitle = 'Com pendências abertas (Clique para ver)';
-                  } else if (hasActiveLicense) {
+                  if (hasActiveLicense) {
                     statusColor = 'bg-yellow-400 border-yellow-500';
                     statusTitle = 'Licença Ativa - Semi-concluído (Clique para ver)';
+                  } else if (hasPending) {
+                    statusColor = 'bg-red-500 border-red-600';
+                    statusTitle = 'Com pendências abertas (Clique para ver)';
                   }
                   
                   let lastMove = '-';
@@ -292,7 +292,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           const activeLicense = projectLicenses.find(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
           const projectNotifs = notifications.filter(n => n.projectId === project.id);
           const openNotifs = projectNotifs.filter(n => n.status === 'Open');
-          const isSemiCompleted = activeLicense && openNotifs.length === 0 && project.status !== 'Concluído';
+          const isSemiCompleted = activeLicense && project.status !== 'Concluído';
           
           return (
             <div key={project.id} className="bg-baccarim-card rounded-[2.5rem] p-8 shadow-2xl border border-baccarim-border hover:border-baccarim-blue/30 transition-all duration-500 group relative overflow-hidden">
@@ -414,7 +414,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       </div>
 
       {/* Details Modal */}
-      {selectedProject && (
+      {selectedProject && (() => {
+        const selectedProjectLicenses = licenses.filter(l => l.clientName === selectedProject.clientName && l.name.includes(selectedProject.name));
+        const hasActiveLicenseInModal = selectedProjectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo');
+        return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-baccarim-dark/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="bg-baccarim-card rounded-[3rem] w-full max-w-2xl shadow-2xl border border-baccarim-border relative overflow-hidden animate-in zoom-in-95 duration-500">
             {/* Header */}
@@ -451,8 +454,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   <div key={notif.id} className="bg-baccarim-hover/30 rounded-3xl p-8 border border-baccarim-border hover:border-baccarim-blue/20 transition-all">
                     <div className="flex justify-between items-start mb-6">
                       <div className="flex items-center space-x-3">
-                        <div className={`w-3 h-3 rounded-full ${notif.status === 'Open' ? 'bg-rose-500 animate-pulse' : 'bg-baccarim-green'}`}></div>
-                        <span className={`text-[9px] font-black uppercase tracking-widest ${notif.status === 'Open' ? 'text-rose-500' : 'text-baccarim-green'}`}>
+                        <div className={`w-3 h-3 rounded-full ${notif.status === 'Open' ? (hasActiveLicenseInModal ? 'bg-yellow-400 animate-pulse' : 'bg-rose-500 animate-pulse') : 'bg-baccarim-green'}`}></div>
+                        <span className={`text-[9px] font-black uppercase tracking-widest ${notif.status === 'Open' ? (hasActiveLicenseInModal ? 'text-yellow-600' : 'text-rose-500') : 'text-baccarim-green'}`}>
                           {notif.status === 'Open' ? 'Pendente' : 'Atendida'}
                         </span>
                       </div>
@@ -497,7 +500,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
             </div>
           </div>
         </div>
-      )}
+        );
+      })}
     </div>
   );
 };
