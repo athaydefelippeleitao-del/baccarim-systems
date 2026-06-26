@@ -197,6 +197,21 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   const openNotifs = projectNotifs.filter(n => n.status === 'Open');
                   const hasPending = openNotifs.length > 0;
                   
+                  const projectLicenses = licenses.filter(l => l.clientName === project.clientName && l.name.includes(project.name));
+                  // Using string literals in case LicenseStatus enum doesn't match perfectly
+                  const hasActiveLicense = projectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo');
+
+                  let statusColor = 'bg-baccarim-green border-emerald-600';
+                  let statusTitle = 'Tudo OK (Clique para ver)';
+                  
+                  if (hasPending) {
+                    statusColor = 'bg-red-500 border-red-600';
+                    statusTitle = 'Com pendências abertas (Clique para ver)';
+                  } else if (hasActiveLicense) {
+                    statusColor = 'bg-yellow-400 border-yellow-500';
+                    statusTitle = 'Licença Ativa - Semi-concluído (Clique para ver)';
+                  }
+                  
                   let lastMove = '-';
                   if (projectNotifs.length > 0) {
                     const sorted = [...projectNotifs].sort((a, b) => new Date(b.dateReceived || 0).getTime() - new Date(a.dateReceived || 0).getTime());
@@ -241,8 +256,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                       </td>
                       <td className="p-4">
                         <div 
-                          className={`w-full h-8 rounded-md shadow-sm border cursor-pointer hover:opacity-80 transition-opacity ${hasPending ? 'bg-red-500 border-red-600' : 'bg-baccarim-green border-emerald-600'}`} 
-                          title={hasPending ? 'Com pendências abertas (Clique para ver)' : 'Tudo OK (Clique para ver)'}
+                          className={`w-full h-8 rounded-md shadow-sm border cursor-pointer hover:opacity-80 transition-opacity ${statusColor}`} 
+                          title={statusTitle}
                           onClick={() => setSelectedProjectId(project.id)}
                         ></div>
                       </td>
@@ -274,9 +289,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
             {filteredProjects.map(project => {
           const projectLicenses = licenses.filter(l => l.clientName === project.clientName && l.name.includes(project.name));
-          const activeLicense = projectLicenses.find(l => l.status === LicenseStatus.ACTIVE);
+          const activeLicense = projectLicenses.find(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
           const projectNotifs = notifications.filter(n => n.projectId === project.id);
           const openNotifs = projectNotifs.filter(n => n.status === 'Open');
+          const isSemiCompleted = activeLicense && openNotifs.length === 0 && project.status !== 'Concluído';
           
           return (
             <div key={project.id} className="bg-baccarim-card rounded-[2.5rem] p-8 shadow-2xl border border-baccarim-border hover:border-baccarim-blue/30 transition-all duration-500 group relative overflow-hidden">
@@ -290,11 +306,12 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   </div>
                   <div className="flex flex-col items-end">
                     <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm ${
+                      isSemiCompleted ? 'bg-yellow-400 text-yellow-900 shadow-[0_2px_10px_rgba(250,204,21,0.3)]' :
                       project.status === 'Concluído' ? 'bg-baccarim-green text-white shadow-[0_2px_10px_rgba(0,176,142,0.3)]' : 
                       project.status === 'Em Execução' ? 'bg-baccarim-blue text-white shadow-[0_2px_10px_rgba(63,169,245,0.3)]' : 
                       'bg-baccarim-navy text-white'
                     }`}>
-                      {project.status}
+                      {isSemiCompleted ? 'Semi-concluído' : project.status}
                     </span>
                   </div>
                 </div>
