@@ -182,19 +182,19 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   const openNotifs = projectNotifs.filter(n => n.status === 'Open');
                   const hasPending = openNotifs.length > 0;
                   
-                  const projectLicenses = licenses.filter(l => l.clientName === project.clientName && l.name.includes(project.name));
+                  const projectLicenses = licenses.filter(l => l.id.includes(project.id));
                   // Using string literals in case LicenseStatus enum doesn't match perfectly
                   const hasActiveLicense = projectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo');
 
                   let statusColor = 'bg-baccarim-green border-emerald-600';
                   let statusTitle = 'Tudo OK (Clique para ver)';
                   
-                  if (hasActiveLicense) {
-                    statusColor = 'bg-yellow-400 border-yellow-500';
-                    statusTitle = 'Licença Ativa - Semi-concluído (Clique para ver)';
-                  } else if (hasPending) {
+                  if (hasPending) {
                     statusColor = 'bg-red-500 border-red-600';
                     statusTitle = 'Com pendências abertas (Clique para ver)';
+                  } else if (hasActiveLicense) {
+                    statusColor = 'bg-yellow-400 border-yellow-500';
+                    statusTitle = 'Licença Ativa - Semi-concluído (Clique para ver)';
                   }
                   
                   let lastMove = '-';
