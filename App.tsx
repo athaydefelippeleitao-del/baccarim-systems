@@ -55,7 +55,7 @@ const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [dataLoaded, setDataLoaded] = useState(false);
   const [isSyncing, setIsSyncing] = useState(false);
-  const [isPresentationMode, setIsPresentationMode] = useState(false);
+  
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
 
   // Refs to track last known server state to prevent sync loops
@@ -869,6 +869,10 @@ const App: React.FC = () => {
             <i className="fas fa-camera-retro w-5"></i>
             <span className="text-sm font-bold">Relatórios Fotog.</span>
           </button>
+          <button onClick={() => setActiveTab('spreadsheets')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'spreadsheets' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
+            <i className="fas fa-table w-5"></i>
+            <span className="text-sm font-bold">Planilhas e Relatórios</span>
+          </button>
           <button onClick={() => setActiveTab('finance')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'finance' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
             <i className="fas fa-file-invoice-dollar w-5"></i>
             <span className="text-sm font-bold">Financeiro</span>
@@ -1020,21 +1024,8 @@ const App: React.FC = () => {
                     <StatCard title="Pendências IAT" value={stats.iatNotifs} icon="fa-envelope-open-text" color="bg-baccarim-blue" />
                     <StatCard title="Pendências SEMA" value={stats.semaNotifs} icon="fa-building-shield" color="bg-baccarim-green" />
                     <StatCard title="Prazos Vencidos" value={stats.expired} icon="fa-triangle-exclamation" color="bg-red-500" />
-
                   </div>
                 )}
-              </div>
-              
-              <div className="flex items-center space-x-4">
-                <button 
-                  onClick={() => setIsPresentationMode(!isPresentationMode)}
-                  className={`px-8 py-4 rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] transition-all flex items-center space-x-3 shadow-xl ${
-                    isPresentationMode ? 'bg-baccarim-blue text-baccarim-text ring-4 ring-baccarim-blue/20' : 'bg-baccarim-card text-baccarim-text-muted hover:bg-baccarim-hover border border-baccarim-border'
-                  }`}
-                >
-                  <i className={`fas ${isPresentationMode ? 'fa-tv' : 'fa-chart-line'} text-sm`}></i>
-                  <span>{isPresentationMode ? 'Sair da Apresentação' : 'Modo Apresentação'}</span>
-                </button>
               </div>
             </div>
 
@@ -1048,7 +1039,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {deferredPrompt && !isPresentationMode && (
+            {deferredPrompt && (
               <div className="bg-gradient-to-r from-baccarim-blue to-baccarim-green rounded-[2.5rem] p-6 shadow-2xl flex flex-col md:flex-row items-center justify-between gap-6 animate-in slide-in-from-top-6 border border-white/20">
                 <div className="flex items-center space-x-6">
                   <div className="w-16 h-16 bg-white rounded-2xl p-2 shadow-inner">
@@ -1069,21 +1060,6 @@ const App: React.FC = () => {
               </div>
             )}
 
-            {isPresentationMode ? (
-              <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
-                <div className="mb-10 text-center">
-                  <h2 className="text-3xl font-black text-baccarim-text tracking-tighter">Status Geral dos Empreendimentos</h2>
-                  <p className="text-xs text-baccarim-text-muted font-bold uppercase tracking-[0.3em] mt-2">Visão Executiva para Apresentação</p>
-                </div>
-                <ProjectStatusSummary
-                  projects={filteredProjects}
-                  licenses={licenses}
-                  notifications={notifications}
-                  onUpdateProject={handleUpdateProject}
-                />
-              </div>
-            ) : (
-              <>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
                 <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Status Ambiental</h3>
@@ -1122,8 +1098,21 @@ const App: React.FC = () => {
                 <button onClick={() => setActiveTab('reports')} className="mt-6 w-full py-4 bg-baccarim-blue text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all">Novo Relatório Fotográfico</button>
               </div>
             </div>
-              </>
-            )}
+          </div>
+        )}
+
+        {activeTab === 'spreadsheets' && (
+          <div className="animate-in fade-in slide-in-from-bottom-6 duration-700">
+            <div className="mb-10 text-center">
+              <h2 className="text-3xl font-black text-baccarim-text tracking-tighter">Planilhas e Relatórios Gerais</h2>
+              <p className="text-xs text-baccarim-text-muted font-bold uppercase tracking-[0.3em] mt-2">Visão Executiva</p>
+            </div>
+            <ProjectStatusSummary
+              projects={filteredProjects}
+              licenses={licenses}
+              notifications={notifications}
+              onUpdateProject={handleUpdateProject}
+            />
           </div>
         )}
 
@@ -1228,6 +1217,10 @@ const App: React.FC = () => {
             <button onClick={() => setActiveTab('clients')} className={`flex flex-col items-center justify-center min-w-[65px] snap-center py-3 px-2 rounded-2xl transition-all duration-300 ${activeTab === 'clients' ? 'bg-baccarim-green text-baccarim-text shadow-xl scale-105' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
               <i className="fas fa-building-circle-check text-lg"></i>
               <span className="text-[7px] font-black uppercase tracking-widest mt-1.5">Obras</span>
+            </button>
+            <button onClick={() => setActiveTab('spreadsheets')} className={`flex flex-col items-center justify-center min-w-[65px] snap-center py-3 px-2 rounded-2xl transition-all duration-300 ${activeTab === 'spreadsheets' ? 'bg-baccarim-blue text-baccarim-text shadow-xl scale-105' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
+              <i className="fas fa-table text-lg"></i>
+              <span className="text-[7px] font-black uppercase tracking-widest mt-1.5">Planilha</span>
             </button>
             <button onClick={() => setActiveTab('agenda')} className={`flex flex-col items-center justify-center min-w-[65px] snap-center py-3 px-2 rounded-2xl transition-all duration-300 ${activeTab === 'agenda' ? 'bg-baccarim-amber text-baccarim-text shadow-xl scale-105' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
               <i className="fas fa-calendar-day text-lg"></i>
