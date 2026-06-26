@@ -179,17 +179,12 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
               <tbody className="divide-y divide-slate-100">
                 {filteredProjects.map((project, index) => {
                   const projectNotifs = notifications.filter(n => n.projectId === project.id);
-                  const openNotifs = projectNotifs.filter(n => n.status === 'Open');
+                  const openNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category !== 'Licença');
                   const hasPending = openNotifs.length > 0;
                   
-                  const projectLicenses = licenses.filter(l => {
-                    const isSameId = l.id.includes(project.id);
-                    const isSameClient = (l.clientName || '').toLowerCase() === (project.clientName || project.razaoSocial || '').toLowerCase();
-                    const isSameName = (l.name || '').toLowerCase().includes((project.name || '').toLowerCase());
-                    const isSameProcess = l.processNumber && project.specs.numeroProtocolo && l.processNumber === project.specs.numeroProtocolo;
-                    return isSameId || (isSameClient && isSameName) || isSameProcess;
-                  });
-                  const hasActiveLicense = projectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
+                  // In this system, licenses are actually tracked as Notifications with category === 'Licença'
+                  const activeLicensesFromNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category === 'Licença');
+                  const hasActiveLicense = activeLicensesFromNotifs.length > 0;
 
                   let statusColor = 'bg-baccarim-green border-emerald-600';
                   let statusTitle = 'Tudo OK (Clique para ver)';
@@ -307,14 +302,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
       {/* Details Modal */}
       {selectedProject && (() => {
-        const selectedProjectLicenses = licenses.filter(l => {
-          const isSameId = l.id.includes(selectedProject.id);
-          const isSameClient = (l.clientName || '').toLowerCase() === (selectedProject.clientName || selectedProject.razaoSocial || '').toLowerCase();
-          const isSameName = (l.name || '').toLowerCase().includes((selectedProject.name || '').toLowerCase());
-          const isSameProcess = l.processNumber && selectedProject.specs.numeroProtocolo && l.processNumber === selectedProject.specs.numeroProtocolo;
-          return isSameId || (isSameClient && isSameName) || isSameProcess;
-        });
-        const hasActiveLicenseInModal = selectedProjectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
+        const selectedProjectNotifs = notifications.filter(n => n.projectId === selectedProject.id);
+        const hasActiveLicenseInModal = selectedProjectNotifs.some(n => n.status === 'Open' && n.category === 'Licença');
         return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-baccarim-dark/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="bg-baccarim-card rounded-[3rem] w-full max-w-2xl shadow-2xl border border-baccarim-border relative overflow-hidden animate-in zoom-in-95 duration-500">
