@@ -13,10 +13,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [clientFilter, setClientFilter] = useState<string>('todos');
   const [isExporting, setIsExporting] = useState(false);
-  const [isSlideshow, setIsSlideshow] = useState(false);
-  const [slideshowIndex, setSlideshowIndex] = useState(0);
+  const [isTableView, setIsTableView] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const slideshowTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
   const selectedNotifs = selectedProjectId ? notifications.filter(n => n.projectId === selectedProjectId) : [];
@@ -61,44 +59,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     }
   };
 
-  // Slideshow Logic
-  React.useEffect(() => {
-    if (isSlideshow && filteredProjects.length > 0) {
-      // Initialize slideshow with the first project
-      setSelectedProjectId(filteredProjects[0].id);
-      setSlideshowIndex(0);
 
-      const startTimer = () => {
-        slideshowTimerRef.current = setInterval(() => {
-          setSlideshowIndex(prev => {
-            const nextIndex = (prev + 1) % filteredProjects.length;
-            setSelectedProjectId(filteredProjects[nextIndex].id);
-            return nextIndex;
-          });
-        }, 10000); // 10 seconds per slide
-      };
-
-      startTimer();
-    } else {
-      if (slideshowTimerRef.current) {
-        clearInterval(slideshowTimerRef.current);
-      }
-    }
-
-    return () => {
-      if (slideshowTimerRef.current) {
-        clearInterval(slideshowTimerRef.current);
-      }
-    };
-  }, [isSlideshow, filteredProjects.length]);
-
-  const toggleSlideshow = () => {
-    setIsSlideshow(!isSlideshow);
-    if (!isSlideshow) {
-      // If turning on, reset details modal if open
-      setSelectedProjectId(null);
-    }
-  };
 
   return (
     <div className="space-y-10">
@@ -153,15 +114,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         </button>
 
         <button 
-          onClick={toggleSlideshow}
+          onClick={() => setIsTableView(!isTableView)}
           className={`flex items-center space-x-3 px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg transition-all transform active:scale-95 ${
-            isSlideshow 
-              ? 'bg-baccarim-green text-white ring-4 ring-baccarim-green/20 animate-pulse' 
+            isTableView 
+              ? 'bg-baccarim-green text-white ring-4 ring-baccarim-green/20' 
               : 'bg-baccarim-navy/60 text-baccarim-text border border-baccarim-border hover:bg-baccarim-blue hover:text-white'
           }`}
         >
-          <i className={`fas ${isSlideshow ? 'fa-pause' : 'fa-play'}`}></i>
-          <span>{isSlideshow ? 'Parar Slide Show' : 'Slide Show'}</span>
+          <i className={`fas ${isTableView ? 'fa-table' : 'fa-list'}`}></i>
+          <span>{isTableView ? 'Modo Planilha' : 'Modo Cards'}</span>
         </button>
 
         {/* Active Filters Counter */}
@@ -177,8 +138,75 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       </div>
 
       {/* Grid container to be exported */}
-      <div ref={containerRef} className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
-        {filteredProjects.map(project => {
+      <div ref={containerRef}>
+        {isTableView ? (
+          <div className="bg-white rounded-[2rem] shadow-2xl border border-baccarim-border overflow-x-auto p-4 md:p-8">
+            <table className="w-full text-left border-collapse min-w-[1000px]">
+              <thead>
+                <tr className="border-b-2 border-baccarim-navy/20 text-[9px] font-black uppercase tracking-widest text-baccarim-navy bg-baccarim-navy/5">
+                  <th className="p-4 rounded-tl-xl">Processo / Protocolo</th>
+                  <th className="p-4 w-12 text-center" title="Pendências">Status</th>
+                  <th className="p-4">Técnico Responsável</th>
+                  <th className="p-4">Nome ou Razão Social</th>
+                  <th className="p-4">Identificação</th>
+                  <th className="p-4 text-center">Data do Protocolo</th>
+                  <th className="p-4 text-center">Última Movimentação</th>
+                  <th className="p-4 rounded-tr-xl">Andamento Atual</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-100">
+                {filteredProjects.map((project, index) => {
+                  const projectNotifs = notifications.filter(n => n.projectId === project.id);
+                  const openNotifs = projectNotifs.filter(n => n.status === 'Open');
+                  const hasPending = openNotifs.length > 0;
+                  
+                  let lastMove = '-';
+                  if (projectNotifs.length > 0) {
+                    const sorted = [...projectNotifs].sort((a, b) => new Date(b.dateReceived || 0).getTime() - new Date(a.dateReceived || 0).getTime());
+                    if (sorted[0].dateReceived) {
+                      lastMove = sorted[0].dateReceived;
+                    }
+                  }
+
+                  return (
+                    <tr key={project.id} className={`hover:bg-baccarim-hover transition-colors ${index % 2 === 0 ? 'bg-slate-50/50' : 'bg-white'}`}>
+                      <td className="p-4 text-xs font-bold text-baccarim-text whitespace-nowrap">
+                        <a href="#" className="text-baccarim-blue hover:underline" onClick={(e) => { e.preventDefault(); setSelectedProjectId(project.id); }}>
+                          {project.specs.numeroProtocolo || '-'}
+                        </a>
+                      </td>
+                      <td className="p-4">
+                        <div className={`w-full h-8 rounded-md shadow-sm border ${hasPending ? 'bg-red-500 border-red-600' : 'bg-baccarim-green border-emerald-600'}`} title={hasPending ? 'Com pendências abertas' : 'Tudo OK'}></div>
+                      </td>
+                      <td className="p-4 text-[10px] font-bold text-baccarim-text">
+                        <span className={project.specs.responsavelTecnico || project.specs.nomeResponsavel ? 'text-baccarim-text' : 'text-slate-300'}>
+                          {project.specs.responsavelTecnico || project.specs.nomeResponsavel || '-'}
+                        </span>
+                      </td>
+                      <td className="p-4 text-[11px] font-black text-baccarim-navy uppercase">
+                        {project.clientName || project.razaoSocial || '-'}
+                      </td>
+                      <td className="p-4 text-[11px] font-bold text-baccarim-text uppercase">
+                        {project.name}
+                      </td>
+                      <td className="p-4 text-center text-[10px] font-medium text-baccarim-text-muted whitespace-nowrap">
+                        {project.specs.dataProtocolo || '-'}
+                      </td>
+                      <td className="p-4 text-center text-[10px] font-medium text-baccarim-text-muted whitespace-nowrap">
+                        {lastMove}
+                      </td>
+                      <td className="p-4 text-[10px] font-black text-baccarim-blue uppercase">
+                        {project.currentPhase || project.status}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
+            {filteredProjects.map(project => {
           const projectLicenses = licenses.filter(l => l.clientName === project.clientName && l.name.includes(project.name));
           const activeLicense = projectLicenses.find(l => l.status === LicenseStatus.ACTIVE);
           const projectNotifs = notifications.filter(n => n.projectId === project.id);
@@ -298,6 +326,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
             <p className="text-xs text-baccarim-text-muted mt-2 uppercase tracking-widest">Tente ajustar os filtros acima para ver outros resultados.</p>
           </div>
         )}
+        </div>
+      )}
       </div>
 
       {/* Details Modal */}
@@ -311,7 +341,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   <h2 className="text-3xl font-black text-baccarim-text tracking-tighter">{selectedProject.name}</h2>
                   <p className="text-xs font-black text-baccarim-blue uppercase tracking-[0.3em] mt-2">Detalhamento de Pendências</p>
                 </div>
-                <button                   onClick={() => { setSelectedProjectId(null); setIsSlideshow(false); }}
+                <button                   onClick={() => setSelectedProjectId(null)}
                    className="w-12 h-12 rounded-2xl bg-baccarim-hover flex items-center justify-center text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-active transition-all"
                  >
                    <i className="fas fa-times"></i>
@@ -376,7 +406,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
             {/* Footer */}
             <div className="p-8 border-t border-baccarim-border bg-baccarim-navy/10 flex justify-end">
-              <button                 onClick={() => { setSelectedProjectId(null); setIsSlideshow(false); }}
+              <button                 onClick={() => setSelectedProjectId(null)}
                  className="px-10 py-4 bg-baccarim-blue text-white rounded-2xl font-black uppercase text-[10px] tracking-[0.2em] shadow-xl hover:bg-baccarim-green transition-all"
                >
                  Concluir Visão
