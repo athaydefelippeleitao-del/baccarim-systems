@@ -1112,6 +1112,17 @@ const App: React.FC = () => {
               licenses={licenses}
               notifications={notifications}
               onUpdateProject={handleUpdateProject}
+              onNavigateToClient={(clientName) => {
+                setAdminClientFilter(clientName);
+                setActiveTab('clients');
+              }}
+              onNavigateToNotifications={(projectId) => {
+                const proj = projects.find(p => p.id === projectId);
+                if (proj) {
+                  setAdminClientFilter(proj.clientName);
+                  setActiveTab('notifications');
+                }
+              }}
             />
           </div>
         )}

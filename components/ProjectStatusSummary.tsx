@@ -7,6 +7,8 @@ interface ProjectStatusSummaryProps {
   licenses: EnvironmentalLicense[];
   notifications: Notification[];
   onUpdateProject?: (project: Project) => void;
+  onNavigateToClient?: (clientName: string) => void;
+  onNavigateToNotifications?: (projectId: string) => void;
 }
 
 const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, licenses, notifications, onUpdateProject }) => {
@@ -14,7 +16,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [clientFilter, setClientFilter] = useState<string>('todos');
   const [isExporting, setIsExporting] = useState(false);
-  const [isTableView, setIsTableView] = useState(true);
   const [editingCell, setEditingCell] = useState<{ projectId: string, field: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -55,7 +56,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     const tableContainer = element.querySelector('.overflow-x-auto');
     let originalTableStyle = '';
     
-    if (isTableView && tableContainer) {
+    if (tableContainer) {
       originalTableStyle = (tableContainer as HTMLElement).style.cssText;
       (tableContainer as HTMLElement).style.overflow = 'visible';
       element.style.width = '1200px'; 
@@ -78,18 +79,14 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       const html2pdf = (window as any).html2pdf;
       if (html2pdf) {
         html2pdf().from(element).set(opt).save().finally(() => {
-          if (isTableView) {
-            element.style.cssText = originalStyle;
-            if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
-          }
+          element.style.cssText = originalStyle;
+          if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
           setIsExporting(false);
         });
       } else {
         console.error('html2pdf not found');
-        if (isTableView) {
-          element.style.cssText = originalStyle;
-          if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
-        }
+        element.style.cssText = originalStyle;
+        if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
@@ -150,18 +147,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           <span>{isExporting ? 'Gerando...' : 'Exportar PDF'}</span>
         </button>
 
-        <button 
-          onClick={() => setIsTableView(!isTableView)}
-          className={`flex items-center space-x-3 px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg transition-all transform active:scale-95 ${
-            isTableView 
-              ? 'bg-baccarim-green text-white ring-4 ring-baccarim-green/20' 
-              : 'bg-baccarim-navy/60 text-baccarim-text border border-baccarim-border hover:bg-baccarim-blue hover:text-white'
-          }`}
-        >
-          <i className={`fas ${isTableView ? 'fa-table' : 'fa-list'}`}></i>
-          <span>{isTableView ? 'Modo Planilha' : 'Modo Cards'}</span>
-        </button>
-
         {/* Active Filters Counter */}
         {(statusFilter !== 'todos' || clientFilter !== 'todos') && (
           <button 
@@ -176,8 +161,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
       {/* Grid container to be exported */}
       <div ref={containerRef}>
-        {isTableView ? (
-          <div className="bg-white rounded-[2rem] shadow-2xl border border-baccarim-border overflow-x-auto p-4 md:p-8">
+        <div className="bg-white rounded-[2rem] shadow-2xl border border-baccarim-border overflow-x-auto p-4 md:p-8">
             <table className="w-full text-left border-collapse min-w-[1000px]">
               <thead>
                 <tr className="border-b-2 border-baccarim-navy/20 text-[9px] font-black uppercase tracking-widest text-baccarim-navy bg-baccarim-navy/5">
@@ -188,7 +172,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   <th className="p-4">Identificação</th>
                   <th className="p-4 text-center">Data do Protocolo</th>
                   <th className="p-4 text-center">Última Movimentação</th>
-                  <th className="p-4 rounded-tr-xl">Andamento Atual</th>
+                  <th className="p-4">Andamento Atual</th>
+                  <th className="p-4 rounded-tr-xl text-center">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -279,126 +264,30 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                       <td className="p-4 text-[10px] font-black text-baccarim-blue uppercase">
                         {renderEditableCell('currentPhase', project.currentPhase || project.status || '', '')}
                       </td>
+                      <td className="p-4 text-center">
+                        <div className="flex justify-center space-x-2">
+                          <button 
+                            title="Ir para Gestão de Clientes" 
+                            onClick={() => onNavigateToClient?.(project.clientName)} 
+                            className="w-8 h-8 rounded-lg bg-baccarim-navy/10 text-baccarim-navy hover:bg-baccarim-navy hover:text-white transition-all flex items-center justify-center shadow-sm"
+                          >
+                            <i className="fas fa-user-tie"></i>
+                          </button>
+                          <button 
+                            title="Ir para Notificações" 
+                            onClick={() => onNavigateToNotifications?.(project.id)} 
+                            className="w-8 h-8 rounded-lg bg-baccarim-blue/10 text-baccarim-blue hover:bg-baccarim-blue hover:text-white transition-all flex items-center justify-center shadow-sm"
+                          >
+                            <i className="fas fa-bell"></i>
+                          </button>
+                        </div>
+                      </td>
                     </tr>
                   );
                 })}
               </tbody>
             </table>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 p-2">
-            {filteredProjects.map(project => {
-          const projectLicenses = licenses.filter(l => l.clientName === project.clientName && l.name.includes(project.name));
-          const activeLicense = projectLicenses.find(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
-          const projectNotifs = notifications.filter(n => n.projectId === project.id);
-          const openNotifs = projectNotifs.filter(n => n.status === 'Open');
-          const isSemiCompleted = activeLicense && project.status !== 'Concluído';
-          
-          return (
-            <div key={project.id} className="bg-baccarim-card rounded-[2.5rem] p-8 shadow-2xl border border-baccarim-border hover:border-baccarim-blue/30 transition-all duration-500 group relative overflow-hidden">
-              {/* Background Accent */}
-              <div className="absolute top-0 right-0 w-32 h-32 bg-baccarim-blue/5 rounded-full -mr-16 -mt-16 blur-3xl group-hover:bg-baccarim-blue/10 transition-colors"></div>
-              
-              <div className="relative z-10 flex flex-col h-full">
-                <div className="flex justify-between items-start mb-6">
-                  <div className="w-12 h-12 rounded-2xl bg-baccarim-blue/10 flex items-center justify-center text-baccarim-blue shadow-inner group-hover:scale-110 transition-transform">
-                    <i className="fas fa-building text-xl"></i>
-                  </div>
-                  <div className="flex flex-col items-end">
-                    <span className={`px-4 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest shadow-sm ${
-                      isSemiCompleted ? 'bg-yellow-400 text-yellow-900 shadow-[0_2px_10px_rgba(250,204,21,0.3)]' :
-                      project.status === 'Concluído' ? 'bg-baccarim-green text-white shadow-[0_2px_10px_rgba(0,176,142,0.3)]' : 
-                      project.status === 'Em Execução' ? 'bg-baccarim-blue text-white shadow-[0_2px_10px_rgba(63,169,245,0.3)]' : 
-                      'bg-baccarim-navy text-white'
-                    }`}>
-                      {isSemiCompleted ? 'Semi-concluído' : project.status}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="mb-6">
-                  <h3 className="text-xl font-black text-baccarim-text tracking-tight mb-1 group-hover:text-baccarim-blue transition-colors">{project.name}</h3>
-                  <p className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-[0.2em]">{project.clientName}</p>
-                </div>
-
-                <div className="space-y-6 flex-1">
-                  {/* Progress Section */}
-                  <div>
-                    <div className="flex justify-between items-end mb-2">
-                      <span className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-widest">Conformidade Legal</span>
-                      <span className="text-xs font-black text-baccarim-blue">{project.progress}%</span>
-                    </div>
-                    <div className="w-full h-2 bg-baccarim-hover rounded-full overflow-hidden border border-baccarim-border">
-                      <div 
-                        className="h-full bg-gradient-to-r from-baccarim-blue to-baccarim-green transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(63,169,245,0.3)]"
-                        style={{ width: `${project.progress}%` }}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Info Grid */}
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="bg-baccarim-hover/50 p-4 rounded-2xl border border-baccarim-border group-hover:bg-baccarim-active transition-colors">
-                      <p className="text-[7px] font-black text-baccarim-text opacity-60 uppercase tracking-widest mb-1">Fase Atual</p>
-                      <p className="text-[10px] font-black text-baccarim-blue leading-tight uppercase">{project.currentPhase || 'N/A'}</p>
-                    </div>
-                    <button 
-                      onClick={() => setSelectedProjectId(project.id)}
-                      className="bg-baccarim-hover/50 p-4 rounded-2xl border border-baccarim-border group-hover:bg-baccarim-blue/10 group-hover:border-baccarim-blue/40 transition-all text-left"
-                    >
-                      <p className="text-[7px] font-black text-baccarim-text opacity-60 uppercase tracking-widest mb-1">Pendências</p>
-                      <div className="flex items-center space-x-2">
-                        <p className={`text-[10px] font-black leading-tight ${openNotifs.length > 0 ? 'text-rose-500' : 'text-baccarim-green'}`}>
-                          {openNotifs.length} {openNotifs.length === 1 ? 'Aberta' : 'Abertas'}
-                        </p>
-                      </div>
-                    </button>
-                  </div>
-
-                  {/* License Badge */}
-                  {activeLicense ? (
-                    <div className="flex items-center space-x-3 bg-baccarim-green/5 p-4 rounded-2xl border border-emerald-500/10">
-                      <div className="w-8 h-8 rounded-xl bg-baccarim-green/20 flex items-center justify-center text-baccarim-green">
-                        <i className="fas fa-certificate text-xs"></i>
-                      </div>
-                      <div>
-                        <p className="text-[7px] font-black text-baccarim-green/70 uppercase tracking-widest leading-none mb-1">Licença Ativa</p>
-                        <p className="text-[9px] font-black text-baccarim-text truncate w-32 uppercase">{activeLicense.name.split(' - ')[1] || activeLicense.type}</p>
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="flex items-center space-x-3 bg-baccarim-navy/30 p-4 rounded-2xl border border-baccarim-border">
-                      <div className="w-8 h-8 rounded-xl bg-baccarim-hover flex items-center justify-center text-baccarim-blue">
-                        <i className="fas fa-clock text-xs"></i>
-                      </div>
-                      <div>
-                        <p className="text-[7px] font-black text-baccarim-text opacity-60 uppercase tracking-widest leading-none mb-1">Status Legal</p>
-                        <p className="text-[9px] font-black text-baccarim-text uppercase">Em Tramitação</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                <div className="mt-8 pt-6 border-t border-baccarim-border flex flex-col space-y-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <div className="flex justify-between items-center text-[8px] font-black text-baccarim-text opacity-60 uppercase tracking-widest">
-                    <span>Protocolo SEI: {project.specs.numeroProtocolo || 'N/D'}</span>
-                  </div>
-                  {project.specs.dataProtocolo && (
-                    <div className="flex justify-between items-center text-[8px] font-black text-baccarim-text opacity-60 uppercase tracking-widest">
-                      <span>Data do Protocolo: {project.specs.dataProtocolo}</span>
-                      <i className="fas fa-arrow-right text-baccarim-blue text-xs"></i>
-                    </div>
-                  )}
-                  {!project.specs.dataProtocolo && (
-                    <div className="flex justify-end">
-                      <i className="fas fa-arrow-right text-baccarim-blue text-xs"></i>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
 
         {filteredProjects.length === 0 && (
           <div className="col-span-full py-20 text-center bg-baccarim-card/30 rounded-[3rem] border border-dashed border-baccarim-border">
@@ -409,8 +298,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
             <p className="text-xs text-baccarim-text-muted mt-2 uppercase tracking-widest">Tente ajustar os filtros acima para ver outros resultados.</p>
           </div>
         )}
-        </div>
-      )}
       </div>
 
       {/* Details Modal */}
