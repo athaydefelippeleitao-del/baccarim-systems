@@ -183,18 +183,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   const hasPending = openNotifs.length > 0;
                   
                   const projectLicenses = licenses.filter(l => l.id.includes(project.id));
-                  // Using string literals in case LicenseStatus enum doesn't match perfectly
-                  const hasActiveLicense = projectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo');
+                  const hasActiveLicense = projectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
 
                   let statusColor = 'bg-baccarim-green border-emerald-600';
                   let statusTitle = 'Tudo OK (Clique para ver)';
                   
-                  if (hasPending) {
-                    statusColor = 'bg-red-500 border-red-600';
-                    statusTitle = 'Com pendências abertas (Clique para ver)';
-                  } else if (hasActiveLicense) {
+                  if (hasActiveLicense) {
                     statusColor = 'bg-yellow-400 border-yellow-500';
                     statusTitle = 'Licença Ativa - Semi-concluído (Clique para ver)';
+                  } else if (hasPending) {
+                    statusColor = 'bg-red-500 border-red-600';
+                    statusTitle = 'Com pendências abertas (Clique para ver)';
                   }
                   
                   let lastMove = '-';
@@ -302,8 +301,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
       {/* Details Modal */}
       {selectedProject && (() => {
-        const selectedProjectLicenses = licenses.filter(l => l.clientName === selectedProject.clientName && l.name.includes(selectedProject.name));
-        const hasActiveLicenseInModal = selectedProjectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo');
+        const selectedProjectLicenses = licenses.filter(l => l.id.includes(selectedProject.id));
+        const hasActiveLicenseInModal = selectedProjectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
         return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-baccarim-dark/90 backdrop-blur-xl animate-in fade-in duration-300">
           <div className="bg-baccarim-card rounded-[3rem] w-full max-w-2xl shadow-2xl border border-baccarim-border relative overflow-hidden animate-in zoom-in-95 duration-500">
