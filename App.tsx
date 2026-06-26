@@ -1079,6 +1079,7 @@ const App: React.FC = () => {
                   projects={filteredProjects}
                   licenses={licenses}
                   notifications={notifications}
+                  onUpdateProject={handleUpdateProject}
                 />
               </div>
             ) : (

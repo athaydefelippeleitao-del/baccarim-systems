@@ -6,14 +6,16 @@ interface ProjectStatusSummaryProps {
   projects: Project[];
   licenses: EnvironmentalLicense[];
   notifications: Notification[];
+  onUpdateProject?: (project: Project) => void;
 }
 
-const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, licenses, notifications }) => {
+const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, licenses, notifications, onUpdateProject }) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [clientFilter, setClientFilter] = useState<string>('todos');
   const [isExporting, setIsExporting] = useState(false);
   const [isTableView, setIsTableView] = useState(false);
+  const [editingCell, setEditingCell] = useState<{ projectId: string, field: string } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
@@ -29,34 +31,69 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     return matchStatus && matchClient;
   });
 
+  const handleCellSave = (project: Project, field: string, value: string) => {
+    if (onUpdateProject) {
+      const updatedProject = { ...project };
+      if (['numeroProtocolo', 'responsavelTecnico', 'nomeResponsavel', 'dataProtocolo'].includes(field)) {
+        updatedProject.specs = { ...updatedProject.specs, [field]: value };
+      } else {
+        (updatedProject as any)[field] = value;
+      }
+      onUpdateProject(updatedProject);
+    }
+    setEditingCell(null);
+  };
+
   const handleExportPDF = () => {
     if (!containerRef.current) return;
     setIsExporting(true);
 
     const element = containerRef.current;
+    
+    // Configurar tabela temporariamente para não cortar no PDF
+    const originalStyle = element.style.cssText;
+    const tableContainer = element.querySelector('.overflow-x-auto');
+    let originalTableStyle = '';
+    
+    if (isTableView && tableContainer) {
+      originalTableStyle = (tableContainer as HTMLElement).style.cssText;
+      (tableContainer as HTMLElement).style.overflow = 'visible';
+      element.style.width = '1200px'; 
+    }
+
     const opt = {
       margin: 10,
       filename: `Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
+      image: { type: 'jpeg', quality: 1 },
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#f8f9fa'
+        backgroundColor: '#ffffff',
+        windowWidth: 1200
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
 
-    // Use window.html2pdf if available or any global reference
-    const html2pdf = (window as any).html2pdf;
-    if (html2pdf) {
-      html2pdf().from(element).set(opt).save().finally(() => {
+    setTimeout(() => {
+      const html2pdf = (window as any).html2pdf;
+      if (html2pdf) {
+        html2pdf().from(element).set(opt).save().finally(() => {
+          if (isTableView) {
+            element.style.cssText = originalStyle;
+            if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+          }
+          setIsExporting(false);
+        });
+      } else {
+        console.error('html2pdf not found');
+        if (isTableView) {
+          element.style.cssText = originalStyle;
+          if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+        }
         setIsExporting(false);
-      });
-    } else {
-      console.error('html2pdf not found');
-      setIsExporting(false);
-      alert('Erro: Biblioteca de exportação não carregada.');
-    }
+        alert('Erro: Biblioteca de exportação não carregada.');
+      }
+    }, 150);
   };
 
 
@@ -168,35 +205,60 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                     }
                   }
 
+                  const renderEditableCell = (field: string, value: string, className: string) => {
+                    const isEditing = editingCell?.projectId === project.id && editingCell?.field === field;
+
+                    if (isEditing) {
+                      return (
+                        <input
+                          autoFocus
+                          defaultValue={value}
+                          className={`w-full bg-white text-baccarim-text border-2 border-baccarim-blue rounded px-2 py-1 outline-none shadow-sm ${className}`}
+                          onBlur={(e) => handleCellSave(project, field, e.target.value)}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleCellSave(project, field, e.currentTarget.value);
+                            if (e.key === 'Escape') setEditingCell(null);
+                          }}
+                        />
+                      );
+                    }
+
+                    return (
+                      <div 
+                        className={`cursor-text hover:bg-slate-200/50 rounded px-1 -mx-1 min-h-[1.5rem] flex items-center transition-colors ${className}`}
+                        onClick={() => setEditingCell({ projectId: project.id, field })}
+                        title="Clique para editar"
+                      >
+                        {value || '-'}
+                      </div>
+                    );
+                  };
+
                   return (
                     <tr key={project.id} className={`hover:bg-baccarim-hover transition-colors ${index % 2 === 0 ? 'bg-slate-50/50' : 'bg-white'}`}>
-                      <td className="p-4 text-xs font-bold text-baccarim-text whitespace-nowrap">
-                        <a href="#" className="text-baccarim-blue hover:underline" onClick={(e) => { e.preventDefault(); setSelectedProjectId(project.id); }}>
-                          {project.specs.numeroProtocolo || '-'}
-                        </a>
+                      <td className="p-4 text-xs font-bold text-baccarim-blue whitespace-nowrap">
+                        {renderEditableCell('numeroProtocolo', project.specs.numeroProtocolo || '', '')}
                       </td>
                       <td className="p-4">
                         <div className={`w-full h-8 rounded-md shadow-sm border ${hasPending ? 'bg-red-500 border-red-600' : 'bg-baccarim-green border-emerald-600'}`} title={hasPending ? 'Com pendências abertas' : 'Tudo OK'}></div>
                       </td>
                       <td className="p-4 text-[10px] font-bold text-baccarim-text">
-                        <span className={project.specs.responsavelTecnico || project.specs.nomeResponsavel ? 'text-baccarim-text' : 'text-slate-300'}>
-                          {project.specs.responsavelTecnico || project.specs.nomeResponsavel || '-'}
-                        </span>
+                        {renderEditableCell('responsavelTecnico', project.specs.responsavelTecnico || project.specs.nomeResponsavel || '', '')}
                       </td>
                       <td className="p-4 text-[11px] font-black text-baccarim-navy uppercase">
-                        {project.clientName || project.razaoSocial || '-'}
+                        {renderEditableCell('clientName', project.clientName || project.razaoSocial || '', '')}
                       </td>
                       <td className="p-4 text-[11px] font-bold text-baccarim-text uppercase">
-                        {project.name}
+                        {renderEditableCell('name', project.name, '')}
                       </td>
                       <td className="p-4 text-center text-[10px] font-medium text-baccarim-text-muted whitespace-nowrap">
-                        {project.specs.dataProtocolo || '-'}
+                        {renderEditableCell('dataProtocolo', project.specs.dataProtocolo || '', 'justify-center')}
                       </td>
                       <td className="p-4 text-center text-[10px] font-medium text-baccarim-text-muted whitespace-nowrap">
                         {lastMove}
                       </td>
                       <td className="p-4 text-[10px] font-black text-baccarim-blue uppercase">
-                        {project.currentPhase || project.status}
+                        {renderEditableCell('currentPhase', project.currentPhase || project.status || '', '')}
                       </td>
                     </tr>
                   );
