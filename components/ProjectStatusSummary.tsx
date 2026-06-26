@@ -240,7 +240,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                         {renderEditableCell('numeroProtocolo', project.specs.numeroProtocolo || '', '')}
                       </td>
                       <td className="p-4">
-                        <div className={`w-full h-8 rounded-md shadow-sm border ${hasPending ? 'bg-red-500 border-red-600' : 'bg-baccarim-green border-emerald-600'}`} title={hasPending ? 'Com pendências abertas' : 'Tudo OK'}></div>
+                        <div 
+                          className={`w-full h-8 rounded-md shadow-sm border cursor-pointer hover:opacity-80 transition-opacity ${hasPending ? 'bg-red-500 border-red-600' : 'bg-baccarim-green border-emerald-600'}`} 
+                          title={hasPending ? 'Com pendências abertas (Clique para ver)' : 'Tudo OK (Clique para ver)'}
+                          onClick={() => setSelectedProjectId(project.id)}
+                        ></div>
                       </td>
                       <td className="p-4 text-[10px] font-bold text-baccarim-text">
                         {renderEditableCell('responsavelTecnico', project.specs.responsavelTecnico || project.specs.nomeResponsavel || '', '')}
