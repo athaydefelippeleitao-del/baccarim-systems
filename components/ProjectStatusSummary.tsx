@@ -182,7 +182,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   const openNotifs = projectNotifs.filter(n => n.status === 'Open');
                   const hasPending = openNotifs.length > 0;
                   
-                  const projectLicenses = licenses.filter(l => l.id.includes(project.id));
+                  const projectLicenses = licenses.filter(l => (l.clientName === project.clientName && l.name.includes(project.name)) || l.id.includes(project.id));
                   const hasActiveLicense = projectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
 
                   let statusColor = 'bg-baccarim-green border-emerald-600';
@@ -301,7 +301,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
       {/* Details Modal */}
       {selectedProject && (() => {
-        const selectedProjectLicenses = licenses.filter(l => l.id.includes(selectedProject.id));
+        const selectedProjectLicenses = licenses.filter(l => (l.clientName === selectedProject.clientName && l.name.includes(selectedProject.name)) || l.id.includes(selectedProject.id));
         const hasActiveLicenseInModal = selectedProjectLicenses.some(l => l.status === 'Ativa' || l.status === 'Vencendo' || l.status === LicenseStatus.ACTIVE || l.status === LicenseStatus.EXPIRING);
         return (
         <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4 bg-baccarim-dark/90 backdrop-blur-xl animate-in fade-in duration-300">
