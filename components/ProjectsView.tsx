@@ -172,7 +172,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
     setDistributingDocs({ projectId: project.id, progress: `Analisando 0 de ${files.length} documentos...` });
     
     try {
-      const updatedChecklistItems = [...(project.checklistItems || [])];
+      const updatedChecklistItems = [...(project.checklist || [])];
       let processedCount = 0;
 
       for (let i = 0; i < files.length; i++) {
@@ -240,7 +240,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       }
 
       // Save project updates
-      onUpdateProject({ ...project, checklistItems: updatedChecklistItems });
+      onUpdateProject({ ...project, checklist: updatedChecklistItems });
       
       setDistributingDocs({ projectId: project.id, progress: `Concluído!` });
       setTimeout(() => setDistributingDocs(null), 3000);
