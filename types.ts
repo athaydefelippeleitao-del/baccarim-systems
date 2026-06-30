@@ -186,6 +186,7 @@ export interface ProjectTechnicalSpecs {
   isDeferred?: boolean;
   licenseFiles?: Attachment[];
   notificationFiles?: Attachment[];
+  extraDocuments?: Attachment[];
   driveLicenseLink?: string;
   driveNotificationLink?: string;
   coordE?: string;

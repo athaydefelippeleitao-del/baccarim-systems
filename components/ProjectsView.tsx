@@ -173,6 +173,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
     
     try {
       const updatedChecklistItems = [...(project.checklist || [])];
+      let updatedSpecs = { ...project.specs };
       let processedCount = 0;
 
       for (let i = 0; i < files.length; i++) {
@@ -262,7 +263,27 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                 }
               ]
             };
+          } else {
+            // Item returned by AI not found in the list, save as extra
+            const existingExtra = updatedSpecs.extraDocuments || [];
+            updatedSpecs = {
+              ...updatedSpecs,
+              extraDocuments: [
+                ...existingExtra,
+                { fileName: file.name, fileData: dataUri, fileDate: new Date().toLocaleDateString('pt-BR') }
+              ]
+            };
           }
+        } else {
+          // AI did not find a match, save as extra
+          const existingExtra = updatedSpecs.extraDocuments || [];
+          updatedSpecs = {
+            ...updatedSpecs,
+            extraDocuments: [
+              ...existingExtra,
+              { fileName: file.name, fileData: dataUri, fileDate: new Date().toLocaleDateString('pt-BR') }
+            ]
+          };
         }
         
         processedCount++;
@@ -270,7 +291,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       }
 
       // Save project updates
-      onUpdateProject({ ...project, checklist: updatedChecklistItems });
+      onUpdateProject({ ...project, checklist: updatedChecklistItems, specs: updatedSpecs });
       
       setDistributingDocs({ projectId: project.id, progress: `Concluído!` });
       setTimeout(() => setDistributingDocs(null), 3000);
@@ -1271,6 +1292,36 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       </div>
                     ))}
                   </div>
+
+                  {project.specs.extraDocuments && project.specs.extraDocuments.length > 0 && (
+                    <div className="mt-8 space-y-6">
+                      <div className="flex items-center justify-between border-b border-baccarim-border pb-3">
+                        <h5 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">OUTROS DOCUMENTOS</h5>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                        {project.specs.extraDocuments.map((doc, idx) => (
+                          <div key={idx} className="bg-baccarim-hover rounded-[2rem] border border-baccarim-border p-5 shadow-sm flex items-center justify-between group/extradoc transition-all hover:border-baccarim-blue/30">
+                            <div className="flex items-center space-x-3 truncate">
+                              <i className="fas fa-file text-baccarim-text-muted text-sm"></i>
+                              <button onClick={() => downloadFile(doc)} className="text-[11px] font-bold text-slate-300 truncate hover:text-baccarim-blue transition-all" title={doc.fileName}>
+                                {doc.fileName}
+                              </button>
+                            </div>
+                            <button 
+                              onClick={() => {
+                                const newExtra = project.specs.extraDocuments?.filter((_, i) => i !== idx);
+                                onUpdateProject({ ...project, specs: { ...project.specs, extraDocuments: newExtra } });
+                              }} 
+                              className="opacity-0 group-hover/extradoc:opacity-100 text-baccarim-text-muted hover:text-red-500 transition-all shrink-0 ml-2"
+                            >
+                              <i className="fas fa-trash-can text-[10px]"></i>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                 </div>
 
                 <div className="pt-8 border-t border-baccarim-border flex items-center justify-between">
