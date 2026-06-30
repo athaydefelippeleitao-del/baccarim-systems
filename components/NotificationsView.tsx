@@ -381,12 +381,20 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               </button>
             ))}
           </div>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-8 py-3.5 bg-baccarim-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-green/20 hover:-translate-y-1 transition-all"
-          >
-            <i className="fas fa-plus mr-2"></i> Nova Notificação
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => { setAiMode(true); setAiFile(null); setEditingNotifId(null); setShowAddModal(true); }}
+              className="px-6 py-3.5 bg-baccarim-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:-translate-y-1 transition-all flex items-center gap-2"
+            >
+              <i className="fas fa-wand-magic-sparkles"></i> Criar com IA
+            </button>
+            <button
+              onClick={() => { setAiMode(false); setEditingNotifId(null); setShowAddModal(true); }}
+              className="px-8 py-3.5 bg-baccarim-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-green/20 hover:-translate-y-1 transition-all"
+            >
+              <i className="fas fa-plus mr-2"></i> Nova Notificação
+            </button>
+          </div>
         </div>
       </header>
 
