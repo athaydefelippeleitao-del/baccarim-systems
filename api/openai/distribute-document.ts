@@ -31,10 +31,10 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
   const openai = new OpenAI({ apiKey });
 
   try {
-    const { dataUri, fileName, checklistItems } = req.body;
+    const { dataUri, fileName, checklistItems, pdfText: providedPdfText } = req.body;
 
-    if (!dataUri || !checklistItems) {
-      return res.status(400).json({ error: 'Faltando dataUri ou checklistItems.' });
+    if (!checklistItems || (!dataUri && !providedPdfText)) {
+      return res.status(400).json({ error: 'Faltando dados do arquivo ou checklistItems.' });
     }
 
     // Filter to only items that aren't completed, or pass all of them? 
@@ -54,23 +54,27 @@ Retorne EXCLUSIVAMENTE um objeto JSON contendo:
 
 Retorne APENAS um JSON válido, sem formatação markdown em volta, apenas o JSON puro.`;
 
-    const isPdf = dataUri.startsWith('data:application/pdf');
-    const isImage = dataUri.startsWith('data:image/');
+    const isPdf = providedPdfText !== undefined || (dataUri && dataUri.startsWith('data:application/pdf'));
+    const isImage = dataUri && dataUri.startsWith('data:image/');
 
     let result: any = null;
 
     if (isPdf) {
-      const base64 = dataUri.replace(/^data:application\/pdf;base64,/, '');
-      const buffer = Buffer.from(base64, 'base64');
+      let pdfText = providedPdfText || '';
       
-      let pdfText = '';
-      try {
-        const { default: pdfParse } = await import('pdf-parse');
-        const parsed = await pdfParse(buffer);
-        pdfText = parsed.text;
-      } catch (err) {
-        console.warn('Could not parse PDF text:', err);
-        pdfText = '(Não foi possível extrair o texto do PDF automaticamente. Baseie-se apenas no nome do arquivo.)';
+      // se não mandou o texto pronto, tentamos extrair no backend (fallback)
+      if (!pdfText && dataUri) {
+        const base64 = dataUri.replace(/^data:application\/pdf;base64,/, '');
+        const buffer = Buffer.from(base64, 'base64');
+        
+        try {
+          const { default: pdfParse } = await import('pdf-parse');
+          const parsed = await pdfParse(buffer);
+          pdfText = parsed.text;
+        } catch (err) {
+          console.warn('Could not parse PDF text:', err);
+          pdfText = '(Não foi possível extrair o texto do PDF automaticamente. Baseie-se apenas no nome do arquivo.)';
+        }
       }
 
       const prompt = `${promptBase}\n\nNome do Arquivo: "${fileName}"\n\nConteúdo extraído do PDF:\n${pdfText.substring(0, 8000)}`;

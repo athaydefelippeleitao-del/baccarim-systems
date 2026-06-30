@@ -178,23 +178,53 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         
-        // Convert to base64
+        // Convert to base64 for local saving
         const dataUri: string = await new Promise((resolve, reject) => {
           const reader = new FileReader();
           reader.onload = e => resolve(e.target?.result as string);
           reader.onerror = reject;
           reader.readAsDataURL(file);
         });
+        
+        let pdfText;
+        if (file.type === 'application/pdf') {
+          try {
+            const pdfjsLib = await import('pdfjs-dist');
+            const pdfWorker = await import('pdfjs-dist/build/pdf.worker.mjs?url');
+            pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker.default;
+            
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+            pdfText = '';
+            // Limitar a extração a 15 páginas para não travar o navegador
+            const numPages = Math.min(pdf.numPages, 15);
+            for (let p = 1; p <= numPages; p++) {
+              const page = await pdf.getPage(p);
+              const content = await page.getTextContent();
+              const strings = content.items.map((item: any) => item.str);
+              pdfText += strings.join(' ') + '\n';
+            }
+          } catch (err) {
+            console.error("Erro ao extrair PDF localmente:", err);
+          }
+        }
 
         // Send to API
+        const payload: any = {
+          fileName: file.name,
+          checklistItems: updatedChecklistItems.map(item => ({ id: item.id, label: item.label, description: item.description }))
+        };
+        
+        if (pdfText !== undefined) {
+          payload.pdfText = pdfText;
+        } else {
+          payload.dataUri = dataUri;
+        }
+
         const res = await fetch('/api/openai/distribute-document', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ 
-            dataUri, 
-            fileName: file.name,
-            checklistItems: updatedChecklistItems.map(item => ({ id: item.id, label: item.label, description: item.description }))
-          }),
+          body: JSON.stringify(payload),
         });
         
         let json;
