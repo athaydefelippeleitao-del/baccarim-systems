@@ -23,7 +23,9 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const [aiMode, setAiMode] = useState(false);
   const [aiFile, setAiFile] = useState<File | null>(null);
   const [aiDragOver, setAiDragOver] = useState(false);
+  const [aiToast, setAiToast] = useState<string | null>(null);
   const aiFileInputRef = React.useRef<HTMLInputElement>(null);
+  const aiDirectFileRef = React.useRef<HTMLInputElement>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
   const [pushSendingId, setPushSendingId] = useState<string | null>(null);
@@ -252,6 +254,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const handleAiCreate = async (file: File) => {
     if (!file) return;
     setAiCreating(true);
+    setAiToast(`Analisando "${file.name}"...`);
     try {
       const dataUri: string = await new Promise((resolve, reject) => {
         const reader = new FileReader();
@@ -275,30 +278,51 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         body: JSON.stringify({ dataUris: [dataUri], projects: projectsForAI }),
       });
       const json = await res.json();
+      if (json.error) throw new Error(json.error);
       const result = json.result || {};
 
       const matchedProject = result.matchedProjectId
         ? projects.find(p => p.id === result.matchedProjectId)
         : null;
 
-      setNewNotifForm(prev => ({
-        ...prev,
-        title: result.title || '',
+      // Format deadline from YYYY-MM-DD to DD/MM/YYYY
+      let formattedDeadline = '';
+      if (result.deadline) {
+        const parts = result.deadline.split('-');
+        if (parts.length === 3) formattedDeadline = `${parts[2]}/${parts[1]}/${parts[0]}`;
+        else formattedDeadline = result.deadline;
+      }
+
+      const newNotif: Notification = {
+        id: `n-${Date.now()}`,
+        title: result.title || 'Notificação sem título',
+        clientName: matchedProject?.clientName || result.matchedClientName || '',
+        projectId: matchedProject?.id || '',
         agency: result.agency || 'SEMA',
-        deadline: result.deadline || '',
         severity: (['Alta', 'Média', 'Baixa'].includes(result.severity) ? result.severity : 'Média') as NotificationSeverity,
         category: (result.category === 'Licença' ? 'Licença' : 'Notificação') as 'Notificação' | 'Licença',
+        deadline: formattedDeadline,
         description: result.description || '',
-        clientName: matchedProject?.clientName || result.matchedClientName || prev.clientName,
-        projectId: matchedProject?.id || prev.projectId,
-      }));
+        dateReceived: new Date().toLocaleDateString('pt-BR'),
+        status: 'Open',
+        attachedFiles: []
+      };
+
+      onAddNotification(newNotif);
+      setAiToast('✓ Notificação criada com sucesso!');
+      setTimeout(() => setAiToast(null), 3000);
       setAiMode(false);
       setAiFile(null);
+      setShowAddModal(false);
     } catch (e) {
       console.error('AI create failed', e);
+      setAiToast(null);
       alert('Erro ao processar com IA. Tente novamente.');
     } finally {
       setAiCreating(false);
+      // Reset file input
+      if (aiDirectFileRef.current) aiDirectFileRef.current.value = '';
+      if (aiFileInputRef.current) aiFileInputRef.current.value = '';
     }
   };
 
@@ -344,6 +368,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
 
   return (
     <div className="space-y-8 animate-in fade-in slide-in-from-bottom-6 duration-700 pb-20">
+      {/* AI Toast Overlay */}
+      {aiToast && (
+        <div className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-[500] flex items-center gap-3 px-6 py-4 rounded-2xl shadow-2xl text-white text-[11px] font-black uppercase tracking-widest animate-in fade-in slide-in-from-bottom-4 duration-300 ${aiToast.startsWith('✓') ? 'bg-baccarim-green' : 'bg-baccarim-blue'}`}>
+          {aiToast.startsWith('✓') ? (
+            <i className="fas fa-check-circle text-lg"></i>
+          ) : (
+            <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          )}
+          <span>{aiToast}</span>
+        </div>
+      )}
       <input
         type="file"
         ref={fileInputRef}
@@ -381,12 +416,25 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               </button>
             ))}
           </div>
+          {/* Hidden file input for direct AI creation */}
+          <input
+            ref={aiDirectFileRef}
+            type="file"
+            accept="image/*,application/pdf"
+            className="hidden"
+            onChange={e => { const f = e.target.files?.[0]; if (f) handleAiCreate(f); }}
+          />
           <div className="flex items-center gap-3">
             <button
-              onClick={() => { setAiMode(true); setAiFile(null); setEditingNotifId(null); setShowAddModal(true); }}
-              className="px-6 py-3.5 bg-baccarim-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:-translate-y-1 transition-all flex items-center gap-2"
+              onClick={() => aiDirectFileRef.current?.click()}
+              disabled={aiCreating}
+              className="px-6 py-3.5 bg-baccarim-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:-translate-y-1 transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-wait"
             >
-              <i className="fas fa-wand-magic-sparkles"></i> Criar com IA
+              {aiCreating ? (
+                <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div><span>Analisando...</span></>
+              ) : (
+                <><i className="fas fa-wand-magic-sparkles"></i><span>Criar com IA</span></>
+              )}
             </button>
             <button
               onClick={() => { setAiMode(false); setEditingNotifId(null); setShowAddModal(true); }}
