@@ -65,6 +65,19 @@ export async function generateNotificationDraft(
   return result || 'Não foi possível gerar o rascunho.';
 }
 
+export async function createNotificationFromText(rawText: string): Promise<{
+  title: string;
+  agency: string;
+  deadline: string;
+  severity: string;
+  category: string;
+  description: string;
+  responseDraft: string;
+}> {
+  return post('/create-notification', { rawText });
+}
+
+
 export async function suggestExcelMapping(headers: string[]): Promise<Record<string, string>> {
   return post('/suggest-mapping', { headers });
 }
