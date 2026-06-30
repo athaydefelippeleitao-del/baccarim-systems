@@ -25,7 +25,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
   // Filter Logic
   const uniqueStatuses = Array.from(new Set(projects.map(p => p.status)));
-  const uniqueClients = Array.from(new Set(projects.map(p => p.clientName)));
+  const uniqueClients = Array.from(new Set(projects.map(p => p.clientName))).sort((a, b) => a.localeCompare(b));
 
   const filteredProjects = projects.filter(p => {
     const matchStatus = statusFilter === 'todos' || p.status === statusFilter;
