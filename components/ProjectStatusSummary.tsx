@@ -36,7 +36,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const handleCellSave = (project: Project, field: string, value: string) => {
     if (onUpdateProject) {
       const updatedProject = { ...project };
-      if (['numeroProtocolo', 'responsavelTecnico', 'nomeResponsavel', 'dataProtocolo'].includes(field)) {
+      if (['numeroProtocolo', 'responsavelTecnico', 'nomeResponsavel', 'dataProtocolo', 'ultimaMovimentacao'].includes(field)) {
         updatedProject.specs = { ...updatedProject.specs, [field]: value };
       } else {
         (updatedProject as any)[field] = value;
@@ -296,7 +296,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                         {renderEditableCell('dataProtocolo', project.specs.dataProtocolo || '', 'justify-center')}
                       </td>
                       <td className="p-4 text-center text-[10px] font-medium text-baccarim-text-muted whitespace-nowrap">
-                        {lastMove}
+                        {renderEditableCell('ultimaMovimentacao', project.specs.ultimaMovimentacao || lastMove, 'justify-center')}
                       </td>
                       <td className="p-4 text-[10px] font-black text-baccarim-blue uppercase">
                         {renderEditableCell('currentPhase', project.currentPhase || project.status || '', '')}
