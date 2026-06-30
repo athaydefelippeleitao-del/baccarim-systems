@@ -198,6 +198,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
         });
         
         const json = await res.json();
+        console.log(`[AI Distribute] Arquivo: ${file.name}`, json);
         
         if (json.result && json.result.matchedChecklistItemId) {
           const matchId = json.result.matchedChecklistItemId;

@@ -47,10 +47,10 @@ Abaixo está a lista de itens pendentes no checklist documental deste empreendim
 ${JSON.stringify(checklistItems)}
 
 Atenção: Procure identificar pelo conteúdo e natureza do documento (ex: se é um RG/CPF, CNH, se é um comprovante de endereço, um contrato social, uma planta planialtimétrica, matrícula do imóvel, procuração, ART, ofício, etc). 
-Pode haver pequenas divergências no nome do arquivo, foque no conteúdo real do documento.
+Pode haver divergências no nome do arquivo, foque no conteúdo real do documento. Tente ao máximo encontrar o item que mais se aproxima do documento, mesmo que o nome não seja idêntico.
 
 Retorne EXCLUSIVAMENTE um objeto JSON contendo:
-- "matchedChecklistItemId": O "id" exato (string) do item do checklist correspondente. Caso o documento não sirva para NENHUM dos itens listados, ou se não for possível determinar, retorne null.
+- "matchedChecklistItemId": O "id" exato (string) do item do checklist correspondente. Se o documento puder ser minimamente associado a um dos itens, retorne o ID. Só retorne null se for impossível associar.
 - "reasoning": Uma explicação muito breve (1 ou 2 frases) do porquê esse documento atende esse item, ou porquê não atende nenhum.
 
 Retorne APENAS um JSON válido, sem formatação markdown em volta, apenas o JSON puro.`;
