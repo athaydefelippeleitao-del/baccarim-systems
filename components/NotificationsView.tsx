@@ -249,19 +249,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     }
   };
 
-  const handleAiCreate = async () => {
-    if (!aiFile) return;
+  const handleAiCreate = async (file: File) => {
+    if (!file) return;
     setAiCreating(true);
     try {
-      // Read file as base64 data URI
       const dataUri: string = await new Promise((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = e => resolve(e.target?.result as string);
         reader.onerror = reject;
-        reader.readAsDataURL(aiFile);
+        reader.readAsDataURL(file);
       });
 
-      // Build minimal project list for AI to cross-reference
       const projectsForAI = projects.map(p => ({
         id: p.id,
         name: p.name,
@@ -279,7 +277,6 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       const json = await res.json();
       const result = json.result || {};
 
-      // Find matched project
       const matchedProject = result.matchedProjectId
         ? projects.find(p => p.id === result.matchedProjectId)
         : null;
@@ -632,7 +629,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                   type="file"
                   accept="image/*,application/pdf"
                   className="hidden"
-                  onChange={e => setAiFile(e.target.files?.[0] || null)}
+                  onChange={e => { const f = e.target.files?.[0]; if (f) { setAiFile(f); handleAiCreate(f); } }}
                 />
                 <div className="bg-gradient-to-br from-baccarim-blue/10 to-purple-500/10 border border-baccarim-blue/30 rounded-3xl p-6 space-y-4">
                   <div className="flex items-center gap-3">
@@ -641,62 +638,46 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     </div>
                     <div>
                       <p className="text-[11px] font-black text-baccarim-blue uppercase tracking-widest">Criação Automática com IA</p>
-                      <p className="text-[10px] text-baccarim-text-muted">Anexe o arquivo do ofício, licença ou notificação recebida</p>
+                      <p className="text-[10px] text-baccarim-text-muted">Anexe o arquivo — a IA preenche tudo automaticamente</p>
                     </div>
                   </div>
 
                   {/* Drop zone */}
                   <div
-                    onClick={() => aiFileInputRef.current?.click()}
+                    onClick={() => !aiCreating && aiFileInputRef.current?.click()}
                     onDragOver={e => { e.preventDefault(); setAiDragOver(true); }}
                     onDragLeave={() => setAiDragOver(false)}
-                    onDrop={e => { e.preventDefault(); setAiDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) setAiFile(f); }}
-                    className={`relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
-                      aiDragOver
-                        ? 'border-baccarim-blue bg-baccarim-blue/10 scale-[1.01]'
-                        : aiFile
-                          ? 'border-baccarim-green bg-baccarim-green/5'
-                          : 'border-baccarim-blue/40 hover:border-baccarim-blue hover:bg-baccarim-blue/5'
+                    onDrop={e => {
+                      e.preventDefault(); setAiDragOver(false);
+                      const f = e.dataTransfer.files?.[0];
+                      if (f) { setAiFile(f); handleAiCreate(f); }
+                    }}
+                    className={`relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-3 transition-all ${
+                      aiCreating
+                        ? 'border-baccarim-blue bg-baccarim-blue/10 cursor-wait'
+                        : aiDragOver
+                          ? 'border-baccarim-blue bg-baccarim-blue/10 scale-[1.01] cursor-copy'
+                          : 'border-baccarim-blue/40 hover:border-baccarim-blue hover:bg-baccarim-blue/5 cursor-pointer'
                     }`}
                   >
-                    {aiFile ? (
+                    {aiCreating ? (
                       <>
-                        <div className="w-14 h-14 rounded-2xl bg-baccarim-green/20 text-baccarim-green flex items-center justify-center">
-                          <i className="fas fa-file-check text-2xl"></i>
+                        <div className="w-14 h-14 rounded-2xl bg-baccarim-blue/20 text-baccarim-blue flex items-center justify-center">
+                          <div className="w-8 h-8 border-4 border-baccarim-blue/30 border-t-baccarim-blue rounded-full animate-spin"></div>
                         </div>
-                        <p className="text-[12px] font-black text-baccarim-green text-center">{aiFile.name}</p>
-                        <p className="text-[10px] text-baccarim-text-muted">{(aiFile.size / 1024).toFixed(0)} KB — clique para trocar</p>
+                        <p className="text-[12px] font-black text-baccarim-blue text-center animate-pulse">Analisando documento com IA...</p>
+                        <p className="text-[10px] text-baccarim-text-muted">{aiFile?.name}</p>
                       </>
                     ) : (
                       <>
                         <div className="w-14 h-14 rounded-2xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center">
                           <i className="fas fa-cloud-arrow-up text-2xl"></i>
                         </div>
-                        <p className="text-[12px] font-black text-baccarim-text-muted text-center">Arraste ou clique para selecionar</p>
-                        <p className="text-[10px] text-baccarim-text-muted/60">PDF, PNG, JPG ou JPEG — máx. 8MB</p>
+                        <p className="text-[12px] font-black text-baccarim-text-muted text-center">Arraste ou clique para anexar</p>
+                        <p className="text-[10px] text-baccarim-text-muted/60">PDF, PNG, JPG — a IA preenche os campos sozinha</p>
                       </>
                     )}
                   </div>
-
-                  <button
-                    type="button"
-                    onClick={handleAiCreate}
-                    disabled={aiCreating || !aiFile}
-                    className="w-full py-4 bg-baccarim-blue text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {aiCreating ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Analisando documento...</span>
-                      </>
-                    ) : (
-                      <>
-                        <i className="fas fa-wand-magic-sparkles"></i>
-                        <span>Analisar e Preencher Automaticamente</span>
-                      </>
-                    )}
-                  </button>
-                  <p className="text-center text-[9px] text-baccarim-text-muted">A IA vai identificar o empreendimento e preencher os campos. Você pode revisar antes de salvar.</p>
                 </div>
               </div>
             )}
