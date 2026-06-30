@@ -877,10 +877,6 @@ const App: React.FC = () => {
             <i className="fas fa-file-invoice-dollar w-5"></i>
             <span className="text-sm font-bold">Financeiro</span>
           </button>
-          <button onClick={() => setActiveTab('ai-docs')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'ai-docs' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-robot w-5 text-baccarim-blue"></i>
-            <span className="text-sm font-bold">Documentos IA</span>
-          </button>
           {(currentUser.role === 'admin' || currentUser.role === 'engineer') && (
             <button onClick={() => setActiveTab('config')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'config' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
               <i className="fas fa-sliders w-5"></i>
