@@ -173,6 +173,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   <th className="p-4">Identificação</th>
                   <th className="p-4 text-center">Data do Protocolo</th>
                   <th className="p-4 text-center">Última Movimentação</th>
+                  <th className="p-4 text-center">Tipo de Licença</th>
                   <th className="p-4">Andamento Atual</th>
                   <th className="p-4 rounded-tr-xl text-center">Ações</th>
                 </tr>
@@ -297,6 +298,9 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                       </td>
                       <td className="p-4 text-center text-[10px] font-medium text-baccarim-text-muted whitespace-nowrap">
                         {renderEditableCell('ultimaMovimentacao', project.specs.ultimaMovimentacao || lastMove, 'justify-center')}
+                      </td>
+                      <td className="p-4 text-center text-[10px] font-bold text-slate-500 whitespace-nowrap uppercase">
+                        {renderEditableCell('licencaObtida', project.specs.licencaObtida || project.specs.licencaASerObtida || '-', 'justify-center')}
                       </td>
                       <td className="p-4 text-[10px] font-black text-baccarim-blue uppercase">
                         {renderEditableCell('currentPhase', project.currentPhase || project.status || '', '')}
