@@ -13,6 +13,7 @@ interface ProjectStatusSummaryProps {
 
 const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, licenses, notifications, onUpdateProject }) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+  const [popoverProjectId, setPopoverProjectId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('todos');
   const [clientFilter, setClientFilter] = useState<string>('todos');
   const [isExporting, setIsExporting] = useState(false);
@@ -239,12 +240,48 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                       <td className="p-4 text-xs font-bold text-baccarim-blue whitespace-nowrap">
                         {renderEditableCell('numeroProtocolo', project.specs.numeroProtocolo || '', '')}
                       </td>
-                      <td className="p-4">
-                        <div 
-                          className={`w-full h-8 rounded-md shadow-sm border cursor-pointer hover:opacity-80 transition-opacity ${statusColor}`} 
+                      <td className="p-4 relative">
+                        <div
+                          className={`w-full h-8 rounded-md shadow-sm border cursor-pointer hover:opacity-80 transition-opacity ${statusColor}`}
                           title={statusTitle}
-                          onClick={() => setSelectedProjectId(project.id)}
+                          onClick={() => setPopoverProjectId(popoverProjectId === project.id ? null : project.id)}
                         ></div>
+
+                        {/* Inline Popover */}
+                        {popoverProjectId === project.id && (() => {
+                          const pendingNotifs = projectNotifs.filter(n => n.status === 'Open');
+                          return (
+                            <div className="absolute left-0 top-full mt-1 z-[200] w-80 bg-baccarim-card border border-baccarim-border rounded-2xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200">
+                              <div className={`px-4 py-3 flex items-center justify-between ${hasPending ? 'bg-red-500' : hasActiveLicense ? 'bg-yellow-400' : 'bg-emerald-500'}`}>
+                                <span className="text-[10px] font-black text-white uppercase tracking-widest">
+                                  {hasPending ? 'Pendências Abertas' : hasActiveLicense ? 'Licença Ativa' : 'Tudo OK'}
+                                </span>
+                                <button onClick={() => setPopoverProjectId(null)} className="text-white/80 hover:text-white">
+                                  <i className="fas fa-times text-xs"></i>
+                                </button>
+                              </div>
+                              {pendingNotifs.length === 0 ? (
+                                <div className="p-4 text-center">
+                                  <i className="fas fa-check-circle text-emerald-500 text-2xl mb-2 block"></i>
+                                  <p className="text-[11px] font-bold text-baccarim-text-muted">Nenhuma pendência aberta</p>
+                                </div>
+                              ) : (
+                                <div className="divide-y divide-baccarim-border max-h-60 overflow-y-auto">
+                                  {pendingNotifs.map(n => (
+                                    <div key={n.id} className="px-4 py-3 flex items-start gap-3">
+                                      <div className={`w-2 h-2 rounded-full mt-1.5 shrink-0 ${n.category === 'Licença' ? 'bg-yellow-400' : n.severity === 'Alta' ? 'bg-red-500' : n.severity === 'Média' ? 'bg-amber-400' : 'bg-emerald-400'}`}></div>
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-[11px] font-black text-baccarim-text leading-tight truncate">{n.title}</p>
+                                        <p className="text-[9px] text-baccarim-text-muted mt-0.5 uppercase tracking-widest">{n.agency} • {n.category}</p>
+                                        {n.deadline && <p className="text-[9px] font-bold text-baccarim-rose mt-0.5">Prazo: {n.deadline}</p>}
+                                      </div>
+                                    </div>
+                                  ))}
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </td>
                       <td className="p-4 text-[10px] font-bold text-baccarim-text">
                         {renderEditableCell('responsavelTecnico', project.specs.responsavelTecnico || project.specs.nomeResponsavel || '', '')}
