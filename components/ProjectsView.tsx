@@ -53,7 +53,10 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   const [extensionProject, setExtensionProject] = useState<Project | null>(null);
   const [meetingMinutesProject, setMeetingMinutesProject] = useState<Project | null>(null);
   const [rapProject, setRapProject] = useState<Project | null>(null);
+  const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
+  const [distributingDocs, setDistributingDocs] = useState<{ projectId: string, progress: string } | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const distributeFileRef = useRef<HTMLInputElement>(null);
 
   const handleDilacaoPrazo = (project: Project) => {
     setExtensionProject(project);
@@ -160,6 +163,80 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       console.error("Erro ao exportar documentos:", error);
     } finally {
       setIsZipping(null);
+    }
+  };
+
+  const handleAIDistributeDocuments = async (project: Project, files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    
+    setDistributingDocs({ projectId: project.id, progress: `Analisando 0 de ${files.length} documentos...` });
+    
+    try {
+      const updatedChecklistItems = [...(project.checklistItems || [])];
+      let processedCount = 0;
+
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        
+        // Convert to base64
+        const dataUri: string = await new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        // Send to API
+        const res = await fetch('/api/openai/distribute-document', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            dataUri, 
+            fileName: file.name,
+            checklistItems: updatedChecklistItems.map(item => ({ id: item.id, label: item.label, description: item.description }))
+          }),
+        });
+        
+        const json = await res.json();
+        
+        if (json.result && json.result.matchedChecklistItemId) {
+          const matchId = json.result.matchedChecklistItemId;
+          const itemIndex = updatedChecklistItems.findIndex(item => item.id === matchId);
+          
+          if (itemIndex !== -1) {
+            // Update checklist item with the file
+            const existingFiles = updatedChecklistItems[itemIndex].attachedFiles || [];
+            updatedChecklistItems[itemIndex] = {
+              ...updatedChecklistItems[itemIndex],
+              isCompleted: true,
+              attachedFiles: [
+                ...existingFiles,
+                {
+                  fileName: file.name,
+                  fileData: dataUri,
+                  fileDate: new Date().toLocaleDateString('pt-BR')
+                }
+              ]
+            };
+          }
+        }
+        
+        processedCount++;
+        setDistributingDocs({ projectId: project.id, progress: `Analisando ${processedCount} de ${files.length} documentos...` });
+      }
+
+      // Save project updates
+      onUpdateProject({ ...project, checklistItems: updatedChecklistItems });
+      
+      setDistributingDocs({ projectId: project.id, progress: `Concluído!` });
+      setTimeout(() => setDistributingDocs(null), 3000);
+
+    } catch (error) {
+      console.error("Erro na distribuição por IA:", error);
+      alert('Erro ao processar documentos com IA. Tente novamente.');
+      setDistributingDocs(null);
+    } finally {
+      if (distributeFileRef.current) distributeFileRef.current.value = '';
     }
   };
 
@@ -604,6 +681,35 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       <h4 className="text-[13px] font-black text-baccarim-text uppercase tracking-[0.2em]">Identificação Técnica Detalhada</h4>
                     </div>
                     <div className="flex flex-wrap items-center gap-4">
+                      {/* Hidden input for AI distribution */}
+                      <input
+                        type="file"
+                        multiple
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        ref={distributeFileRef}
+                        onChange={(e) => handleAIDistributeDocuments(project, e.target.files)}
+                      />
+                      
+                      <button
+                        onClick={(e) => { e.stopPropagation(); distributeFileRef.current?.click(); }}
+                        disabled={distributingDocs?.projectId === project.id}
+                        className="text-[9px] font-black px-6 py-3 rounded-xl bg-purple-600 text-white uppercase tracking-widest hover:brightness-110 transition-all flex items-center space-x-2 disabled:opacity-50"
+                        title="Anexar múltiplos documentos e distribuir via IA para o checklist"
+                      >
+                        {distributingDocs?.projectId === project.id ? (
+                          <>
+                            <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                            <span>{distributingDocs.progress}</span>
+                          </>
+                        ) : (
+                          <>
+                            <i className="fas fa-wand-magic-sparkles"></i>
+                            <span>Distribuir Docs (IA)</span>
+                          </>
+                        )}
+                      </button>
+
                       <button
                         onClick={(e) => { e.stopPropagation(); setReportProject(project); }}
                         className="text-[9px] font-black px-6 py-3 rounded-xl bg-baccarim-green text-white uppercase tracking-widest hover:brightness-110 transition-all flex items-center space-x-2"
