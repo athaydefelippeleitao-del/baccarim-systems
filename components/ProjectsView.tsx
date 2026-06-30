@@ -197,8 +197,21 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
           }),
         });
         
-        const json = await res.json();
+        let json;
+        const text = await res.text();
+        try {
+          json = JSON.parse(text);
+        } catch (err) {
+          console.error("Non-JSON response from API:", text);
+          throw new Error(`Invalid response from server: ${res.status}`);
+        }
+        
         console.log(`[AI Distribute] Arquivo: ${file.name}`, json);
+        
+        if (json.error) {
+          console.error("API Error:", json.error);
+          throw new Error(json.error);
+        }
         
         if (json.result && json.result.matchedChecklistItemId) {
           const matchId = json.result.matchedChecklistItemId;

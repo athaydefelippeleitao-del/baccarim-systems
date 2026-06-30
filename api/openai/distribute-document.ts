@@ -1,7 +1,6 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 import { Buffer } from 'buffer';
-import pdfParse from 'pdf-parse';
 
 export const config = {
   api: {
@@ -66,6 +65,7 @@ Retorne APENAS um JSON válido, sem formatação markdown em volta, apenas o JSO
       
       let pdfText = '';
       try {
+        const { default: pdfParse } = await import('pdf-parse');
         const parsed = await pdfParse(buffer);
         pdfText = parsed.text;
       } catch (err) {
