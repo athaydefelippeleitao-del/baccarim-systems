@@ -21,7 +21,9 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const [aiLoadingId, setAiLoadingId] = useState<string | null>(null);
   const [aiCreating, setAiCreating] = useState(false);
   const [aiMode, setAiMode] = useState(false);
-  const [aiRawText, setAiRawText] = useState('');
+  const [aiFile, setAiFile] = useState<File | null>(null);
+  const [aiDragOver, setAiDragOver] = useState(false);
+  const aiFileInputRef = React.useRef<HTMLInputElement>(null);
   const [showAddModal, setShowAddModal] = useState(false);
   const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
   const [pushSendingId, setPushSendingId] = useState<string | null>(null);
@@ -248,29 +250,53 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   };
 
   const handleAiCreate = async () => {
-    if (!aiRawText.trim()) return;
+    if (!aiFile) return;
     setAiCreating(true);
     try {
-      const result = await createNotificationFromText(aiRawText);
-      // Convert deadline from DD/MM/YYYY to YYYY-MM-DD for the date input
-      let deadlineInput = '';
-      if (result.deadline) {
-        const parts = result.deadline.split('/');
-        if (parts.length === 3) {
-          deadlineInput = `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
-        }
-      }
+      // Read file as base64 data URI
+      const dataUri: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target?.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(aiFile);
+      });
+
+      // Build minimal project list for AI to cross-reference
+      const projectsForAI = projects.map(p => ({
+        id: p.id,
+        name: p.name,
+        clientName: p.clientName,
+        razaoSocial: p.razaoSocial,
+        cnpj: p.cnpj,
+        processNumber: p.specs?.numeroProtocolo || '',
+      }));
+
+      const res = await fetch('/api/openai/analyze-notification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ dataUris: [dataUri], projects: projectsForAI }),
+      });
+      const json = await res.json();
+      const result = json.result || {};
+
+      // Find matched project
+      const matchedProject = result.matchedProjectId
+        ? projects.find(p => p.id === result.matchedProjectId)
+        : null;
+
       setNewNotifForm(prev => ({
         ...prev,
         title: result.title || '',
         agency: result.agency || 'SEMA',
-        deadline: deadlineInput,
+        deadline: result.deadline || '',
         severity: (['Alta', 'Média', 'Baixa'].includes(result.severity) ? result.severity : 'Média') as NotificationSeverity,
         category: (result.category === 'Licença' ? 'Licença' : 'Notificação') as 'Notificação' | 'Licença',
         description: result.description || '',
+        clientName: matchedProject?.clientName || result.matchedClientName || prev.clientName,
+        projectId: matchedProject?.id || prev.projectId,
       }));
       setAiMode(false);
-      setAiRawText('');
+      setAiFile(null);
     } catch (e) {
       console.error('AI create failed', e);
       alert('Erro ao processar com IA. Tente novamente.');
@@ -598,9 +624,16 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               )}
             </div>
 
-            {/* AI MODE: Paste raw text */}
+            {/* AI MODE: File Upload */}
             {aiMode && !editingNotifId && (
               <div className="mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
+                <input
+                  ref={aiFileInputRef}
+                  type="file"
+                  accept="image/*,application/pdf"
+                  className="hidden"
+                  onChange={e => setAiFile(e.target.files?.[0] || null)}
+                />
                 <div className="bg-gradient-to-br from-baccarim-blue/10 to-purple-500/10 border border-baccarim-blue/30 rounded-3xl p-6 space-y-4">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-2xl bg-baccarim-blue/20 text-baccarim-blue flex items-center justify-center">
@@ -608,25 +641,53 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     </div>
                     <div>
                       <p className="text-[11px] font-black text-baccarim-blue uppercase tracking-widest">Criação Automática com IA</p>
-                      <p className="text-[10px] text-baccarim-text-muted">Cole o texto do ofício, e-mail ou exigência recebida</p>
+                      <p className="text-[10px] text-baccarim-text-muted">Anexe o arquivo do ofício, licença ou notificação recebida</p>
                     </div>
                   </div>
-                  <textarea
-                    value={aiRawText}
-                    onChange={e => setAiRawText(e.target.value)}
-                    className="w-full bg-baccarim-card border border-baccarim-blue/30 p-4 rounded-2xl outline-none focus:ring-2 focus:ring-baccarim-blue font-medium text-baccarim-text text-sm h-40 resize-none placeholder:text-baccarim-text-muted/50"
-                    placeholder="Cole aqui o texto completo do ofício, notificação ou e-mail recebido do órgão ambiental (SEMA, IAT, IBAMA, etc.)..."
-                  />
+
+                  {/* Drop zone */}
+                  <div
+                    onClick={() => aiFileInputRef.current?.click()}
+                    onDragOver={e => { e.preventDefault(); setAiDragOver(true); }}
+                    onDragLeave={() => setAiDragOver(false)}
+                    onDrop={e => { e.preventDefault(); setAiDragOver(false); const f = e.dataTransfer.files?.[0]; if (f) setAiFile(f); }}
+                    className={`relative border-2 border-dashed rounded-2xl p-8 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all ${
+                      aiDragOver
+                        ? 'border-baccarim-blue bg-baccarim-blue/10 scale-[1.01]'
+                        : aiFile
+                          ? 'border-baccarim-green bg-baccarim-green/5'
+                          : 'border-baccarim-blue/40 hover:border-baccarim-blue hover:bg-baccarim-blue/5'
+                    }`}
+                  >
+                    {aiFile ? (
+                      <>
+                        <div className="w-14 h-14 rounded-2xl bg-baccarim-green/20 text-baccarim-green flex items-center justify-center">
+                          <i className="fas fa-file-check text-2xl"></i>
+                        </div>
+                        <p className="text-[12px] font-black text-baccarim-green text-center">{aiFile.name}</p>
+                        <p className="text-[10px] text-baccarim-text-muted">{(aiFile.size / 1024).toFixed(0)} KB — clique para trocar</p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="w-14 h-14 rounded-2xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center">
+                          <i className="fas fa-cloud-arrow-up text-2xl"></i>
+                        </div>
+                        <p className="text-[12px] font-black text-baccarim-text-muted text-center">Arraste ou clique para selecionar</p>
+                        <p className="text-[10px] text-baccarim-text-muted/60">PDF, PNG, JPG ou JPEG — máx. 8MB</p>
+                      </>
+                    )}
+                  </div>
+
                   <button
                     type="button"
                     onClick={handleAiCreate}
-                    disabled={aiCreating || !aiRawText.trim()}
+                    disabled={aiCreating || !aiFile}
                     className="w-full py-4 bg-baccarim-blue text-white rounded-2xl font-black uppercase tracking-widest text-[10px] shadow-xl hover:bg-baccarim-green transition-all flex items-center justify-center gap-3 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {aiCreating ? (
                       <>
                         <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                        <span>Analisando e preenchendo...</span>
+                        <span>Analisando documento...</span>
                       </>
                     ) : (
                       <>
@@ -635,7 +696,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                       </>
                     )}
                   </button>
-                  <p className="text-center text-[9px] text-baccarim-text-muted">A IA vai preencher o formulário abaixo. Você pode revisar antes de salvar.</p>
+                  <p className="text-center text-[9px] text-baccarim-text-muted">A IA vai identificar o empreendimento e preencher os campos. Você pode revisar antes de salvar.</p>
                 </div>
               </div>
             )}
