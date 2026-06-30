@@ -31,6 +31,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     const matchStatus = statusFilter === 'todos' || p.status === statusFilter;
     const matchClient = clientFilter === 'todos' || p.clientName === clientFilter;
     return matchStatus && matchClient;
+  }).sort((a, b) => {
+    const clientCompare = (a.clientName || '').localeCompare(b.clientName || '');
+    if (clientCompare !== 0) return clientCompare;
+    return (a.name || '').localeCompare(b.name || '');
   });
 
   const handleCellSave = (project: Project, field: string, value: string) => {

@@ -683,8 +683,12 @@ const App: React.FC = () => {
   }, [currentUser, adminClientFilter]);
 
   const filteredLicenses = useMemo(() => {
-    if (!currentClientFocus) return licenses;
-    return licenses.filter(l => currentClientFocus.includes(l.clientName));
+    const list = !currentClientFocus ? licenses : licenses.filter(l => currentClientFocus.includes(l.clientName));
+    return [...list].sort((a, b) => {
+      const clientCompare = (a.clientName || '').localeCompare(b.clientName || '');
+      if (clientCompare !== 0) return clientCompare;
+      return (a.name || '').localeCompare(b.name || '');
+    });
   }, [currentClientFocus, licenses]);
 
   const filteredNotifications = useMemo(() => {
@@ -693,8 +697,12 @@ const App: React.FC = () => {
   }, [currentClientFocus, notifications]);
 
   const filteredProjects = useMemo(() => {
-    if (!currentClientFocus) return projects;
-    return projects.filter(p => currentClientFocus.includes(p.clientName));
+    const list = !currentClientFocus ? projects : projects.filter(p => currentClientFocus.includes(p.clientName));
+    return [...list].sort((a, b) => {
+      const clientCompare = (a.clientName || '').localeCompare(b.clientName || '');
+      if (clientCompare !== 0) return clientCompare;
+      return (a.name || '').localeCompare(b.name || '');
+    });
   }, [currentClientFocus, projects]);
 
   const projectsForMap = useMemo(() => {
@@ -704,8 +712,12 @@ const App: React.FC = () => {
   }, [currentUser, projects]);
 
   const filteredContracts = useMemo(() => {
-    if (!currentClientFocus) return contracts;
-    return contracts.filter(c => currentClientFocus.includes(c.clientName));
+    const list = !currentClientFocus ? contracts : contracts.filter(c => currentClientFocus.includes(c.clientName));
+    return [...list].sort((a, b) => {
+      const clientCompare = (a.clientName || '').localeCompare(b.clientName || '');
+      if (clientCompare !== 0) return clientCompare;
+      return (a.title || '').localeCompare(b.title || '');
+    });
   }, [currentClientFocus, contracts]);
 
   const filteredReports = useMemo(() => {
@@ -716,8 +728,9 @@ const App: React.FC = () => {
   const filteredClientsList = useMemo(() => {
     if (!currentUser) return [];
     const list = (currentUser.role === 'admin' || currentUser.role === 'engineer') ? clients : (currentUser.clientNames || []);
-    return [...list].sort((a, b) => a.localeCompare(b));
-  }, [currentUser, clients]);
+    const filtered = adminClientFilter ? list.filter(c => c === adminClientFilter) : list;
+    return [...filtered].sort((a, b) => a.localeCompare(b));
+  }, [currentUser, clients, adminClientFilter]);
 
   const chartDataStatus = useMemo(() => {
     const active = filteredLicenses.filter(l => l.status === LicenseStatus.ACTIVE).length;
