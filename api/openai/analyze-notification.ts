@@ -67,42 +67,35 @@ Lembre-se: retorne APENAS um JSON válido.`;
     let result: any;
 
     if (isPdf) {
-      // For PDFs: upload to OpenAI Files API, then use as file input
       const base64 = dataUri.replace(/^data:application\/pdf;base64,/, '');
       const buffer = Buffer.from(base64, 'base64');
+      
+      let pdfText = '';
+      try {
+        const { default: pdfParse } = await import('pdf-parse');
+        const parsed = await pdfParse(buffer);
+        pdfText = parsed.text;
+      } catch (err) {
+        console.warn('Could not parse PDF text:', err);
+        pdfText = '(Não foi possível extrair o texto do PDF automaticamente. Baseie-se apenas no nome do arquivo e nos metadados possíveis.)';
+      }
 
-      // Create a File-like object for the OpenAI SDK
-      const file = new File([buffer], 'documento.pdf', { type: 'application/pdf' });
+      const finalPrompt = `${prompt}\n\nConteúdo extraído do PDF:\n${pdfText.substring(0, 8000)}`;
 
-      // Upload file to OpenAI
-      const uploadedFile = await withTimeout(openai.files.create({
-        file: file,
-        purpose: 'user_data',
+      const response = await withTimeout(openai.chat.completions.create({
+        model: 'gpt-4o',
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: finalPrompt }
+          ]
+        }],
+        response_format: { type: 'json_object' },
+        temperature: 0.1
       }));
 
-      try {
-        const response = await withTimeout(openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'text', text: prompt },
-              {
-                type: 'file',
-                file: { file_id: uploadedFile.id }
-              } as any
-            ]
-          }],
-          response_format: { type: 'json_object' },
-          temperature: 0.1
-        }));
-
-        const text = response.choices[0]?.message?.content || '{}';
-        result = JSON.parse(text);
-      } finally {
-        // Clean up the uploaded file
-        await openai.files.delete(uploadedFile.id).catch(() => {});
-      }
+      const text = response.choices[0]?.message?.content || '{}';
+      result = JSON.parse(text);
     } else if (isImage) {
       // For images: use vision API directly
       const imagesContent = dataUris.map((uri: string) => ({

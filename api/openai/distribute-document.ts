@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
-import { Readable } from 'stream';
 import { Buffer } from 'buffer';
+import pdfParse from 'pdf-parse';
 
 export const config = {
   api: {
@@ -38,59 +38,61 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Faltando dataUri ou checklistItems.' });
     }
 
-    const prompt = `Você é um assistente especializado em licenciamento ambiental.
-Eu vou enviar um documento cujo nome é "${fileName}" (em anexo).
+    // Filter to only items that aren't completed, or pass all of them? 
+    // The frontend passes all, but we should make sure we only match valid ones.
+    const promptBase = `Você é um assistente especializado em licenciamento ambiental e análise documental.
+Sua tarefa é analisar o documento (ou o texto do documento) fornecido e decidir se ele atende a UM dos itens deste checklist.
 
 Abaixo está a lista de itens pendentes no checklist documental deste empreendimento:
 ${JSON.stringify(checklistItems)}
 
-Sua tarefa é analisar o documento e decidir se ele atende a UM dos itens deste checklist.
-Atenção: Procure identificar pelo conteúdo e natureza do documento (ex: se é um RG/CPF, se é um comprovante de endereço, um contrato social, uma planta planialtimétrica, matrícula do imóvel, procuração, etc).
+Atenção: Procure identificar pelo conteúdo e natureza do documento (ex: se é um RG/CPF, CNH, se é um comprovante de endereço, um contrato social, uma planta planialtimétrica, matrícula do imóvel, procuração, ART, ofício, etc). 
+Pode haver pequenas divergências no nome do arquivo, foque no conteúdo real do documento.
 
 Retorne EXCLUSIVAMENTE um objeto JSON contendo:
-- "matchedChecklistItemId": O "id" do item do checklist correspondente. Caso o documento não sirva para nenhum dos itens listados, retorne null.
-- "reasoning": Uma explicação muito breve (1 frase) do porquê esse documento atende esse item, ou porquê não atende nenhum.
+- "matchedChecklistItemId": O "id" exato (string) do item do checklist correspondente. Caso o documento não sirva para NENHUM dos itens listados, ou se não for possível determinar, retorne null.
+- "reasoning": Uma explicação muito breve (1 ou 2 frases) do porquê esse documento atende esse item, ou porquê não atende nenhum.
 
-Retorne APENAS um JSON válido.`;
+Retorne APENAS um JSON válido, sem formatação markdown em volta, apenas o JSON puro.`;
 
     const isPdf = dataUri.startsWith('data:application/pdf');
     const isImage = dataUri.startsWith('data:image/');
 
-    let result: any;
+    let result: any = null;
 
     if (isPdf) {
       const base64 = dataUri.replace(/^data:application\/pdf;base64,/, '');
       const buffer = Buffer.from(base64, 'base64');
-      const file = new File([buffer], fileName || 'documento.pdf', { type: 'application/pdf' });
+      
+      let pdfText = '';
+      try {
+        const parsed = await pdfParse(buffer);
+        pdfText = parsed.text;
+      } catch (err) {
+        console.warn('Could not parse PDF text:', err);
+        pdfText = '(Não foi possível extrair o texto do PDF automaticamente. Baseie-se apenas no nome do arquivo.)';
+      }
 
-      const uploadedFile = await withTimeout(openai.files.create({
-        file: file,
-        purpose: 'user_data',
+      const prompt = `${promptBase}\n\nNome do Arquivo: "${fileName}"\n\nConteúdo extraído do PDF:\n${pdfText.substring(0, 8000)}`;
+
+      const response = await withTimeout(openai.chat.completions.create({
+        model: 'gpt-4o', // using gpt-4o as it handles long contexts better
+        messages: [{
+          role: 'user',
+          content: [
+            { type: 'text', text: prompt }
+          ]
+        }],
+        response_format: { type: 'json_object' },
+        temperature: 0.1
       }));
 
-      try {
-        const response = await withTimeout(openai.chat.completions.create({
-          model: 'gpt-4o',
-          messages: [{
-            role: 'user',
-            content: [
-              { type: 'text', text: prompt },
-              {
-                type: 'file',
-                file: { file_id: uploadedFile.id }
-              } as any
-            ]
-          }],
-          response_format: { type: 'json_object' },
-          temperature: 0.1
-        }));
+      const text = response.choices[0]?.message?.content || '{}';
+      result = JSON.parse(text);
 
-        const text = response.choices[0]?.message?.content || '{}';
-        result = JSON.parse(text);
-      } finally {
-        await openai.files.delete(uploadedFile.id).catch(() => {});
-      }
     } else if (isImage) {
+      const prompt = `${promptBase}\n\nNome do Arquivo: "${fileName}"\n\nAnalise a imagem em anexo.`;
+
       const response = await withTimeout(openai.chat.completions.create({
         model: 'gpt-4o-mini',
         messages: [{
@@ -106,6 +108,7 @@ Retorne APENAS um JSON válido.`;
 
       const text = response.choices[0]?.message?.content || '{}';
       result = JSON.parse(text);
+
     } else {
       return res.status(400).json({ error: 'Formato de arquivo não suportado. Use PDF, PNG ou JPG.' });
     }
@@ -116,3 +119,4 @@ Retorne APENAS um JSON válido.`;
     return res.status(200).json({ error: e.message || 'Erro ao analisar o documento com IA' });
   }
 }
+
