@@ -1,6 +1,6 @@
-
 import React, { useState, useRef } from 'react';
 import { Project, EnvironmentalLicense, Notification, LicenseStatus } from '../types';
+import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
 
 interface ProjectStatusSummaryProps {
   projects: Project[];
@@ -18,6 +18,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const [clientFilter, setClientFilter] = useState<string>('todos');
   const [isExporting, setIsExporting] = useState(false);
   const [editingCell, setEditingCell] = useState<{ projectId: string, field: string } | null>(null);
+  const [meetingMinutesProject, setMeetingMinutesProject] = useState<Project | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const selectedProject = projects.find(p => p.id === selectedProjectId);
@@ -325,6 +326,13 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                           >
                             <i className="fas fa-bell"></i>
                           </button>
+                          <button 
+                            title="Ir para Atas e Anotações" 
+                            onClick={() => setMeetingMinutesProject(project)} 
+                            className="w-8 h-8 rounded-lg bg-baccarim-green/10 text-baccarim-green hover:bg-baccarim-green hover:text-white transition-all flex items-center justify-center shadow-sm"
+                          >
+                            <i className="fas fa-file-signature"></i>
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -434,6 +442,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         </div>
         );
       })}
+
+      {meetingMinutesProject && (
+        <ProjectMeetingMinutesView
+          project={meetingMinutesProject}
+          onUpdateProject={(updated) => {
+             if (onUpdateProject) onUpdateProject(updated);
+             setMeetingMinutesProject(updated);
+          }}
+          onClose={() => setMeetingMinutesProject(null)}
+        />
+      )}
     </div>
   );
 };
