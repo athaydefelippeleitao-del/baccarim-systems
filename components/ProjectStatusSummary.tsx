@@ -65,15 +65,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     if (tableContainer) {
       originalTableStyle = (tableContainer as HTMLElement).style.cssText;
       (tableContainer as HTMLElement).style.overflow = 'visible';
-      // Forçar o container da tabela a expandir seu conteúdo total sem rolagem
-      (tableContainer as HTMLElement).style.width = 'max-content';
-      (tableContainer as HTMLElement).style.minWidth = '1400px';
+      // Forçar a largura exata calculada pelo navegador
+      (tableContainer as HTMLElement).style.width = tableContainer.scrollWidth + 'px';
+      (tableContainer as HTMLElement).style.maxWidth = 'none';
     }
 
     // Adicionar cabeçalho com logo
     const headerDiv = document.createElement('div');
     headerDiv.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px;">
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px; background: white;">
         <img src="/logo_baccarim.jpg" style="height: 60px; object-fit: contain;" />
         <div style="text-align: right;">
           <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
@@ -83,15 +83,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     `;
     element.insertBefore(headerDiv, element.firstChild);
 
-    // SOLUÇÃO DEFINITIVA: 
-    // 1. Rolar para o topo absoluto da página
-    const originalScrollY = window.scrollY;
-    const originalScrollX = window.scrollX;
-    window.scrollTo(0, 0);
-
-    // 2. Descolar o elemento da hierarquia de margens/centralização do pai,
-    // fixando-o no canto superior esquerdo exato (0,0) em absolute.
-    element.style.cssText += 'position: absolute !important; left: 0px !important; top: 0px !important; margin: 0px !important; transform: none !important; width: max-content !important; min-width: 1400px !important; padding: 30px !important; background-color: white !important; z-index: 99999 !important;';
+    element.style.cssText += 'width: ' + element.scrollWidth + 'px !important; max-width: none !important; padding: 20px !important; background-color: white !important;';
 
     const opt = {
       margin: 10,
@@ -100,12 +92,9 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#ffffff',
-        x: 0,
-        y: 0,
-        scrollX: 0,
-        scrollY: 0,
-        windowWidth: Math.max(1400, element.scrollWidth)
+        backgroundColor: '#ffffff'
+        // SEM hacks de windowWidth, scrollX, position absolute, etc.
+        // O html2canvas nativo captura o DOM com base na largura exata que forçamos acima.
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
@@ -117,7 +106,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           if (headerDiv.parentNode) element.removeChild(headerDiv);
           element.style.cssText = originalStyle;
           if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
-          window.scrollTo(originalScrollX, originalScrollY);
           setIsExporting(false);
         });
       } else {
@@ -125,7 +113,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         if (headerDiv.parentNode) element.removeChild(headerDiv);
         element.style.cssText = originalStyle;
         if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
-        window.scrollTo(originalScrollX, originalScrollY);
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
