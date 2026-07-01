@@ -61,37 +61,29 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
        return;
     }
 
-    // Criar um container gigante para o print que ficará absoluto por cima de tudo
-    const printWrapper = document.createElement('div');
-    printWrapper.style.position = 'absolute';
-    printWrapper.style.top = window.scrollY + 'px'; // Fixa na altura atual do scroll para evitar pulos
-    printWrapper.style.left = '0px';
-    printWrapper.style.width = '1600px';
-    printWrapper.style.backgroundColor = '#ffffff';
-    printWrapper.style.zIndex = '999999';
-    printWrapper.style.padding = '40px';
+    // Criar um clone apenas para extrair o HTML sem afetar a tela real
+    const tableClone = originalTableContainer.cloneNode(true) as HTMLElement;
+    tableClone.classList.remove('overflow-x-auto');
+    tableClone.style.width = '100%';
+    
+    // Extraímos o HTML da tabela
+    const tableHTML = tableClone.outerHTML;
 
-    const headerDiv = document.createElement('div');
-    headerDiv.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
-        <img src="/logo_baccarim.jpg" style="height: 70px; object-fit: contain;" />
-        <div style="text-align: right;">
-          <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
-          <p style="font-size: 14px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
+    // Criar a string HTML completa isolada
+    const printHtml = `
+      <div style="width: 1600px; padding: 40px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+          <img src="/logo_baccarim.jpg" style="height: 70px; object-fit: contain;" />
+          <div style="text-align: right;">
+            <h1 style="font-size: 24px; font-weight: bold; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
+            <p style="font-size: 14px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
+          </div>
+        </div>
+        <div style="width: 100%;">
+          ${tableHTML}
         </div>
       </div>
     `;
-    printWrapper.appendChild(headerDiv);
-
-    // Clone exato da tabela, livre das amarras do App
-    const tableClone = originalTableContainer.cloneNode(true) as HTMLElement;
-    tableClone.classList.remove('overflow-x-auto');
-    tableClone.style.overflow = 'visible';
-    tableClone.style.width = '100%';
-    tableClone.style.maxWidth = 'none';
-    
-    printWrapper.appendChild(tableClone);
-    document.body.appendChild(printWrapper);
 
     const opt = {
       margin: 10,
@@ -100,31 +92,20 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        windowWidth: 1600
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
 
     const html2pdf = (window as any).html2pdf;
     if (html2pdf) {
-      setTimeout(() => {
-        html2pdf().from(printWrapper).set(opt).save().then(() => {
-          if (document.body.contains(printWrapper)) {
-            document.body.removeChild(printWrapper);
-          }
-          setIsExporting(false);
-        }).catch(() => {
-          if (document.body.contains(printWrapper)) {
-            document.body.removeChild(printWrapper);
-          }
-          setIsExporting(false);
-        });
-      }, 100);
+      // Passar a string HTML isola completamente o processo da tela do usuário
+      html2pdf().from(printHtml).set(opt).save().finally(() => {
+        setIsExporting(false);
+      });
     } else {
       console.error('html2pdf not found');
-      if (document.body.contains(printWrapper)) {
-        document.body.removeChild(printWrapper);
-      }
       setIsExporting(false);
       alert('Erro: Biblioteca de exportação não carregada.');
     }
