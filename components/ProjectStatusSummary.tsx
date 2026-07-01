@@ -64,7 +64,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     // Criar um container gigante para o print que ficará absoluto por cima de tudo
     const printWrapper = document.createElement('div');
     printWrapper.style.position = 'absolute';
-    printWrapper.style.top = '0px';
+    printWrapper.style.top = window.scrollY + 'px'; // Fixa na altura atual do scroll para evitar pulos
     printWrapper.style.left = '0px';
     printWrapper.style.width = '1600px';
     printWrapper.style.backgroundColor = '#ffffff';
@@ -100,29 +100,26 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#ffffff',
-        windowWidth: 1600,
-        x: 0,
-        y: 0,
-        scrollX: 0,
-        scrollY: 0
+        backgroundColor: '#ffffff'
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
 
     const html2pdf = (window as any).html2pdf;
     if (html2pdf) {
-      html2pdf().from(printWrapper).set(opt).save().then(() => {
-        if (document.body.contains(printWrapper)) {
-          document.body.removeChild(printWrapper);
-        }
-        setIsExporting(false);
-      }).catch(() => {
-        if (document.body.contains(printWrapper)) {
-          document.body.removeChild(printWrapper);
-        }
-        setIsExporting(false);
-      });
+      setTimeout(() => {
+        html2pdf().from(printWrapper).set(opt).save().then(() => {
+          if (document.body.contains(printWrapper)) {
+            document.body.removeChild(printWrapper);
+          }
+          setIsExporting(false);
+        }).catch(() => {
+          if (document.body.contains(printWrapper)) {
+            document.body.removeChild(printWrapper);
+          }
+          setIsExporting(false);
+        });
+      }, 100);
     } else {
       console.error('html2pdf not found');
       if (document.body.contains(printWrapper)) {
