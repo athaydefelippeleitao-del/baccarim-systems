@@ -69,16 +69,22 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         img.onerror = reject;
       });
 
-      // Cabeçalho
-      doc.addImage(img, 'JPEG', 10, 10, 45, 12); // x, y, width, height
+      // Calcular proporção real da imagem para não amassar
+      const logoHeight = 12;
+      const logoWidth = (img.width * logoHeight) / img.height;
+
+      // Cabeçalho (Posição X, Posição Y, Largura, Altura)
+      doc.addImage(img, 'JPEG', 10, 10, logoWidth, logoHeight);
+      
+      const textX = 10 + logoWidth + 5; // 5mm de espaço após o logo
       
       doc.setFontSize(16);
       doc.setTextColor(15, 23, 42); // baccarim-navy
-      doc.text('RELATÓRIO DE EMPREENDIMENTOS', 60, 16);
+      doc.text('RELATÓRIO DE EMPREENDIMENTOS', textX, 16);
       
       doc.setFontSize(10);
       doc.setTextColor(100, 116, 139);
-      doc.text(`Gerado em ${new Date().toLocaleDateString()}`, 60, 22);
+      doc.text(`Gerado em ${new Date().toLocaleDateString()}`, textX, 22);
 
       // Dados da tabela
       const tableColumn = [
