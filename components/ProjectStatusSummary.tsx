@@ -54,20 +54,31 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setEditingCell(null);
   };
 
-  const handleExportPDF = () => {
+  const handleExportPDF = async () => {
     setIsExporting(true);
 
     try {
       const doc = new jsPDF('landscape', 'mm', 'a4');
       
+      // Carregar a logo
+      const img = new Image();
+      img.src = '/logo_baccarim.jpg';
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
       // Cabeçalho
+      doc.addImage(img, 'JPEG', 10, 10, 45, 12); // x, y, width, height
+      
       doc.setFontSize(16);
       doc.setTextColor(15, 23, 42); // baccarim-navy
-      doc.text('RELATÓRIO DE EMPREENDIMENTOS', 14, 20);
+      doc.text('RELATÓRIO DE EMPREENDIMENTOS', 60, 16);
       
       doc.setFontSize(10);
       doc.setTextColor(100, 116, 139);
-      doc.text(`Gerado em ${new Date().toLocaleDateString()}`, 14, 26);
+      doc.text(`Gerado em ${new Date().toLocaleDateString()}`, 60, 22);
 
       // Dados da tabela
       const tableColumn = [
