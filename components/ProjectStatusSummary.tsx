@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Project, EnvironmentalLicense, Notification, LicenseStatus } from '../types';
 import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
+import * as XLSX from 'xlsx';
 
 interface ProjectStatusSummaryProps {
   projects: Project[];
@@ -61,10 +62,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
        return;
     }
 
-    const tableElement = originalTableContainer.querySelector('table');
-    // Descobrir a largura exata da tabela real (mais 100px de margem de segurança)
-    const exactWidth = tableElement ? Math.max(tableElement.scrollWidth + 100, 1600) : 1600;
-
     // Criar um clone apenas para extrair o HTML sem afetar a tela real
     const tableClone = originalTableContainer.cloneNode(true) as HTMLElement;
     tableClone.classList.remove('overflow-x-auto');
@@ -73,9 +70,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     // Extraímos o HTML da tabela
     const tableHTML = tableClone.outerHTML;
 
-    // Criar a string HTML completa isolada com largura perfeitamente calculada
+    // Criar a string HTML completa isolada com largura GIGANTE fixa (2800px) 
+    // para garantir que NUNCA, em hipótese alguma, as colunas da direita sejam cortadas.
+    // O jsPDF vai espremer isso automaticamente para caber na folha A4.
     const printHtml = `
-      <div style="width: ${exactWidth}px; padding: 40px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
+      <div style="width: 2800px; padding: 40px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
           <img src="/logo_baccarim.jpg" style="height: 70px; object-fit: contain;" />
           <div style="text-align: right;">
@@ -97,7 +96,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: exactWidth
+        windowWidth: 2800
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
@@ -113,6 +112,43 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       setIsExporting(false);
       alert('Erro: Biblioteca de exportação não carregada.');
     }
+  };
+
+  const handleExportExcel = () => {
+    const data = filteredProjects.map(project => {
+      const projectNotifs = notifications.filter(n => n.projectId === project.id);
+      const activeLicensesFromNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category === 'Licença');
+      const openNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category !== 'Licença');
+      
+      let statusText = 'Tudo OK';
+      if (activeLicensesFromNotifs.length > 0) statusText = 'Licença Ativa - Semi-concluído';
+      else if (openNotifs.length > 0) statusText = 'Com pendências abertas';
+
+      let lastMove = '-';
+      if (projectNotifs.length > 0) {
+        const sorted = [...projectNotifs].sort((a, b) => new Date(b.dateReceived || 0).getTime() - new Date(a.dateReceived || 0).getTime());
+        if (sorted[0].dateReceived) {
+          lastMove = sorted[0].dateReceived;
+        }
+      }
+
+      return {
+        'Processo / Protocolo': project.processNumber || '-',
+        'Status': statusText,
+        'Técnico Responsável': project.responsibleTechnician || '-',
+        'Nome ou Razão Social': project.clientName || '-',
+        'Identificação': project.identification || '-',
+        'Data do Protocolo': project.protocolDate || '-',
+        'Última Movimentação': lastMove,
+        'Tipo de Licença': project.licenseType || '-',
+        'Andamento Atual': project.currentStatus || '-'
+      };
+    });
+
+    const worksheet = XLSX.utils.json_to_sheet(data);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Projetos");
+    XLSX.writeFile(workbook, `Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.xlsx`);
   };
 
 
@@ -156,18 +192,28 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           <i className="fas fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-[8px] text-baccarim-text-muted pointer-events-none group-hover:text-baccarim-blue transition-colors"></i>
         </div>
 
-        <button 
-          onClick={handleExportPDF}
-          disabled={isExporting}
-          className={`ml-auto flex items-center space-x-3 bg-baccarim-blue text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all transform active:scale-95 ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
-        >
-          {isExporting ? (
-            <i className="fas fa-spinner fa-spin"></i>
-          ) : (
-            <i className="fas fa-file-pdf"></i>
-          )}
-          <span>{isExporting ? 'Gerando...' : 'Exportar PDF'}</span>
-        </button>
+        <div className="ml-auto flex items-center space-x-2">
+          <button 
+            onClick={handleExportExcel}
+            className="flex items-center space-x-3 bg-emerald-600 text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-emerald-500 transition-all transform active:scale-95"
+          >
+            <i className="fas fa-file-excel"></i>
+            <span>Baixar Excel</span>
+          </button>
+          
+          <button 
+            onClick={handleExportPDF}
+            disabled={isExporting}
+            className={`flex items-center space-x-3 bg-baccarim-blue text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all transform active:scale-95 ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isExporting ? (
+              <i className="fas fa-spinner fa-spin"></i>
+            ) : (
+              <i className="fas fa-file-pdf"></i>
+            )}
+            <span>{isExporting ? 'Gerando PDF...' : 'Exportar PDF'}</span>
+          </button>
+        </div>
 
         {/* Active Filters Counter */}
         {(statusFilter !== 'todos' || clientFilter !== 'todos') && (
