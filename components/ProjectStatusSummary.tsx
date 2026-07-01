@@ -103,12 +103,12 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
         tableRows.push([
           project.specs?.numeroProtocolo || '-',
-          statusText,
+          { content: statusText, styles: { halign: 'center' } },
           project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-',
           project.clientName || (project as any).razaoSocial || '-',
           project.name || '-',
-          project.specs?.dataProtocolo || '-',
-          project.specs?.ultimaMovimentacao || lastMove,
+          { content: (project.specs?.dataProtocolo || '-').toString().trim(), styles: { halign: 'center' } },
+          { content: (project.specs?.ultimaMovimentacao || lastMove).toString().trim(), styles: { halign: 'center' } },
           project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-',
           project.currentPhase || project.status || '-'
         ]);
