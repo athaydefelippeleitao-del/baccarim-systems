@@ -102,15 +102,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         }
 
         tableRows.push([
-          project.specs?.numeroProtocolo || '-',
+          { content: (project.specs?.numeroProtocolo || '-').toString().trim(), styles: { halign: 'left' } },
           { content: statusText, styles: { halign: 'center' } },
-          project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-',
-          project.clientName || (project as any).razaoSocial || '-',
-          project.name || '-',
+          { content: (project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-').toString().trim(), styles: { halign: 'left' } },
+          { content: (project.clientName || (project as any).razaoSocial || '-').toString().trim(), styles: { halign: 'left' } },
+          { content: (project.name || '-').toString().trim(), styles: { halign: 'left' } },
           { content: (project.specs?.dataProtocolo || '-').toString().trim(), styles: { halign: 'center' } },
           { content: (project.specs?.ultimaMovimentacao || lastMove).toString().trim(), styles: { halign: 'center' } },
-          project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-',
-          project.currentPhase || project.status || '-'
+          { content: (project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-').toString().trim(), styles: { halign: 'center' } },
+          { content: (project.currentPhase || project.status || '-').toString().trim(), styles: { halign: 'left' } }
         ]);
       });
 
@@ -122,15 +122,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', halign: 'center' },
         styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
         columnStyles: {
-          0: { cellWidth: 35 },
-          1: { cellWidth: 17 },
-          2: { cellWidth: 28 },
-          3: { cellWidth: 33 },
-          4: { cellWidth: 33 },
+          0: { cellWidth: 35, halign: 'left' },
+          1: { cellWidth: 17, halign: 'center' },
+          2: { cellWidth: 28, halign: 'left' },
+          3: { cellWidth: 33, halign: 'left' },
+          4: { cellWidth: 33, halign: 'left' },
           5: { cellWidth: 22, halign: 'center' },
           6: { cellWidth: 22, halign: 'center' },
-          7: { cellWidth: 41 },
-          8: { cellWidth: 41 }
+          7: { cellWidth: 41, halign: 'center' },
+          8: { cellWidth: 41, halign: 'left' }
         },
         margin: { top: 32, right: 10, bottom: 15, left: 10 },
       });
