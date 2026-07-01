@@ -123,14 +123,14 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
         columnStyles: {
           0: { cellWidth: 35 },
-          1: { cellWidth: 18 },
+          1: { cellWidth: 17 },
           2: { cellWidth: 28 },
-          3: { cellWidth: 32 },
-          4: { cellWidth: 32 },
-          5: { cellWidth: 18, halign: 'center' },
-          6: { cellWidth: 18, halign: 'center' },
-          7: { cellWidth: 40 },
-          8: { cellWidth: 40 }
+          3: { cellWidth: 33 },
+          4: { cellWidth: 33 },
+          5: { cellWidth: 22, halign: 'center' },
+          6: { cellWidth: 22, halign: 'center' },
+          7: { cellWidth: 41 },
+          8: { cellWidth: 41 }
         },
         margin: { top: 32, right: 10, bottom: 15, left: 10 },
       });
