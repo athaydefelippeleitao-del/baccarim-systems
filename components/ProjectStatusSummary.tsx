@@ -65,6 +65,9 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     if (tableContainer) {
       originalTableStyle = (tableContainer as HTMLElement).style.cssText;
       (tableContainer as HTMLElement).style.overflow = 'visible';
+      // Forçar o container da tabela a expandir seu conteúdo total sem rolagem
+      (tableContainer as HTMLElement).style.width = 'max-content';
+      (tableContainer as HTMLElement).style.minWidth = '1400px';
     }
 
     // Adicionar cabeçalho com logo
@@ -80,8 +83,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     `;
     element.insertBefore(headerDiv, element.firstChild);
 
-    // Destacar o elemento para frente e forçar largura total para print perfeito
-    element.style.cssText += 'position: fixed; top: 0; left: 0; width: 1600px; min-width: 1600px; background-color: white; padding: 30px; z-index: 99999; max-height: none; overflow: visible;';
+    // Expandir o elemento principal para caber a tabela inteira sem cortes
+    element.style.cssText += 'width: max-content; min-width: 1400px; padding: 30px; background-color: white;';
 
     const opt = {
       margin: 10,
@@ -90,10 +93,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#ffffff',
-        windowWidth: 1600,
-        scrollX: 0,
-        scrollY: 0
+        backgroundColor: '#ffffff'
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
@@ -115,7 +115,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
-    }, 800);
+    }, 500);
   };
 
 
