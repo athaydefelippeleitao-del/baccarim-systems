@@ -70,16 +70,23 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     // Extraímos o HTML da tabela
     const tableHTML = tableClone.outerHTML;
 
-    // Criar a string HTML completa isolada com largura GIGANTE fixa (2800px) 
-    // para garantir que NUNCA, em hipótese alguma, as colunas da direita sejam cortadas.
-    // O jsPDF vai espremer isso automaticamente para caber na folha A4.
+    // Criar a string HTML completa isolada com largura perfeitamente dimensionada para 1 folha (1400px)
+    // E injetamos CSS para forçar a quebra de linha dos textos, para que a tabela não fique espremida
     const printHtml = `
-      <div style="width: 2800px; padding: 40px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
-          <img src="/logo_baccarim.jpg" style="height: 70px; object-fit: contain;" />
+      <div style="width: 1400px; padding: 20px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
+        <style>
+          /* Forçar a tabela a usar apenas o espaço disponível e quebrar textos longos */
+          table { min-width: 0 !important; width: 100% !important; }
+          th, td { white-space: normal !important; word-wrap: break-word !important; }
+          /* Reduzir paddings e tamanho de fonte para caber mais informações sem ficar microscópico */
+          th { padding: 6px 4px !important; font-size: 10px !important; line-height: 1.2 !important; }
+          td { padding: 6px 4px !important; font-size: 11px !important; line-height: 1.2 !important; }
+        </style>
+        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
+          <img src="/logo_baccarim.jpg" style="height: 60px; object-fit: contain;" />
           <div style="text-align: right;">
-            <h1 style="font-size: 24px; font-weight: bold; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
-            <p style="font-size: 14px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
+            <h1 style="font-size: 20px; font-weight: bold; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
+            <p style="font-size: 12px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
           </div>
         </div>
         <div style="width: 100%;">
@@ -89,14 +96,14 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     `;
 
     const opt = {
-      margin: 10,
+      margin: 5,
       filename: `Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`,
       image: { type: 'jpeg', quality: 1 },
       html2canvas: { 
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: 2800
+        windowWidth: 1400
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
