@@ -57,6 +57,19 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
 
     const element = containerRef.current;
     
+    // Adicionar cabeçalho temporário com logo
+    const headerDiv = document.createElement('div');
+    headerDiv.innerHTML = `
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px;">
+        <img src="/logo_baccarim.jpg" style="height: 60px; object-fit: contain;" />
+        <div style="text-align: right;">
+          <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0;">Relatório de Empreendimentos</h1>
+          <p style="font-size: 12px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
+        </div>
+      </div>
+    `;
+    element.insertBefore(headerDiv, element.firstChild);
+
     // Configurar tabela temporariamente para não cortar no PDF
     const originalStyle = element.style.cssText;
     const tableContainer = element.querySelector('.overflow-x-auto');
@@ -65,7 +78,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     if (tableContainer) {
       originalTableStyle = (tableContainer as HTMLElement).style.cssText;
       (tableContainer as HTMLElement).style.overflow = 'visible';
-      element.style.width = '1200px'; 
+      element.style.width = 'max-content';
+      element.style.padding = '20px';
     }
 
     const opt = {
@@ -76,7 +90,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: 1200
+        windowWidth: element.scrollWidth + 40
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
@@ -85,18 +99,20 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       const html2pdf = (window as any).html2pdf;
       if (html2pdf) {
         html2pdf().from(element).set(opt).save().finally(() => {
+          if (headerDiv.parentNode) element.removeChild(headerDiv);
           element.style.cssText = originalStyle;
           if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
           setIsExporting(false);
         });
       } else {
         console.error('html2pdf not found');
+        if (headerDiv.parentNode) element.removeChild(headerDiv);
         element.style.cssText = originalStyle;
         if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
-    }, 150);
+    }, 400);
   };
 
 
@@ -180,7 +196,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                   <th className="p-4 text-center">Última Movimentação</th>
                   <th className="p-4 text-center">Tipo de Licença</th>
                   <th className="p-4">Andamento Atual</th>
-                  <th className="p-4 rounded-tr-xl text-center">Ações</th>
+                  <th className="p-4 rounded-tr-xl text-center" data-html2canvas-ignore="true">Ações</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
@@ -310,7 +326,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                       <td className="p-4 text-[10px] font-black text-baccarim-blue uppercase">
                         {renderEditableCell('currentPhase', project.currentPhase || project.status || '', '')}
                       </td>
-                      <td className="p-4 text-center">
+                      <td className="p-4 text-center" data-html2canvas-ignore="true">
                         <div className="flex justify-center space-x-2">
                           <button 
                             title="Ir para Gestão de Clientes" 
