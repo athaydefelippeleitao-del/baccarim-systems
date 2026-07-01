@@ -93,7 +93,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        windowWidth: 1600
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
