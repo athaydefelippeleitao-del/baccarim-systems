@@ -61,6 +61,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
        return;
     }
 
+    const tableElement = originalTableContainer.querySelector('table');
+    // Descobrir a largura exata da tabela real (mais 100px de margem de segurança)
+    const exactWidth = tableElement ? Math.max(tableElement.scrollWidth + 100, 1600) : 1600;
+
     // Criar um clone apenas para extrair o HTML sem afetar a tela real
     const tableClone = originalTableContainer.cloneNode(true) as HTMLElement;
     tableClone.classList.remove('overflow-x-auto');
@@ -69,9 +73,9 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     // Extraímos o HTML da tabela
     const tableHTML = tableClone.outerHTML;
 
-    // Criar a string HTML completa isolada
+    // Criar a string HTML completa isolada com largura perfeitamente calculada
     const printHtml = `
-      <div style="width: 1600px; padding: 40px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
+      <div style="width: ${exactWidth}px; padding: 40px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
         <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
           <img src="/logo_baccarim.jpg" style="height: 70px; object-fit: contain;" />
           <div style="text-align: right;">
@@ -93,7 +97,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: 1600
+        windowWidth: exactWidth
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
