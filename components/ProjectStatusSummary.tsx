@@ -93,9 +93,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     printWrapper.appendChild(tableClone);
     document.body.appendChild(printWrapper);
 
-    const originalScrollY = window.scrollY;
-    window.scrollTo(0, 0);
-
     const opt = {
       margin: 10,
       filename: `Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`,
@@ -113,26 +110,27 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
 
-    setTimeout(() => {
-      const html2pdf = (window as any).html2pdf;
-      if (html2pdf) {
-        html2pdf().from(printWrapper).set(opt).save().finally(() => {
-          if (document.body.contains(printWrapper)) {
-            document.body.removeChild(printWrapper);
-          }
-          window.scrollTo(0, originalScrollY);
-          setIsExporting(false);
-        });
-      } else {
-        console.error('html2pdf not found');
+    const html2pdf = (window as any).html2pdf;
+    if (html2pdf) {
+      html2pdf().from(printWrapper).set(opt).save().then(() => {
         if (document.body.contains(printWrapper)) {
           document.body.removeChild(printWrapper);
         }
-        window.scrollTo(0, originalScrollY);
         setIsExporting(false);
-        alert('Erro: Biblioteca de exportação não carregada.');
+      }).catch(() => {
+        if (document.body.contains(printWrapper)) {
+          document.body.removeChild(printWrapper);
+        }
+        setIsExporting(false);
+      });
+    } else {
+      console.error('html2pdf not found');
+      if (document.body.contains(printWrapper)) {
+        document.body.removeChild(printWrapper);
       }
-    }, 600);
+      setIsExporting(false);
+      alert('Erro: Biblioteca de exportação não carregada.');
+    }
   };
 
 
