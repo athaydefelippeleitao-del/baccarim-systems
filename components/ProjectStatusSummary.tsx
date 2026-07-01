@@ -2,6 +2,8 @@ import React, { useState, useRef } from 'react';
 import { Project, EnvironmentalLicense, Notification, LicenseStatus } from '../types';
 import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
 import * as XLSX from 'xlsx';
+import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface ProjectStatusSummaryProps {
   projects: Project[];
@@ -53,71 +55,92 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   };
 
   const handleExportPDF = () => {
-    if (!containerRef.current) return;
     setIsExporting(true);
 
-    const originalTableContainer = containerRef.current.querySelector('.overflow-x-auto');
-    if (!originalTableContainer) {
-       setIsExporting(false);
-       return;
-    }
+    try {
+      const doc = new jsPDF('landscape', 'mm', 'a4');
+      
+      // Cabeçalho
+      doc.setFontSize(16);
+      doc.setTextColor(15, 23, 42); // baccarim-navy
+      doc.text('RELATÓRIO DE EMPREENDIMENTOS', 14, 20);
+      
+      doc.setFontSize(10);
+      doc.setTextColor(100, 116, 139);
+      doc.text(`Gerado em ${new Date().toLocaleDateString()}`, 14, 26);
 
-    // Criar um clone apenas para extrair o HTML sem afetar a tela real
-    const tableClone = originalTableContainer.cloneNode(true) as HTMLElement;
-    tableClone.classList.remove('overflow-x-auto');
-    tableClone.style.width = '100%';
-    
-    // Extraímos o HTML da tabela
-    const tableHTML = tableClone.outerHTML;
+      // Dados da tabela
+      const tableColumn = [
+        "Processo / Protocolo", 
+        "Status", 
+        "Técnico Responsável", 
+        "Nome ou Razão Social", 
+        "Identificação", 
+        "Data do Protocolo", 
+        "Última Movimentação", 
+        "Tipo de Licença", 
+        "Andamento Atual"
+      ];
+      
+      const tableRows: any[] = [];
 
-    // Criar a string HTML completa isolada com largura perfeitamente dimensionada para 1 folha (1400px)
-    // E injetamos CSS para forçar a quebra de linha dos textos, para que a tabela não fique espremida
-    const printHtml = `
-      <div style="width: 1400px; padding: 20px; background-color: #ffffff; color: #0f172a; font-family: ui-sans-serif, system-ui, sans-serif;">
-        <style>
-          /* Forçar a tabela a usar apenas o espaço disponível e quebrar textos longos */
-          table { min-width: 0 !important; width: 100% !important; }
-          th, td { white-space: normal !important; word-wrap: break-word !important; }
-          /* Reduzir paddings e tamanho de fonte para caber mais informações sem ficar microscópico */
-          th { padding: 6px 4px !important; font-size: 10px !important; line-height: 1.2 !important; }
-          td { padding: 6px 4px !important; font-size: 11px !important; line-height: 1.2 !important; }
-        </style>
-        <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px;">
-          <img src="/logo_baccarim.jpg" style="height: 60px; object-fit: contain;" />
-          <div style="text-align: right;">
-            <h1 style="font-size: 20px; font-weight: bold; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
-            <p style="font-size: 12px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
-          </div>
-        </div>
-        <div style="width: 100%;">
-          ${tableHTML}
-        </div>
-      </div>
-    `;
+      filteredProjects.forEach(project => {
+        const projectNotifs = notifications.filter(n => n.projectId === project.id);
+        const activeLicensesFromNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category === 'Licença');
+        const openNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category !== 'Licença');
+        
+        let statusText = 'OK';
+        if (activeLicensesFromNotifs.length > 0) statusText = 'Licença Ativa';
+        else if (openNotifs.length > 0) statusText = 'Pendências';
 
-    const opt = {
-      margin: 5,
-      filename: `Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`,
-      image: { type: 'jpeg', quality: 1 },
-      html2canvas: { 
-        scale: 2, 
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        windowWidth: 1400
-      },
-      jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
-    };
+        let lastMove = '-';
+        if (projectNotifs.length > 0) {
+          const sorted = [...projectNotifs].sort((a, b) => new Date(b.dateReceived || 0).getTime() - new Date(a.dateReceived || 0).getTime());
+          if (sorted[0].dateReceived) {
+            lastMove = sorted[0].dateReceived;
+          }
+        }
 
-    const html2pdf = (window as any).html2pdf;
-    if (html2pdf) {
-      // Passar a string HTML isola completamente o processo da tela do usuário
-      html2pdf().from(printHtml).set(opt).save().finally(() => {
-        setIsExporting(false);
+        tableRows.push([
+          project.processNumber || '-',
+          statusText,
+          project.responsibleTechnician || '-',
+          project.clientName || '-',
+          project.identification || '-',
+          project.protocolDate || '-',
+          lastMove,
+          project.licenseType || '-',
+          project.currentStatus || '-'
+        ]);
       });
-    } else {
-      console.error('html2pdf not found');
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 32,
+        theme: 'grid',
+        headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', halign: 'center' },
+        styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
+        columnStyles: {
+          0: { cellWidth: 25 },
+          1: { cellWidth: 20 },
+          2: { cellWidth: 30 },
+          3: { cellWidth: 35 },
+          4: { cellWidth: 35 },
+          5: { cellWidth: 20, halign: 'center' },
+          6: { cellWidth: 20, halign: 'center' },
+          7: { cellWidth: 40 },
+          8: { cellWidth: 40 }
+        },
+        margin: { top: 32, right: 10, bottom: 15, left: 10 },
+      });
+
+      doc.save(`Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Erro ao gerar PDF nativo. Verifique o console.');
+    } finally {
       setIsExporting(false);
-      alert('Erro: Biblioteca de exportação não carregada.');
     }
   };
 
