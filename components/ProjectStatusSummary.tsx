@@ -75,12 +75,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     const tableContainer = element.querySelector('.overflow-x-auto');
     let originalTableStyle = '';
     
+    let targetWidth = 1500;
     if (tableContainer) {
       originalTableStyle = (tableContainer as HTMLElement).style.cssText;
       (tableContainer as HTMLElement).style.overflow = 'visible';
-      element.style.width = 'max-content';
-      element.style.padding = '20px';
+      targetWidth = Math.max(tableContainer.scrollWidth, 1500);
     }
+    
+    // Forçar a quebra das restrições do pai (App.tsx) para expandir livremente
+    element.style.cssText += `position: absolute; top: 0; left: 0; width: ${targetWidth}px; min-width: ${targetWidth}px; padding: 30px; background: white; z-index: 9999;`;
 
     const opt = {
       margin: 10,
@@ -90,7 +93,8 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: element.scrollWidth + 40
+        windowWidth: targetWidth + 50,
+        scrollY: 0
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
