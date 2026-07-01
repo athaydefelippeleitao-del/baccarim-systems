@@ -73,19 +73,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       const logoHeight = 12;
       const logoWidth = (img.width * logoHeight) / img.height;
 
-      // Cabeçalho (Posição X, Posição Y, Largura, Altura)
-      doc.addImage(img, 'JPEG', 10, 10, logoWidth, logoHeight);
-      
-      const textX = 10 + logoWidth + 5; // 5mm de espaço após o logo
-      
-      doc.setFontSize(16);
-      doc.setTextColor(15, 23, 42); // baccarim-navy
-      doc.text('RELATÓRIO DE EMPREENDIMENTOS', textX, 16);
-      
-      doc.setFontSize(10);
-      doc.setTextColor(100, 116, 139);
-      doc.text(`Gerado em ${new Date().toLocaleDateString()}`, textX, 22);
-
       // Dados da tabela
       const tableColumn = [
         "Processo / Protocolo", 
@@ -150,6 +137,22 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           8: { cellWidth: 41, halign: 'left' }
         },
         margin: { top: 32, right: 10, bottom: 15, left: 10 },
+        didDrawPage: function (data: any) {
+          // Cabeçalho em todas as páginas
+          const textX = 10 + logoWidth + 5;
+          doc.addImage(img, 'JPEG', 10, 10, logoWidth, logoHeight);
+          doc.setFontSize(16);
+          doc.setTextColor(15, 23, 42);
+          doc.text('RELATÓRIO DE EMPREENDIMENTOS', textX, 16);
+          doc.setFontSize(10);
+          doc.setTextColor(100, 116, 139);
+          doc.text(`Gerado em ${new Date().toLocaleDateString()}`, textX, 22);
+          
+          // Rodapé com número da página
+          const str = 'Página ' + doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
+        }
       });
 
       doc.save(`Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`);
