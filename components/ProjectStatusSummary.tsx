@@ -83,8 +83,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     `;
     element.insertBefore(headerDiv, element.firstChild);
 
-    // Expandir o elemento principal para caber a tabela inteira sem cortes
-    element.style.cssText += 'width: max-content; min-width: 1400px; padding: 30px; background-color: white;';
+    // SOLUÇÃO DEFINITIVA: 
+    // 1. Rolar para o topo absoluto da página
+    const originalScrollY = window.scrollY;
+    const originalScrollX = window.scrollX;
+    window.scrollTo(0, 0);
+
+    // 2. Descolar o elemento da hierarquia de margens/centralização do pai,
+    // fixando-o no canto superior esquerdo exato (0,0) em absolute.
+    element.style.cssText += 'position: absolute !important; left: 0px !important; top: 0px !important; margin: 0px !important; transform: none !important; width: max-content !important; min-width: 1400px !important; padding: 30px !important; background-color: white !important; z-index: 99999 !important;';
 
     const opt = {
       margin: 10,
@@ -94,7 +101,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: 1600
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0,
+        windowWidth: Math.max(1400, element.scrollWidth)
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
@@ -106,6 +117,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           if (headerDiv.parentNode) element.removeChild(headerDiv);
           element.style.cssText = originalStyle;
           if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+          window.scrollTo(originalScrollX, originalScrollY);
           setIsExporting(false);
         });
       } else {
@@ -113,6 +125,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         if (headerDiv.parentNode) element.removeChild(headerDiv);
         element.style.cssText = originalStyle;
         if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+        window.scrollTo(originalScrollX, originalScrollY);
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
