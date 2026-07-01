@@ -55,35 +55,46 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     if (!containerRef.current) return;
     setIsExporting(true);
 
-    const element = containerRef.current;
-    
-    // Configurar tabela temporariamente para não cortar no PDF
-    const originalStyle = element.style.cssText;
-    const tableContainer = element.querySelector('.overflow-x-auto');
-    let originalTableStyle = '';
-    
-    if (tableContainer) {
-      originalTableStyle = (tableContainer as HTMLElement).style.cssText;
-      (tableContainer as HTMLElement).style.overflow = 'visible';
-      // Forçar a largura exata calculada pelo navegador
-      (tableContainer as HTMLElement).style.width = tableContainer.scrollWidth + 'px';
-      (tableContainer as HTMLElement).style.maxWidth = 'none';
+    const originalTableContainer = containerRef.current.querySelector('.overflow-x-auto');
+    if (!originalTableContainer) {
+       setIsExporting(false);
+       return;
     }
 
-    // Adicionar cabeçalho com logo
+    // Criar um container gigante para o print que ficará absoluto por cima de tudo
+    const printWrapper = document.createElement('div');
+    printWrapper.style.position = 'absolute';
+    printWrapper.style.top = '0px';
+    printWrapper.style.left = '0px';
+    printWrapper.style.width = '1600px';
+    printWrapper.style.backgroundColor = '#ffffff';
+    printWrapper.style.zIndex = '999999';
+    printWrapper.style.padding = '40px';
+
     const headerDiv = document.createElement('div');
     headerDiv.innerHTML = `
-      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px; background: white;">
-        <img src="/logo_baccarim.jpg" style="height: 60px; object-fit: contain;" />
+      <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 30px;">
+        <img src="/logo_baccarim.jpg" style="height: 70px; object-fit: contain;" />
         <div style="text-align: right;">
           <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
-          <p style="font-size: 12px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
+          <p style="font-size: 14px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
         </div>
       </div>
     `;
-    element.insertBefore(headerDiv, element.firstChild);
+    printWrapper.appendChild(headerDiv);
 
-    element.style.cssText += 'width: ' + element.scrollWidth + 'px !important; max-width: none !important; padding: 20px !important; background-color: white !important;';
+    // Clone exato da tabela, livre das amarras do App
+    const tableClone = originalTableContainer.cloneNode(true) as HTMLElement;
+    tableClone.classList.remove('overflow-x-auto');
+    tableClone.style.overflow = 'visible';
+    tableClone.style.width = '100%';
+    tableClone.style.maxWidth = 'none';
+    
+    printWrapper.appendChild(tableClone);
+    document.body.appendChild(printWrapper);
+
+    const originalScrollY = window.scrollY;
+    window.scrollTo(0, 0);
 
     const opt = {
       margin: 10,
@@ -92,9 +103,12 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       html2canvas: { 
         scale: 2, 
         useCORS: true,
-        backgroundColor: '#ffffff'
-        // SEM hacks de windowWidth, scrollX, position absolute, etc.
-        // O html2canvas nativo captura o DOM com base na largura exata que forçamos acima.
+        backgroundColor: '#ffffff',
+        windowWidth: 1600,
+        x: 0,
+        y: 0,
+        scrollX: 0,
+        scrollY: 0
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
     };
@@ -102,21 +116,23 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setTimeout(() => {
       const html2pdf = (window as any).html2pdf;
       if (html2pdf) {
-        html2pdf().from(element).set(opt).save().finally(() => {
-          if (headerDiv.parentNode) element.removeChild(headerDiv);
-          element.style.cssText = originalStyle;
-          if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+        html2pdf().from(printWrapper).set(opt).save().finally(() => {
+          if (document.body.contains(printWrapper)) {
+            document.body.removeChild(printWrapper);
+          }
+          window.scrollTo(0, originalScrollY);
           setIsExporting(false);
         });
       } else {
         console.error('html2pdf not found');
-        if (headerDiv.parentNode) element.removeChild(headerDiv);
-        element.style.cssText = originalStyle;
-        if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+        if (document.body.contains(printWrapper)) {
+          document.body.removeChild(printWrapper);
+        }
+        window.scrollTo(0, originalScrollY);
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
-    }, 500);
+    }, 600);
   };
 
 
