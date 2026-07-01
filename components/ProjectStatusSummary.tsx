@@ -102,15 +102,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         }
 
         tableRows.push([
-          project.processNumber || '-',
+          project.specs?.numeroProtocolo || '-',
           statusText,
-          project.responsibleTechnician || '-',
-          project.clientName || '-',
-          project.identification || '-',
-          project.protocolDate || '-',
-          lastMove,
-          project.licenseType || '-',
-          project.currentStatus || '-'
+          project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-',
+          project.clientName || (project as any).razaoSocial || '-',
+          project.name || '-',
+          project.specs?.dataProtocolo || '-',
+          project.specs?.ultimaMovimentacao || lastMove,
+          project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-',
+          project.currentPhase || project.status || '-'
         ]);
       });
 
@@ -163,15 +163,15 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       }
 
       return {
-        'Processo / Protocolo': project.processNumber || '-',
+        'Processo / Protocolo': project.specs?.numeroProtocolo || '-',
         'Status': statusText,
-        'Técnico Responsável': project.responsibleTechnician || '-',
-        'Nome ou Razão Social': project.clientName || '-',
-        'Identificação': project.identification || '-',
-        'Data do Protocolo': project.protocolDate || '-',
-        'Última Movimentação': lastMove,
-        'Tipo de Licença': project.licenseType || '-',
-        'Andamento Atual': project.currentStatus || '-'
+        'Técnico Responsável': project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-',
+        'Nome ou Razão Social': project.clientName || (project as any).razaoSocial || '-',
+        'Identificação': project.name || '-',
+        'Data do Protocolo': project.specs?.dataProtocolo || '-',
+        'Última Movimentação': project.specs?.ultimaMovimentacao || lastMove,
+        'Tipo de Licença': project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-',
+        'Andamento Atual': project.currentPhase || project.status || '-'
       };
     });
 
