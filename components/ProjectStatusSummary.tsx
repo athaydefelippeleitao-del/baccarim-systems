@@ -55,17 +55,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     if (!containerRef.current) return;
     setIsExporting(true);
 
-    const originalElement = containerRef.current;
+    const element = containerRef.current;
     
-    // Criar um wrapper oculto isolado para não sofrer cortes da tela
-    const printWrapper = document.createElement('div');
-    printWrapper.style.position = 'fixed'; 
-    printWrapper.style.top = '0';
-    printWrapper.style.left = '0';
-    printWrapper.style.width = '1600px'; 
-    printWrapper.style.backgroundColor = 'white';
-    printWrapper.style.padding = '20px';
-    printWrapper.style.zIndex = '-9999';
+    // Configurar tabela temporariamente para não cortar no PDF
+    const originalStyle = element.style.cssText;
+    const tableContainer = element.querySelector('.overflow-x-auto');
+    let originalTableStyle = '';
+    
+    if (tableContainer) {
+      originalTableStyle = (tableContainer as HTMLElement).style.cssText;
+      (tableContainer as HTMLElement).style.overflow = 'visible';
+    }
 
     // Adicionar cabeçalho com logo
     const headerDiv = document.createElement('div');
@@ -78,20 +78,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         </div>
       </div>
     `;
-    printWrapper.appendChild(headerDiv);
+    element.insertBefore(headerDiv, element.firstChild);
 
-    // Clonar a tabela inteira
-    const tableClone = originalElement.cloneNode(true) as HTMLElement;
-    
-    // Retirar a limitação de rolagem no clone
-    const tableContainer = tableClone.querySelector('.overflow-x-auto') as HTMLElement;
-    if (tableContainer) {
-      tableContainer.style.overflow = 'visible';
-      tableContainer.classList.remove('overflow-x-auto');
-    }
-    
-    printWrapper.appendChild(tableClone);
-    document.body.appendChild(printWrapper);
+    // Destacar o elemento para frente e forçar largura total para print perfeito
+    element.style.cssText += 'position: fixed; top: 0; left: 0; width: 1600px; min-width: 1600px; background-color: white; padding: 30px; z-index: 99999; max-height: none; overflow: visible;';
 
     const opt = {
       margin: 10,
@@ -102,8 +92,6 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         useCORS: true,
         backgroundColor: '#ffffff',
         windowWidth: 1600,
-        x: 0,
-        y: 0,
         scrollX: 0,
         scrollY: 0
       },
@@ -113,17 +101,21 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setTimeout(() => {
       const html2pdf = (window as any).html2pdf;
       if (html2pdf) {
-        html2pdf().from(printWrapper).set(opt).save().finally(() => {
-          document.body.removeChild(printWrapper);
+        html2pdf().from(element).set(opt).save().finally(() => {
+          if (headerDiv.parentNode) element.removeChild(headerDiv);
+          element.style.cssText = originalStyle;
+          if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
           setIsExporting(false);
         });
       } else {
         console.error('html2pdf not found');
-        document.body.removeChild(printWrapper);
+        if (headerDiv.parentNode) element.removeChild(headerDiv);
+        element.style.cssText = originalStyle;
+        if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
-    }, 500);
+    }, 800);
   };
 
 
