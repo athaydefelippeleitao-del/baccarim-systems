@@ -55,35 +55,43 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     if (!containerRef.current) return;
     setIsExporting(true);
 
-    const element = containerRef.current;
+    const originalElement = containerRef.current;
     
-    // Adicionar cabeçalho temporário com logo
+    // Criar um wrapper oculto isolado para não sofrer cortes da tela
+    const printWrapper = document.createElement('div');
+    printWrapper.style.position = 'fixed'; 
+    printWrapper.style.top = '0';
+    printWrapper.style.left = '0';
+    printWrapper.style.width = '1600px'; 
+    printWrapper.style.backgroundColor = 'white';
+    printWrapper.style.padding = '20px';
+    printWrapper.style.zIndex = '-9999';
+
+    // Adicionar cabeçalho com logo
     const headerDiv = document.createElement('div');
     headerDiv.innerHTML = `
       <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; padding: 10px;">
         <img src="/logo_baccarim.jpg" style="height: 60px; object-fit: contain;" />
         <div style="text-align: right;">
-          <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0;">Relatório de Empreendimentos</h1>
+          <h1 style="font-size: 24px; font-weight: bold; color: #0f172a; margin: 0; text-transform: uppercase;">Relatório de Empreendimentos</h1>
           <p style="font-size: 12px; color: #64748b; margin: 0;">Gerado em ${new Date().toLocaleDateString()}</p>
         </div>
       </div>
     `;
-    element.insertBefore(headerDiv, element.firstChild);
+    printWrapper.appendChild(headerDiv);
 
-    // Configurar tabela temporariamente para não cortar no PDF
-    const originalStyle = element.style.cssText;
-    const tableContainer = element.querySelector('.overflow-x-auto');
-    let originalTableStyle = '';
+    // Clonar a tabela inteira
+    const tableClone = originalElement.cloneNode(true) as HTMLElement;
     
-    let targetWidth = 1500;
+    // Retirar a limitação de rolagem no clone
+    const tableContainer = tableClone.querySelector('.overflow-x-auto') as HTMLElement;
     if (tableContainer) {
-      originalTableStyle = (tableContainer as HTMLElement).style.cssText;
-      (tableContainer as HTMLElement).style.overflow = 'visible';
-      targetWidth = Math.max(tableContainer.scrollWidth, 1500);
+      tableContainer.style.overflow = 'visible';
+      tableContainer.classList.remove('overflow-x-auto');
     }
     
-    // Forçar a quebra das restrições do pai (App.tsx) para expandir livremente
-    element.style.cssText += `position: absolute; top: 0; left: 0; width: ${targetWidth}px; min-width: ${targetWidth}px; padding: 30px; background: white; z-index: 9999;`;
+    printWrapper.appendChild(tableClone);
+    document.body.appendChild(printWrapper);
 
     const opt = {
       margin: 10,
@@ -93,7 +101,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         scale: 2, 
         useCORS: true,
         backgroundColor: '#ffffff',
-        windowWidth: targetWidth + 50,
+        windowWidth: 1600,
+        x: 0,
+        y: 0,
+        scrollX: 0,
         scrollY: 0
       },
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'landscape' }
@@ -102,21 +113,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setTimeout(() => {
       const html2pdf = (window as any).html2pdf;
       if (html2pdf) {
-        html2pdf().from(element).set(opt).save().finally(() => {
-          if (headerDiv.parentNode) element.removeChild(headerDiv);
-          element.style.cssText = originalStyle;
-          if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+        html2pdf().from(printWrapper).set(opt).save().finally(() => {
+          document.body.removeChild(printWrapper);
           setIsExporting(false);
         });
       } else {
         console.error('html2pdf not found');
-        if (headerDiv.parentNode) element.removeChild(headerDiv);
-        element.style.cssText = originalStyle;
-        if (tableContainer) (tableContainer as HTMLElement).style.cssText = originalTableStyle;
+        document.body.removeChild(printWrapper);
         setIsExporting(false);
         alert('Erro: Biblioteca de exportação não carregada.');
       }
-    }, 400);
+    }, 500);
   };
 
 
