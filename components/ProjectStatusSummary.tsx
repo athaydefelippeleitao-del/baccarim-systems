@@ -3,6 +3,7 @@ import { Project, EnvironmentalLicense, Notification, LicenseStatus } from '../t
 import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
+import autoTable from 'jspdf-autotable';
 
 interface ProjectStatusSummaryProps {
   projects: Project[];
@@ -53,7 +54,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setEditingCell(null);
   };
 
-  const handleExportPDF = async () => {
+  const handleExportDetailedReport = async () => {
     setIsExporting(true);
 
     try {
@@ -257,6 +258,111 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     }
   };
 
+  const handleExportPDF = async () => {
+    setIsExporting(true);
+
+    try {
+      const doc = new jsPDF('landscape', 'mm', 'a4');
+      
+      const img = new Image();
+      img.src = '/logo_baccarim.jpg';
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+      });
+
+      const logoHeight = 12;
+      const logoWidth = (img.width * logoHeight) / img.height;
+
+      const tableColumn = [
+        "Processo / Protocolo", 
+        "Status", 
+        "Técnico Responsável", 
+        "Nome ou Razão Social", 
+        "Identificação", 
+        "Data do Protocolo", 
+        "Última Movimentação", 
+        "Tipo de Licença", 
+        "Andamento Atual"
+      ];
+      
+      const tableRows: any[] = [];
+
+      filteredProjects.forEach(project => {
+        const projectNotifs = notifications.filter(n => n.projectId === project.id);
+        const activeLicensesFromNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category === 'Licença');
+        const openNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category !== 'Licença');
+        
+        let statusText = 'OK';
+        if (activeLicensesFromNotifs.length > 0) statusText = 'Licença Ativa';
+        else if (openNotifs.length > 0) statusText = 'Pendências';
+
+        let lastMove = '-';
+        if (projectNotifs.length > 0) {
+          const sorted = [...projectNotifs].sort((a, b) => new Date(b.dateReceived || 0).getTime() - new Date(a.dateReceived || 0).getTime());
+          if (sorted[0].dateReceived) {
+            lastMove = sorted[0].dateReceived;
+          }
+        }
+
+        tableRows.push([
+          { content: (project.specs?.numeroProtocolo || '-').toString().trim(), styles: { halign: 'left' } },
+          { content: statusText, styles: { halign: 'center' } },
+          { content: (project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-').toString().trim(), styles: { halign: 'left' } },
+          { content: (project.clientName || (project as any).razaoSocial || '-').toString().trim(), styles: { halign: 'left' } },
+          { content: (project.name || '-').toString().trim(), styles: { halign: 'left' } },
+          { content: (project.specs?.dataProtocolo || '-').toString().trim(), styles: { halign: 'center' } },
+          { content: (project.specs?.ultimaMovimentacao || lastMove).toString().trim(), styles: { halign: 'center' } },
+          { content: (project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-').toString().trim(), styles: { halign: 'center' } },
+          { content: (project.currentPhase || project.status || '-').toString().trim(), styles: { halign: 'left' } }
+        ]);
+      });
+
+      autoTable(doc, {
+        head: [tableColumn],
+        body: tableRows,
+        startY: 32,
+        theme: 'grid',
+        headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', halign: 'center' },
+        styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
+        columnStyles: {
+          0: { cellWidth: 35, halign: 'left' },
+          1: { cellWidth: 17, halign: 'center' },
+          2: { cellWidth: 28, halign: 'left' },
+          3: { cellWidth: 33, halign: 'left' },
+          4: { cellWidth: 33, halign: 'left' },
+          5: { cellWidth: 22, halign: 'center' },
+          6: { cellWidth: 22, halign: 'center' },
+          7: { cellWidth: 41, halign: 'center' },
+          8: { cellWidth: 41, halign: 'left' }
+        },
+        margin: { top: 32, right: 10, bottom: 15, left: 10 },
+        didDrawPage: function (data: any) {
+          const textX = 10 + logoWidth + 5;
+          doc.addImage(img, 'JPEG', 10, 10, logoWidth, logoHeight);
+          doc.setFontSize(16);
+          doc.setTextColor(15, 23, 42);
+          doc.text('RELATÓRIO DE EMPREENDIMENTOS', textX, 16);
+          doc.setFontSize(10);
+          doc.setTextColor(100, 116, 139);
+          doc.text(`Gerado em ${new Date().toLocaleDateString()}`, textX, 22);
+          
+          const str = 'Página ' + doc.internal.getNumberOfPages();
+          doc.setFontSize(8);
+          doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
+        }
+      });
+
+      doc.save(`Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`);
+    } catch (err) {
+      console.error('Error generating PDF:', err);
+      alert('Erro ao gerar PDF nativo. Verifique o console.');
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
   const handleExportExcel = () => {
     const data = filteredProjects.map(project => {
       const projectNotifs = notifications.filter(n => n.projectId === project.id);
@@ -347,6 +453,19 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           <button 
             onClick={handleExportPDF}
             disabled={isExporting}
+            className={`flex items-center space-x-3 bg-baccarim-navy text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-slate-800 transition-all transform active:scale-95 ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          >
+            {isExporting ? (
+              <i className="fas fa-spinner fa-spin"></i>
+            ) : (
+              <i className="fas fa-table"></i>
+            )}
+            <span>Planilha PDF</span>
+          </button>
+          
+          <button 
+            onClick={handleExportDetailedReport}
+            disabled={isExporting}
             className={`flex items-center space-x-3 bg-baccarim-blue text-white px-8 py-3 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all transform active:scale-95 ${isExporting ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             {isExporting ? (
@@ -354,7 +473,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
             ) : (
               <i className="fas fa-file-pdf"></i>
             )}
-            <span>{isExporting ? 'Gerando PDF...' : 'Exportar PDF'}</span>
+            <span>Relatório Detalhado</span>
           </button>
         </div>
 
