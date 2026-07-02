@@ -54,10 +54,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setEditingCell(null);
   };
 
-  const handleExportDetailedReport = async () => {
+  const handleExportDetailedReport = async (projectsOrEvent?: Project[] | React.MouseEvent | Project) => {
     setIsExporting(true);
 
     try {
+      let projectsToExport = filteredProjects;
+      if (projectsOrEvent && !('nativeEvent' in projectsOrEvent)) {
+        projectsToExport = Array.isArray(projectsOrEvent) ? projectsOrEvent : [projectsOrEvent as Project];
+      }
+      
+      const isSingleProject = projectsToExport.length === 1;
+
       const doc = new jsPDF('portrait', 'mm', 'a4');
       const pageWidth = doc.internal.pageSize.width;
       const pageHeight = doc.internal.pageSize.height;
@@ -77,74 +84,80 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         doc.addImage(img, 'JPEG', pageWidth - margin - logoWidth, margin, logoWidth, logoHeight);
       };
 
+      let startPage = 1;
+
       // 1. CAPA E SUMÁRIO
-      drawLogoRight();
-      
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.setTextColor(0, 0, 0);
-      doc.text('RELATÓRIO DE PROCESSOS E PENDÊNCIAS', pageWidth / 2, margin + logoHeight + 15, { align: 'center' });
-      
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(11);
-      const dateText = `Atualizado em ${new Date().toLocaleDateString('pt-BR')}.`;
-      doc.text(dateText, pageWidth / 2, margin + logoHeight + 25, { align: 'center' });
-      
-      const textWidth = doc.getTextWidth(dateText);
-      doc.setLineWidth(0.5);
-      doc.line((pageWidth / 2) - (textWidth / 2), margin + logoHeight + 26, (pageWidth / 2) + (textWidth / 2), margin + logoHeight + 26);
-
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(14);
-      doc.text('Sumário de Empreendimentos ativos', pageWidth / 2, margin + logoHeight + 45, { align: 'center' });
-
-      let summaryY = margin + logoHeight + 60;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      
-      const lineHeight = 7;
-      const maxItemsPerPage = Math.floor((pageHeight - margin - summaryY) / lineHeight);
-      const summaryPages = Math.ceil(filteredProjects.length / maxItemsPerPage) || 1;
-      const startPage = 1 + summaryPages;
-
-      filteredProjects.forEach((project, index) => {
-        let name = project.name || project.clientName || (project as any).razaoSocial || 'SEM NOME';
-        if (project.status === 'Concluído') name = `FINALIZADO - ${name}`;
+      if (!isSingleProject) {
+        drawLogoRight();
         
-        const itemText = `${index + 1}.  ${name}`.toUpperCase();
-        const pageNumber = startPage + index;
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.setTextColor(0, 0, 0);
+        doc.text('RELATÓRIO DE PROCESSOS E PENDÊNCIAS', pageWidth / 2, margin + logoHeight + 15, { align: 'center' });
         
-        if (summaryY > pageHeight - margin - 10) {
-          doc.addPage();
-          drawLogoRight();
-          summaryY = margin + logoHeight + 20;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(11);
+        const dateText = `Atualizado em ${new Date().toLocaleDateString('pt-BR')}.`;
+        doc.text(dateText, pageWidth / 2, margin + logoHeight + 25, { align: 'center' });
+        
+        const textWidth = doc.getTextWidth(dateText);
+        doc.setLineWidth(0.5);
+        doc.line((pageWidth / 2) - (textWidth / 2), margin + logoHeight + 26, (pageWidth / 2) + (textWidth / 2), margin + logoHeight + 26);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text('Sumário de Empreendimentos ativos', pageWidth / 2, margin + logoHeight + 45, { align: 'center' });
+
+        let summaryY = margin + logoHeight + 60;
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        
+        const lineHeight = 7;
+        const maxItemsPerPage = Math.floor((pageHeight - margin - summaryY) / lineHeight);
+        const summaryPages = Math.ceil(projectsToExport.length / maxItemsPerPage) || 1;
+        startPage = 1 + summaryPages;
+
+        projectsToExport.forEach((project, index) => {
+          let name = project.name || project.clientName || (project as any).razaoSocial || 'SEM NOME';
+          if (project.status === 'Concluído') name = `FINALIZADO - ${name}`;
+          
+          const itemText = `${index + 1}.  ${name}`.toUpperCase();
+          const pageNumber = startPage + index;
+          
+          if (summaryY > pageHeight - margin - 10) {
+            doc.addPage();
+            drawLogoRight();
+            summaryY = margin + logoHeight + 20;
+          }
+
+          const pageNumText = pageNumber.toString();
+          const itemWidth = doc.getTextWidth(itemText);
+          const pageNumWidth = doc.getTextWidth(pageNumText);
+          
+          const dotWidth = doc.getTextWidth('.');
+          const spaceForDots = pageWidth - margin * 2 - itemWidth - pageNumWidth - 2;
+          const numDots = Math.floor(spaceForDots / dotWidth);
+          const dots = '.'.repeat(Math.max(0, numDots));
+
+          doc.text(itemText, margin, summaryY);
+          doc.text(dots, margin + itemWidth + 1, summaryY);
+          doc.text(pageNumText, pageWidth - margin - pageNumWidth, summaryY);
+          
+          summaryY += lineHeight;
+        });
+        
+        for (let i = 1; i <= summaryPages; i++) {
+          doc.setPage(i);
+          doc.setFontSize(9);
+          doc.text(i.toString(), pageWidth - margin, pageHeight - margin, { align: 'right' });
         }
-
-        const pageNumText = pageNumber.toString();
-        const itemWidth = doc.getTextWidth(itemText);
-        const pageNumWidth = doc.getTextWidth(pageNumText);
-        
-        const dotWidth = doc.getTextWidth('.');
-        const spaceForDots = pageWidth - margin * 2 - itemWidth - pageNumWidth - 2;
-        const numDots = Math.floor(spaceForDots / dotWidth);
-        const dots = '.'.repeat(Math.max(0, numDots));
-
-        doc.text(itemText, margin, summaryY);
-        doc.text(dots, margin + itemWidth + 1, summaryY);
-        doc.text(pageNumText, pageWidth - margin - pageNumWidth, summaryY);
-        
-        summaryY += lineHeight;
-      });
-      
-      for (let i = 1; i <= summaryPages; i++) {
-        doc.setPage(i);
-        doc.setFontSize(9);
-        doc.text(i.toString(), pageWidth - margin, pageHeight - margin, { align: 'right' });
       }
 
       // 2. PÁGINAS DOS PROJETOS
-      filteredProjects.forEach((project, index) => {
-        doc.addPage();
+      projectsToExport.forEach((project, index) => {
+        if (!isSingleProject || index > 0) {
+          doc.addPage();
+        }
         drawLogoRight();
         
         let y = margin + logoHeight + 20;
@@ -662,6 +675,13 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
                             className="w-8 h-8 rounded-lg bg-baccarim-green/10 text-baccarim-green hover:bg-baccarim-green hover:text-white transition-all flex items-center justify-center shadow-sm"
                           >
                             <i className="fas fa-file-signature"></i>
+                          </button>
+                          <button 
+                            title="Baixar Relatório do Empreendimento" 
+                            onClick={() => handleExportDetailedReport(project)} 
+                            className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white transition-all flex items-center justify-center shadow-sm"
+                          >
+                            <i className="fas fa-file-pdf"></i>
                           </button>
                         </div>
                       </td>
