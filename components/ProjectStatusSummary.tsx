@@ -168,7 +168,10 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           const maxWidth = pageWidth - margin * 2 - labelWidth - 2;
           const splitValue = doc.splitTextToSize(value, maxWidth);
           
-          doc.text(splitValue, margin + labelWidth + 2, y);
+          splitValue.forEach((line: string, i: number) => {
+            doc.text(line, margin + labelWidth + 2, y + (i * 5));
+          });
+          
           y += (splitValue.length * 5) + 2; 
           
           if (y > pageHeight - margin) {
