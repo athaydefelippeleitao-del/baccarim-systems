@@ -3,7 +3,6 @@ import { Project, EnvironmentalLicense, Notification, LicenseStatus } from '../t
 import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
 import * as XLSX from 'xlsx';
 import { jsPDF } from 'jspdf';
-import autoTable from 'jspdf-autotable';
 
 interface ProjectStatusSummaryProps {
   projects: Project[];
@@ -58,104 +57,198 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
     setIsExporting(true);
 
     try {
-      const doc = new jsPDF('landscape', 'mm', 'a4');
+      const doc = new jsPDF('portrait', 'mm', 'a4');
+      const pageWidth = doc.internal.pageSize.width;
+      const pageHeight = doc.internal.pageSize.height;
+      const margin = 20;
       
-      // Carregar a logo
       const img = new Image();
       img.src = '/logo_baccarim.jpg';
-      
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
       });
 
-      // Calcular proporção real da imagem para não amassar
-      const logoHeight = 12;
+      const logoHeight = 15;
       const logoWidth = (img.width * logoHeight) / img.height;
 
-      // Dados da tabela
-      const tableColumn = [
-        "Processo / Protocolo", 
-        "Status", 
-        "Técnico Responsável", 
-        "Nome ou Razão Social", 
-        "Identificação", 
-        "Data do Protocolo", 
-        "Última Movimentação", 
-        "Tipo de Licença", 
-        "Andamento Atual"
-      ];
+      const drawLogoRight = () => {
+        doc.addImage(img, 'JPEG', pageWidth - margin - logoWidth, margin, logoWidth, logoHeight);
+      };
+
+      // 1. CAPA E SUMÁRIO
+      drawLogoRight();
       
-      const tableRows: any[] = [];
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.setTextColor(0, 0, 0);
+      doc.text('RELATÓRIO DE PROCESSOS E PENDÊNCIAS', pageWidth / 2, margin + logoHeight + 15, { align: 'center' });
+      
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      const dateText = `Atualizado em ${new Date().toLocaleDateString('pt-BR')}.`;
+      doc.text(dateText, pageWidth / 2, margin + logoHeight + 25, { align: 'center' });
+      
+      const textWidth = doc.getTextWidth(dateText);
+      doc.setLineWidth(0.5);
+      doc.line((pageWidth / 2) - (textWidth / 2), margin + logoHeight + 26, (pageWidth / 2) + (textWidth / 2), margin + logoHeight + 26);
 
-      filteredProjects.forEach(project => {
-        const projectNotifs = notifications.filter(n => n.projectId === project.id);
-        const activeLicensesFromNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category === 'Licença');
-        const openNotifs = projectNotifs.filter(n => n.status === 'Open' && n.category !== 'Licença');
+      doc.setFont('helvetica', 'bold');
+      doc.setFontSize(14);
+      doc.text('Sumário de Empreendimentos ativos', pageWidth / 2, margin + logoHeight + 45, { align: 'center' });
+
+      let summaryY = margin + logoHeight + 60;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(10);
+      
+      const lineHeight = 7;
+      const maxItemsPerPage = Math.floor((pageHeight - margin - summaryY) / lineHeight);
+      const summaryPages = Math.ceil(filteredProjects.length / maxItemsPerPage) || 1;
+      const startPage = 1 + summaryPages;
+
+      filteredProjects.forEach((project, index) => {
+        let name = project.name || project.clientName || (project as any).razaoSocial || 'SEM NOME';
+        if (project.status === 'Concluído') name = `FINALIZADO - ${name}`;
         
-        let statusText = 'OK';
-        if (activeLicensesFromNotifs.length > 0) statusText = 'Licença Ativa';
-        else if (openNotifs.length > 0) statusText = 'Pendências';
-
-        let lastMove = '-';
-        if (projectNotifs.length > 0) {
-          const sorted = [...projectNotifs].sort((a, b) => new Date(b.dateReceived || 0).getTime() - new Date(a.dateReceived || 0).getTime());
-          if (sorted[0].dateReceived) {
-            lastMove = sorted[0].dateReceived;
-          }
+        const itemText = `${index + 1}.  ${name}`.toUpperCase();
+        const pageNumber = startPage + index;
+        
+        if (summaryY > pageHeight - margin - 10) {
+          doc.addPage();
+          drawLogoRight();
+          summaryY = margin + logoHeight + 20;
         }
 
-        tableRows.push([
-          { content: (project.specs?.numeroProtocolo || '-').toString().trim(), styles: { halign: 'left' } },
-          { content: statusText, styles: { halign: 'center' } },
-          { content: (project.specs?.responsavelTecnico || project.specs?.nomeResponsavel || '-').toString().trim(), styles: { halign: 'left' } },
-          { content: (project.clientName || (project as any).razaoSocial || '-').toString().trim(), styles: { halign: 'left' } },
-          { content: (project.name || '-').toString().trim(), styles: { halign: 'left' } },
-          { content: (project.specs?.dataProtocolo || '-').toString().trim(), styles: { halign: 'center' } },
-          { content: (project.specs?.ultimaMovimentacao || lastMove).toString().trim(), styles: { halign: 'center' } },
-          { content: (project.specs?.licencaObtida || project.specs?.licencaASerObtida || '-').toString().trim(), styles: { halign: 'center' } },
-          { content: (project.currentPhase || project.status || '-').toString().trim(), styles: { halign: 'left' } }
-        ]);
-      });
+        const pageNumText = pageNumber.toString();
+        const itemWidth = doc.getTextWidth(itemText);
+        const pageNumWidth = doc.getTextWidth(pageNumText);
+        
+        const dotWidth = doc.getTextWidth('.');
+        const spaceForDots = pageWidth - margin * 2 - itemWidth - pageNumWidth - 2;
+        const numDots = Math.floor(spaceForDots / dotWidth);
+        const dots = '.'.repeat(Math.max(0, numDots));
 
-      autoTable(doc, {
-        head: [tableColumn],
-        body: tableRows,
-        startY: 32,
-        theme: 'grid',
-        headStyles: { fillColor: [15, 23, 42], textColor: [255, 255, 255], fontSize: 8, fontStyle: 'bold', halign: 'center' },
-        styles: { fontSize: 7, cellPadding: 2, overflow: 'linebreak' },
-        columnStyles: {
-          0: { cellWidth: 35, halign: 'left' },
-          1: { cellWidth: 17, halign: 'center' },
-          2: { cellWidth: 28, halign: 'left' },
-          3: { cellWidth: 33, halign: 'left' },
-          4: { cellWidth: 33, halign: 'left' },
-          5: { cellWidth: 22, halign: 'center' },
-          6: { cellWidth: 22, halign: 'center' },
-          7: { cellWidth: 41, halign: 'center' },
-          8: { cellWidth: 41, halign: 'left' }
-        },
-        margin: { top: 32, right: 10, bottom: 15, left: 10 },
-        didDrawPage: function (data: any) {
-          // Cabeçalho em todas as páginas
-          const textX = 10 + logoWidth + 5;
-          doc.addImage(img, 'JPEG', 10, 10, logoWidth, logoHeight);
-          doc.setFontSize(16);
-          doc.setTextColor(15, 23, 42);
-          doc.text('RELATÓRIO DE EMPREENDIMENTOS', textX, 16);
+        doc.text(itemText, margin, summaryY);
+        doc.text(dots, margin + itemWidth + 1, summaryY);
+        doc.text(pageNumText, pageWidth - margin - pageNumWidth, summaryY);
+        
+        summaryY += lineHeight;
+      });
+      
+      for (let i = 1; i <= summaryPages; i++) {
+        doc.setPage(i);
+        doc.setFontSize(9);
+        doc.text(i.toString(), pageWidth - margin, pageHeight - margin, { align: 'right' });
+      }
+
+      // 2. PÁGINAS DOS PROJETOS
+      filteredProjects.forEach((project, index) => {
+        doc.addPage();
+        drawLogoRight();
+        
+        let y = margin + logoHeight + 20;
+        
+        let name = project.name || project.clientName || (project as any).razaoSocial || 'SEM NOME';
+        if (project.status === 'Concluído') name = `FINALIZADO - ${name}`;
+        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(14);
+        doc.text(`${index + 1}.    ${name}`.toUpperCase(), pageWidth / 2, y, { align: 'center' });
+        y += 15;
+
+        const drawField = (label: string, value: string) => {
+          doc.setFont('helvetica', 'bold');
           doc.setFontSize(10);
-          doc.setTextColor(100, 116, 139);
-          doc.text(`Gerado em ${new Date().toLocaleDateString()}`, textX, 22);
+          doc.text(label, margin, y);
           
-          // Rodapé com número da página
-          const str = 'Página ' + doc.internal.getNumberOfPages();
-          doc.setFontSize(8);
-          doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
+          const labelWidth = doc.getTextWidth(label);
+          doc.setFont('helvetica', 'normal');
+          
+          const maxWidth = pageWidth - margin * 2 - labelWidth - 2;
+          const splitValue = doc.splitTextToSize(value, maxWidth);
+          
+          doc.text(splitValue, margin + labelWidth + 2, y);
+          y += (splitValue.length * 5) + 2; 
+          
+          if (y > pageHeight - margin) {
+            doc.addPage();
+            y = margin + 10;
+          }
+        };
+
+        const drawSectionTitle = (title: string) => {
+          doc.setFont('helvetica', 'bold');
+          doc.setFontSize(10);
+          doc.text(title, margin, y);
+          const titleWidth = doc.getTextWidth(title);
+          doc.setLineWidth(0.3);
+          doc.line(margin, y + 1, margin + titleWidth, y + 1);
+          y += 8;
+        };
+
+        drawSectionTitle('IDENTIFICAÇÃO DO EMPREENDIMENTO:');
+        drawField('RAZÃO SOCIAL DO LICENCIAMENTO:', project.clientName || (project as any).razaoSocial || '-');
+        drawField('ENDEREÇO DA OBRA:', [project.specs?.projectAddress, project.specs?.projectCity].filter(Boolean).join(' - ') || '-');
+        drawField('TIPO DE EMPREENDIMENTO:', project.specs?.projectCategory || project.specs?.projectType || '-');
+        drawField('NÚMERO ESTIMADO DE LOTES ou U.H.:', project.specs?.numUnits?.toString() || (project as any).qtdLotes?.toString() || '-');
+        y += 5;
+        
+        drawSectionTitle('LICENCIAMENTO AMBIENTAL:');
+        drawField('ÓRGÃO RESPONSÁVEL:', project.specs?.orgaoResponsavel || project.checklistAgency || '-');
+        drawField('LICENÇA VIGENTE:', project.specs?.licencaObtida || (project as any).numeroLicenca || '-');
+        drawField('LICENÇA A SER OBTIDA:', project.specs?.licencaASerObtida || '-');
+        drawField('NÚMERO PROTOCOLO:', project.specs?.numeroProtocolo || '-');
+        drawField('SITUAÇÃO:', project.currentPhase || project.status || '-');
+        drawField('ÚLTIMO ANDAMENTO:', project.specs?.ultimaMovimentacao || '-');
+        y += 5;
+        
+        drawField('IPHAN:', (project.specs as any)?.iphan || '-');
+        y += 5;
+
+        drawField('DOCUMENTOS PENDENTES:', '');
+        y -= 5; 
+        
+        const projectNotifs = notifications.filter(n => n.projectId === project.id && n.status === 'Open');
+        const projectChecklists = project.checklist?.filter(c => !c.isCompleted) || [];
+        
+        if (projectNotifs.length === 0 && projectChecklists.length === 0) {
+          doc.setFont('helvetica', 'normal');
+          doc.text('N/A', margin, y);
+          y += 8;
+        } else {
+          let docIndex = 1;
+          doc.setFont('helvetica', 'normal');
+          
+          projectNotifs.forEach(n => {
+            const text = `${docIndex}. ${n.title} - ${n.description}`;
+            const split = doc.splitTextToSize(text, pageWidth - margin * 2 - 5);
+            doc.text(split, margin + 5, y);
+            y += (split.length * 5) + 2;
+            docIndex++;
+            if (y > pageHeight - margin) {
+              doc.addPage();
+              y = margin + 10;
+            }
+          });
+          
+          projectChecklists.forEach(c => {
+            const text = `${docIndex}. ${c.label} - ${c.description}`;
+            const split = doc.splitTextToSize(text, pageWidth - margin * 2 - 5);
+            doc.text(split, margin + 5, y);
+            y += (split.length * 5) + 2;
+            docIndex++;
+            if (y > pageHeight - margin) {
+              doc.addPage();
+              y = margin + 10;
+            }
+          });
         }
+        
+        doc.setFontSize(9);
+        doc.text((startPage + index).toString(), pageWidth - margin, pageHeight - margin, { align: 'right' });
       });
 
-      doc.save(`Baccarim-Status-Projetos-${new Date().toLocaleDateString()}.pdf`);
+      doc.save(`Relatorio-Baccarim-${new Date().toLocaleDateString('pt-BR')}.pdf`);
     } catch (err) {
       console.error('Error generating PDF:', err);
       alert('Erro ao gerar PDF nativo. Verifique o console.');
