@@ -160,16 +160,17 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         const drawField = (label: string, value: string) => {
           doc.setFont('helvetica', 'bold');
           doc.setFontSize(10);
-          doc.text(label, margin, y);
+          doc.text(label, margin, y, { baseline: 'bottom' });
           
           const labelWidth = doc.getTextWidth(label);
           doc.setFont('helvetica', 'normal');
           
+          const safeValue = (value || '-').toString().trim();
           const maxWidth = pageWidth - margin * 2 - labelWidth - 2;
-          const splitValue = doc.splitTextToSize(value, maxWidth);
+          const splitValue = doc.splitTextToSize(safeValue, maxWidth);
           
           splitValue.forEach((line: string, i: number) => {
-            doc.text(line, margin + labelWidth + 2, y + (i * 5));
+            doc.text(line, margin + labelWidth + 2, y + (i * 5), { baseline: 'bottom' });
           });
           
           y += (splitValue.length * 5) + 2; 
