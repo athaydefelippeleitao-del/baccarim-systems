@@ -206,9 +206,11 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
         drawField('IPHAN:', (project.specs as any)?.iphan || '-');
         y += 5;
 
-        drawField('DOCUMENTOS PENDENTES:', '');
-        y -= 5; 
-        
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.text('DOCUMENTOS PENDENTES:', margin, y);
+        y += 8;
+
         const projectNotifs = notifications.filter(n => n.projectId === project.id && n.status === 'Open');
         const projectChecklists = project.checklist?.filter(c => !c.isCompleted) || [];
         
