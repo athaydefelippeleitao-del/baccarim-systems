@@ -986,6 +986,10 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                           {isEditing ? <input value={project.specs.orgaoResponsavel} onChange={(e) => updateSpecField(project, 'orgaoResponsavel', e.target.value)} className="w-full bg-baccarim-hover border border-baccarim-border p-2.5 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" /> : <p className="text-[14px] font-black text-baccarim-text">{project.specs.orgaoResponsavel || '-'}</p>}
                         </div>
                         <div className="space-y-1.5">
+                          <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">IPHAN</label>
+                          {isEditing ? <input value={project.specs.iphan || ''} onChange={(e) => updateSpecField(project, 'iphan', e.target.value)} className="w-full bg-baccarim-hover border border-baccarim-border p-2.5 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" placeholder="Ex: Dispensado, Em análise..." /> : <p className="text-[14px] font-black text-baccarim-text">{project.specs.iphan || '-'}</p>}
+                        </div>
+                        <div className="space-y-1.5">
                           <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">UTM (E)</label>
                           {isEditing ? <input value={project.specs.coordE} onChange={(e) => updateSpecField(project, 'coordE', e.target.value)} className="w-full bg-baccarim-hover border border-baccarim-border p-2.5 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-1 focus:ring-baccarim-blue" /> : <p className="text-[14px] font-black text-baccarim-text">{project.specs.coordE || '-'}</p>}
                         </div>

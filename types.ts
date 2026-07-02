@@ -176,6 +176,7 @@ export interface ProjectTechnicalSpecs {
   cep?: string;
   orgaoResponsavel?: string;
   responsavelTecnico?: string;
+  iphan?: string;
   licencaObtida?: string;
   numeroLicenca?: string;
   licencaASerObtida?: string;
