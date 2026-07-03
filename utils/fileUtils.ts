@@ -47,3 +47,40 @@ export const convertPdfToImage = async (file: File): Promise<string> => {
   
   return canvas.toDataURL('image/jpeg', 0.8);
 };
+
+/**
+ * Converte múltiplas páginas de um PDF em um array de imagens base64
+ * Útil para enviar para a IA ler documentos com mais de 1 página (ex: licenças onde a data está na última página)
+ */
+export const convertPdfToImages = async (file: File, maxPages: number = 4): Promise<string[]> => {
+  const pdfjsLib = await import('pdfjs-dist');
+  const pdfWorker = await import('pdfjs-dist/build/pdf.worker.mjs?url');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker.default;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  
+  const numPages = Math.min(pdf.numPages, maxPages);
+  const dataUris: string[] = [];
+
+  for (let i = 1; i <= numPages; i++) {
+    const page = await pdf.getPage(i);
+    const viewport = page.getViewport({ scale: 2.0 });
+    
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    if (!ctx) continue;
+    
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    
+    await page.render({
+      canvasContext: ctx,
+      viewport: viewport
+    }).promise;
+    
+    dataUris.push(canvas.toDataURL('image/jpeg', 0.8));
+  }
+  
+  return dataUris;
+};

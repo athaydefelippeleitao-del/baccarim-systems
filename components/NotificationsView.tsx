@@ -1,8 +1,7 @@
-
 import React, { useState, useMemo, useCallback } from 'react';
 import { Notification, NotificationSeverity, Attachment, Project } from '../types';
 import { generateNotificationDraft, createNotificationFromText } from '../services/openaiClient';
-import { downloadFile, convertPdfToImage } from '../utils/fileUtils';
+import { downloadFile, convertPdfToImages } from '../utils/fileUtils';
 import { getNotificationFiles } from '../services/supabaseService';
 
 interface NotificationsViewProps {
@@ -256,18 +255,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     setAiCreating(true);
     setAiToast(`Analisando "${file.name}"...`);
     try {
-      let dataUriForAi = '';
-      let originalBase64 = await new Promise<string>((resolve, reject) => {
+      const originalBase64 = await new Promise<string>((resolve) => {
         const reader = new FileReader();
-        reader.onload = e => resolve(e.target?.result as string);
-        reader.onerror = reject;
+        reader.onloadend = () => resolve(reader.result as string);
         reader.readAsDataURL(file);
       });
 
+      let dataUrisForAi: string[] = [];
       if (file.type === 'application/pdf') {
-        dataUriForAi = await convertPdfToImage(file);
+        dataUrisForAi = await convertPdfToImages(file, 4);
       } else {
-        dataUriForAi = originalBase64;
+        dataUrisForAi = [originalBase64];
       }
 
       const projectsForAI = projects.map(p => ({
@@ -282,7 +280,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       const res = await fetch('/api/openai/analyze-notification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dataUris: [dataUriForAi], projects: projectsForAI }),
+        body: JSON.stringify({ dataUris: dataUrisForAi, projects: projectsForAI }),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
