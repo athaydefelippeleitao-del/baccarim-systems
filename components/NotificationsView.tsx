@@ -305,13 +305,19 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
           dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
           
           if (result.category === 'Licença' && result.validityMonths) {
-            // Add months to issueDate
-            dateObj.setMonth(dateObj.getMonth() + Number(result.validityMonths));
-            // Subtract 120 days for renewal
-            dateObj.setDate(dateObj.getDate() - 120);
+            // Use regex to safely extract just the number, in case AI returned "72 meses"
+            const match = String(result.validityMonths).match(/\d+/);
+            const months = match ? Number(match[0]) : 0;
+            if (months > 0) {
+              dateObj.setMonth(dateObj.getMonth() + months);
+              dateObj.setDate(dateObj.getDate() - 120);
+            }
           } else if (result.category === 'Notificação' && result.deadlineDays) {
-            // Add days to issueDate
-            dateObj.setDate(dateObj.getDate() + Number(result.deadlineDays));
+            const match = String(result.deadlineDays).match(/\d+/);
+            const days = match ? Number(match[0]) : 0;
+            if (days > 0) {
+              dateObj.setDate(dateObj.getDate() + days);
+            }
           }
         }
       }
