@@ -52,7 +52,7 @@ Retorne EXCLUSIVAMENTE um objeto JSON contendo:
 - "title": Título curto e descritivo. Ex: "Licença de Operação - IAT", "Ofício 123/2023 - Complementação".
 - "description": Resumo do que trata o documento.
 - "agency": Órgão emissor do licenciamento ambiental. SEMPRE retorne "SEMA" ou "IAT". Se no documento aparecer "Secretaria de Estado do Meio Ambiente", "SEMA/PR" ou similar, retorne "SEMA". Se aparecer "Instituto Água e Terra" ou "IAT" ou "ICMBIO" (estadual), retorne "IAT". Em QUALQUER outro caso (prefeitura, IBAMA federal, etc.) ainda assim retorne "SEMA" ou "IAT" conforme o contexto do licenciamento estadual do Paraná.
-- "deadline": Prazo Fatal no formato AAAA-MM-DD. Se for licença, 5 meses antes da validade final. Se não achar, null.
+- "deadline": Prazo Fatal ou Data de Vencimento no formato AAAA-MM-DD. Se for uma licença, calcule a data exata de vencimento (validade final) somando o prazo de validade à data de emissão. NÃO faça subtrações ou reduções de prazo (como 120 dias antes), informe a data final exata. Se não achar, null.
 - "severity": "Alta" (multa, prazo curto, indeferimento), "Média" (prazos normais), ou "Baixa" (apenas ciência, licença emitida).
 - "matchedProjectId": O "id" do projeto que melhor corresponde ao documento, ou null.
 - "matchedClientName": O "clientName" do projeto identificado, ou o nome que estiver no documento.
