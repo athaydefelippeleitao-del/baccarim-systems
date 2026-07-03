@@ -256,16 +256,18 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     setAiCreating(true);
     setAiToast(`Analisando "${file.name}"...`);
     try {
-      let dataUri = '';
+      let dataUriForAi = '';
+      let originalBase64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target?.result as string);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+
       if (file.type === 'application/pdf') {
-        dataUri = await convertPdfToImage(file);
+        dataUriForAi = await convertPdfToImage(file);
       } else {
-        dataUri = await new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onload = e => resolve(e.target?.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
+        dataUriForAi = originalBase64;
       }
 
       const projectsForAI = projects.map(p => ({
@@ -280,7 +282,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       const res = await fetch('/api/openai/analyze-notification', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ dataUris: [dataUri], projects: projectsForAI }),
+        body: JSON.stringify({ dataUris: [dataUriForAi], projects: projectsForAI }),
       });
       const json = await res.json();
       if (json.error) throw new Error(json.error);
@@ -298,11 +300,11 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         else formattedDeadline = result.deadline;
       }
 
-      // Create the attachment object
+      // Create the attachment object with the original file, NOT the image converted for AI
       const dateStr = new Date().toLocaleDateString('pt-BR');
       const newAttachment: Attachment = {
         fileName: file.name,
-        fileData: dataUri,
+        fileData: originalBase64,
         fileDate: dateStr
       };
 
