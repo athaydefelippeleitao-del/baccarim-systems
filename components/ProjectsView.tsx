@@ -55,8 +55,69 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
   const [rapProject, setRapProject] = useState<Project | null>(null);
   const [activeUploadId, setActiveUploadId] = useState<string | null>(null);
   const [distributingDocs, setDistributingDocs] = useState<{ projectId: string, progress: string } | null>(null);
+  const [isExtractingF08, setIsExtractingF08] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const distributeFileRef = useRef<HTMLInputElement>(null);
+  const f08InputRef = useRef<HTMLInputElement>(null);
+
+  const handleExtractF08 = async (project: Project, file: File) => {
+    setIsExtractingF08(project.id);
+    try {
+      let base64 = '';
+      if (file.type === 'application/pdf') {
+        base64 = await convertPdfToImage(file);
+      } else {
+        base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = (e) => resolve(e.target?.result as string);
+          reader.onerror = () => reject(new Error('Falha ao ler arquivo de imagem.'));
+          reader.readAsDataURL(file);
+        });
+      }
+
+      const response = await fetch('/api/openai/extract-f08', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ base64Image: base64 })
+      });
+
+      const data = await response.json();
+      if (data.error) throw new Error(data.error);
+
+      const result = data.result;
+      
+      const newSpecs = { ...project.specs };
+      if (result.razaoSocial) newSpecs.razaoSocial = result.razaoSocial;
+      if (result.cnpjCpf) newSpecs.cnpjCpf = result.cnpjCpf;
+      if (result.endereco) newSpecs.applicantAddress = result.endereco;
+      if (result.bairro) newSpecs.applicantBairro = result.bairro;
+      if (result.municipioUf) newSpecs.applicantCity = result.municipioUf;
+      if (result.cep) newSpecs.applicantCep = result.cep;
+      if (result.telefoneFixo) newSpecs.applicantPhone = result.telefoneFixo;
+      if (result.telefoneCelular) newSpecs.applicantMobile = result.telefoneCelular;
+      if (result.email) newSpecs.applicantEmail = result.email;
+      if (result.nomeContato) newSpecs.contactName = result.nomeContato;
+      if (result.cargo) newSpecs.contactRole = result.cargo;
+      
+      if (result.tipoEmpreendimento) newSpecs.projectCategory = result.tipoEmpreendimento;
+      if (result.enderecoEmpreendimento) newSpecs.projectAddress = result.enderecoEmpreendimento;
+      if (result.bairroEmpreendimento) newSpecs.projectBairro = result.bairroEmpreendimento;
+      if (result.municipioEmpreendimento) newSpecs.projectCity = result.municipioEmpreendimento;
+      if (result.inscricaoImobiliaria) newSpecs.realEstateId = result.inscricaoImobiliaria;
+      if (result.areaTotal) newSpecs.areaTotal = result.areaTotal;
+      if (result.areaConstruida) newSpecs.areaConstruida = result.areaConstruida;
+      if (result.numeroUnidades) newSpecs.numUnits = result.numeroUnidades;
+      
+      if (result.nomeResponsavel) newSpecs.responsavelTecnico = result.nomeResponsavel;
+      
+      onUpdateProject({ ...project, specs: newSpecs });
+      alert('Dados extraídos da Ficha F08 com sucesso!');
+    } catch (err: any) {
+      alert(err.message || 'Erro ao extrair F08.');
+    } finally {
+      setIsExtractingF08(null);
+    }
+  };
 
   const handleDilacaoPrazo = (project: Project) => {
     setExtensionProject(project);
@@ -832,6 +893,31 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                       >
                         {isEditing ? 'SALVAR DADOS' : 'EDITAR DADOS'}
                       </button>
+                      
+                      <label
+                        htmlFor={`f08-input-${project.id}`}
+                        onClick={(e) => e.stopPropagation()}
+                        className={`text-[9px] font-black px-6 py-3 rounded-xl bg-purple-600/10 text-purple-600 hover:bg-purple-600 hover:text-white uppercase tracking-widest flex items-center space-x-2 cursor-pointer transition-all border border-purple-500/30 hover:border-purple-600 ${isExtractingF08 === project.id ? 'opacity-50 cursor-wait' : ''}`}
+                        title="Extrair dados do Requerimento F08 via Inteligência Artificial"
+                      >
+                        {isExtractingF08 === project.id ? (
+                          <><i className="fas fa-spinner fa-spin"></i><span>Extraindo F08...</span></>
+                        ) : (
+                          <><i className="fas fa-wand-magic-sparkles"></i><span>Auto-Preencher F08</span></>
+                        )}
+                      </label>
+                      <input
+                        id={`f08-input-${project.id}`}
+                        type="file"
+                        accept="image/*,application/pdf"
+                        className="hidden"
+                        disabled={isExtractingF08 === project.id}
+                        onChange={(e) => {
+                          const file = e.target.files?.[0];
+                          if (file) handleExtractF08(project, file);
+                          e.target.value = '';
+                        }}
+                      />
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDeleteProject(project); }}
                         className="text-[9px] font-black px-6 py-3 rounded-xl bg-red-500/10 text-red-400 border border-red-500/20 uppercase tracking-widest hover:bg-red-500 hover:text-white hover:border-red-500 transition-all flex items-center space-x-2"
