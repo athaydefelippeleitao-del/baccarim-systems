@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { Notification, NotificationSeverity, Attachment, Project } from '../types';
 import { generateNotificationDraft, createNotificationFromText } from '../services/openaiClient';
-import { downloadFile } from '../utils/fileUtils';
+import { downloadFile, convertPdfToImage } from '../utils/fileUtils';
 import { getNotificationFiles } from '../services/supabaseService';
 
 interface NotificationsViewProps {
@@ -256,12 +256,17 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
     setAiCreating(true);
     setAiToast(`Analisando "${file.name}"...`);
     try {
-      const dataUri: string = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = e => resolve(e.target?.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+      let dataUri = '';
+      if (file.type === 'application/pdf') {
+        dataUri = await convertPdfToImage(file);
+      } else {
+        dataUri = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = e => resolve(e.target?.result as string);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      }
 
       const projectsForAI = projects.map(p => ({
         id: p.id,
@@ -293,6 +298,14 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         else formattedDeadline = result.deadline;
       }
 
+      // Create the attachment object
+      const dateStr = new Date().toLocaleDateString('pt-BR');
+      const newAttachment: Attachment = {
+        fileName: file.name,
+        fileData: dataUri,
+        fileDate: dateStr
+      };
+
       const newNotif: Notification = {
         id: `n-${Date.now()}`,
         title: result.title || 'Notificação sem título',
@@ -301,11 +314,11 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         agency: result.agency || 'SEMA',
         severity: (['Alta', 'Média', 'Baixa'].includes(result.severity) ? result.severity : 'Média') as NotificationSeverity,
         category: (result.category === 'Licença' ? 'Licença' : 'Notificação') as 'Notificação' | 'Licença',
-        deadline: formattedDeadline,
+        deadline: formattedDeadline || '',
         description: result.description || '',
         dateReceived: new Date().toLocaleDateString('pt-BR'),
         status: 'Open',
-        attachedFiles: []
+        attachedFiles: [newAttachment]
       };
 
       onAddNotification(newNotif);
