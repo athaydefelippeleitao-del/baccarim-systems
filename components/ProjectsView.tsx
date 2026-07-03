@@ -3,7 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Project, ChecklistItem, Attachment, EnvironmentalLicense, Notification } from '../types';
 import ProjectProcessReportView from './ProjectProcessReportView';
 import { utmToDecimal } from '../utils/geoUtils';
-import { downloadFile } from '../utils/fileUtils';
+import { downloadFile, convertPdfToImage } from '../utils/fileUtils';
 import { exportProjectDocumentsAsZip } from '../utils/zipUtils';
 import ProjectExtensionReportView from './ProjectExtensionReportView';
 import ProjectMeetingMinutesView from './ProjectMeetingMinutesView';
