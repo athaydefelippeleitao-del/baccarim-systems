@@ -294,23 +294,33 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
 
       // Format deadline from YYYY-MM-DD to DD/MM/YYYY
       let formattedDeadline = '';
-      if (result.deadline) {
-        const parts = result.deadline.split('-');
+      
+      let dateObj: Date | null = null;
+      if (result.explicitDeadline) {
+        const parts = result.explicitDeadline.split('-');
+        if (parts.length === 3) dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+      } else if (result.issueDate) {
+        const parts = result.issueDate.split('-');
         if (parts.length === 3) {
-          let dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+          dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
           
-          // Se for Licença, o Prazo Fatal para renovação é 120 dias antes do vencimento
-          if (result.category === 'Licença') {
+          if (result.category === 'Licença' && result.validityMonths) {
+            // Add months to issueDate
+            dateObj.setMonth(dateObj.getMonth() + Number(result.validityMonths));
+            // Subtract 120 days for renewal
             dateObj.setDate(dateObj.getDate() - 120);
+          } else if (result.category === 'Notificação' && result.deadlineDays) {
+            // Add days to issueDate
+            dateObj.setDate(dateObj.getDate() + Number(result.deadlineDays));
           }
-          
-          const d = String(dateObj.getDate()).padStart(2, '0');
-          const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-          const y = dateObj.getFullYear();
-          formattedDeadline = `${d}/${m}/${y}`;
-        } else {
-          formattedDeadline = result.deadline;
         }
+      }
+
+      if (dateObj && !isNaN(dateObj.getTime())) {
+        const d = String(dateObj.getDate()).padStart(2, '0');
+        const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const y = dateObj.getFullYear();
+        formattedDeadline = `${d}/${m}/${y}`;
       }
 
       // Create the attachment object with the original file, NOT the image converted for AI
