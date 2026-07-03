@@ -296,8 +296,21 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
       let formattedDeadline = '';
       if (result.deadline) {
         const parts = result.deadline.split('-');
-        if (parts.length === 3) formattedDeadline = `${parts[2]}/${parts[1]}/${parts[0]}`;
-        else formattedDeadline = result.deadline;
+        if (parts.length === 3) {
+          let dateObj = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]));
+          
+          // Se for Licença, o Prazo Fatal para renovação é 120 dias antes do vencimento
+          if (result.category === 'Licença') {
+            dateObj.setDate(dateObj.getDate() - 120);
+          }
+          
+          const d = String(dateObj.getDate()).padStart(2, '0');
+          const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+          const y = dateObj.getFullYear();
+          formattedDeadline = `${d}/${m}/${y}`;
+        } else {
+          formattedDeadline = result.deadline;
+        }
       }
 
       // Create the attachment object with the original file, NOT the image converted for AI
