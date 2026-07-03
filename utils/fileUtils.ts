@@ -17,3 +17,33 @@ export const downloadFile = (file: Attachment) => {
   link.click();
   document.body.removeChild(link);
 };
+
+/**
+ * Converte a primeira página de um PDF em uma imagem base64
+ */
+export const convertPdfToImage = async (file: File): Promise<string> => {
+  const pdfjsLib = await import('pdfjs-dist');
+  const pdfWorker = await import('pdfjs-dist/build/pdf.worker.mjs?url');
+  pdfjsLib.GlobalWorkerOptions.workerSrc = pdfWorker.default;
+
+  const arrayBuffer = await file.arrayBuffer();
+  const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+  const page = await pdf.getPage(1);
+  
+  // Escala de 2.0 para manter qualidade o suficiente para leitura da IA
+  const viewport = page.getViewport({ scale: 2.0 });
+  
+  const canvas = document.createElement('canvas');
+  const ctx = canvas.getContext('2d');
+  if (!ctx) throw new Error('Falha ao criar canvas');
+  
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  
+  await page.render({
+    canvasContext: ctx,
+    viewport: viewport
+  }).promise;
+  
+  return canvas.toDataURL('image/jpeg', 0.8);
+};
