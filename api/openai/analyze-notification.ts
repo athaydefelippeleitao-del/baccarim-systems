@@ -45,20 +45,22 @@ Lista de Empreendimentos (Projetos) atuais no sistema (JSON):
 ${JSON.stringify(projects || [])}
 
 Baseado no documento, identifique a qual empreendimento (projectId) e cliente (clientName) ele pertence.
-IMPORTANTE: A regra de ouro para encontrar o empreendimento correto é: busque PRIMEIRO pelo número do Protocolo (e-Protocolo, SEI, etc) ou Número do Processo no documento e compare com o campo "processNumber" da lista (ignorando pontos, traços e barras na comparação). Se o número bater, esse é o match perfeito, use o "id" dele. Se NÃO achar o protocolo no documento, compare o Nome Fantasia ("clientName") E o Nome do Loteamento ("name"). NÃO chute e NÃO adivinhe! Se você não tiver certeza absoluta de qual é o empreendimento, retorne "matchedProjectId": null e "matchedClientName": "". NUNCA selecione um empreendimento aleatório.
+IMPORTANTE: A regra de ouro para encontrar o empreendimento correto é: busque PRIMEIRO pelo número do Protocolo (e-Protocolo, SEI, etc) ou Número do Processo no documento e compare com o campo "processNumber" da lista (ignorando pontos, traços e barras na comparação). Se o número bater exato, esse é o match perfeito, use o "id" dele. Se NÃO achar o protocolo no documento, compare o Nome Fantasia ("clientName") E o Nome do Loteamento ("name"). NÃO chute e NÃO adivinhe! Se houver múltiplos empreendimentos do mesmo cliente (ex: MRV) e você não tiver certeza de qual é o correto, DEIXE EM BRANCO. É preferível retornar null a errar o projeto.
 
 Retorne EXCLUSIVAMENTE um objeto JSON contendo:
 - "category": "Notificação" se for um ofício, exigência, multa, notificação, auto de infração, etc. "Licença" se for uma licença (LP, LI, LO, LAS, Outorga, etc).
 - "title": Título curto e descritivo. Ex: "Licença de Operação - IAT", "Ofício 123/2023 - Complementação".
 - "description": Resumo do que trata o documento.
-- "agency": Órgão emissor do licenciamento ambiental. SEMPRE retorne "SEMA" ou "IAT". Se no documento aparecer "Secretaria de Estado do Meio Ambiente", "SEMA/PR" ou similar, retorne "SEMA". Se aparecer "Instituto Água e Terra" ou "IAT" ou "ICMBIO" (estadual), retorne "IAT". Em QUALQUER outro caso (prefeitura, IBAMA federal, etc.) ainda assim retorne "SEMA" ou "IAT" conforme o contexto do licenciamento estadual do Paraná.
+- "agency": Órgão emissor do licenciamento ambiental. SEMPRE retorne "SEMA" ou "IAT" (a não ser que seja de prefeitura).
 - "issueDate": Data de emissão ou recebimento estampada no documento (AAAA-MM-DD). Ex: data da assinatura. Se não achar, null.
 - "validityMonths": Se for Licença, extraia APENAS O NÚMERO do prazo de validade em meses (ex: 72, 48). Se não tiver, null.
 - "deadlineDays": Se for Notificação/Ofício, extraia APENAS O NÚMERO do prazo para resposta em dias (ex: 15, 30). Se não tiver, null.
 - "explicitDeadline": Se o documento citar uma data final fatal explícita para cumprimento (AAAA-MM-DD). Se não achar, null.
 - "severity": "Alta" (multa, prazo curto, indeferimento), "Média" (prazos normais), ou "Baixa" (apenas ciência, licença emitida).
-- "matchedProjectId": O "id" do projeto que melhor corresponde ao documento, ou null.
-- "matchedClientName": O "clientName" do projeto identificado, ou o nome que estiver no documento.
+- "extractedProtocol": O número do protocolo EXATO que você leu no documento (ex: "11.222.333-4"). Se não achou protocolo, null.
+- "extractedProjectName": O nome do empreendimento EXATO que você leu no documento. Se não achou, null.
+- "matchedProjectId": O "id" do projeto da lista que corresponde ao documento, ou null se não tiver certeza absoluta.
+- "matchedClientName": O "clientName" do projeto identificado, ou o nome que estiver no documento se não bater.
 
 Lembre-se: retorne APENAS um JSON válido.`;
 
