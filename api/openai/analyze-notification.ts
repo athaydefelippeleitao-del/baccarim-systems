@@ -45,7 +45,7 @@ Lista de Empreendimentos (Projetos) atuais no sistema (JSON):
 ${JSON.stringify(projects || [])}
 
 Baseado no documento, identifique a qual empreendimento (projectId) e cliente (clientName) ele pertence.
-IMPORTANTE: A forma mais garantida de encontrar o empreendimento correto é comparando o Número do Processo/Protocolo ("processNumber"), CNPJ ("cnpj") ou Razão Social ("razaoSocial"). Porém, muitas licenças trazem apenas o Nome Fantasia do cliente ("clientName") e o Nome do Loteamento/Empreendimento ("name"). Por exemplo, se no documento estiver escrito "ROTTAS CONSTRUTORA - ROTTAS MARITACAS", procure na lista por clientName = "ROTTAS CONSTRUTORA" e name = "ROTTAS MARITACAS" ou algo similar. Seja muito flexível na busca textual: cruze o "name" e "clientName" da lista com os nomes citados no documento. Ao encontrar a correspondência, preencha o "matchedProjectId" com o id exato.
+IMPORTANTE: A regra de ouro para encontrar o empreendimento correto é: busque PRIMEIRO pelo número do Protocolo (e-Protocolo, SEI, etc) ou Número do Processo no documento e compare exatamente com o campo "processNumber" da lista. Se os protocolos baterem, é o match perfeito, use-o imediatamente. Apenas se não houver protocolo no documento (ou se não bater), tente cruzar o Nome Fantasia do cliente ("clientName") e o Nome do Loteamento/Empreendimento ("name"). Seja muito flexível na busca textual. Ao encontrar a correspondência, preencha o "matchedProjectId" com o id exato.
 
 Retorne EXCLUSIVAMENTE um objeto JSON contendo:
 - "category": "Notificação" se for um ofício, exigência, multa, notificação, auto de infração, etc. "Licença" se for uma licença (LP, LI, LO, LAS, Outorga, etc).
