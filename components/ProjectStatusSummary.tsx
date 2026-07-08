@@ -44,7 +44,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
   const handleCellSave = (project: Project, field: string, value: string) => {
     if (onUpdateProject) {
       const updatedProject = { ...project };
-      if (['numeroProtocolo', 'responsavelTecnico', 'nomeResponsavel', 'dataProtocolo', 'ultimaMovimentacao'].includes(field)) {
+      if (['numeroProtocolo', 'responsavelTecnico', 'nomeResponsavel', 'dataProtocolo', 'ultimaMovimentacao', 'licencaObtida'].includes(field)) {
         updatedProject.specs = { ...updatedProject.specs, [field]: value };
       } else {
         (updatedProject as any)[field] = value;
