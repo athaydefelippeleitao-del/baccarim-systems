@@ -712,8 +712,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
             </div>
           </div>
           <div className="fixed top-8 right-8 flex space-x-4 z-[210] print:hidden">
-            <button onClick={handleGeneratePDF} disabled={isGeneratingPdf} className="w-16 h-16 bg-baccarim-green/10 border border-baccarim-border text-baccarim-text rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
-              {isGeneratingPdf ? <div className="w-6 h-6 border-2 border-baccarim-border/30 border-t-baccarim-text rounded-full animate-spin"></div> : <i className="fas fa-file-pdf text-xl"></i>}
+            <button onClick={handleGeneratePDF} disabled={isGeneratingPdf} className="w-16 h-16 bg-baccarim-blue text-white rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform">
+              {isGeneratingPdf ? <div className="w-6 h-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div> : <i className="fas fa-file-pdf text-xl"></i>}
             </button>
             <button onClick={() => setSelectedReport(null)} className="w-16 h-16 bg-baccarim-card text-baccarim-navy rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-transform"><i className="fas fa-times text-xl"></i></button>
           </div>
