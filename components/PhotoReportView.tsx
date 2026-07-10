@@ -513,6 +513,20 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                   {draftReport.projectId && (
                     <div className="space-y-10 pt-4 border-t animate-in fade-in">
                       <div className="space-y-6">
+                        <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">0. Dados do Relatório</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título do Documento</label>
+                            <input value={draftReport.title || 'RELATÓRIO FOTOGRÁFICO'} onChange={e => setDraftReport({ ...draftReport, title: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" placeholder="Ex: RELATÓRIO FOTOGRÁFICO" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Data Base (Elaboração)</label>
+                            <input type="date" value={draftReport.date || ''} onChange={e => setDraftReport({ ...draftReport, date: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6 pt-4 border-t">
                         <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">1. Identificação do Empreendedor</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                           <div className="space-y-1 md:col-span-2">
@@ -766,7 +780,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
               <div className="relative z-10 space-y-20">
                 <div className="text-center">
-                  <h3 className="text-[18px] font-black text-[#002D62] uppercase underline decoration-2 underline-offset-8">RELATÓRIO FOTOGRÁFICO</h3>
+                  <h3 className="text-[18px] font-black text-[#002D62] uppercase underline decoration-2 underline-offset-8">{selectedReport.title || 'RELATÓRIO FOTOGRÁFICO'}</h3>
                 </div>
 
                 <div className="grid grid-cols-2 gap-20">
@@ -783,8 +797,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                     <p className="text-[16px] font-black text-[#002D62] text-center">Contratada</p>
                     <div className="space-y-6 text-center flex flex-col items-center">
                       <div className="text-left flex flex-col items-center">
-                        <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="w-16 h-16 object-contain mb-4" />
-                        <h4 className="text-[24px] font-black text-[#002D62] leading-tight uppercase text-center">Baccarim<br />Engenharia de<br />Loteamentos</h4>
+                        <img src="/logo_baccarim.jpg" alt="Logo" className="w-16 h-16 object-contain mb-4" />
+                        <h4 className="text-[24px] font-black text-[#002D62] leading-tight uppercase text-center max-w-[250px] break-words">
+                          {selectedReport.respCompany || 'Baccarim Engenharia'}
+                        </h4>
                       </div>
                       <p className="text-[14px] font-bold text-[#002D62] leading-relaxed">
                         {selectedReport.respAddress} – {selectedReport.respCity}
