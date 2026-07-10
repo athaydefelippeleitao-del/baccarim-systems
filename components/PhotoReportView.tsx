@@ -475,19 +475,6 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               {formStep === 1 && (
                 <div className="space-y-8 animate-in slide-in-from-right-4">
                   <div>
-                    <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em] mb-4">Informações Gerais</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título do Laudo</label>
-                        <input value={draftReport.title} onChange={e => setDraftReport({ ...draftReport, title: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" placeholder="Ex: RELATÓRIO FOTOGRÁFICO" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Data do Laudo</label>
-                        <input type="date" value={draftReport.date} onChange={e => setDraftReport({ ...draftReport, date: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" />
-                      </div>
-                    </div>
-
-                    <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em] mb-4">1. Selecione o Empreendimento</h4>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {projects.map(p => {
                         const isSelected = draftReport.projectId === p.id;
@@ -509,9 +496,12 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                       })}
                     </div>
                   </div>
+                </div>
+              )}
 
-                  {draftReport.projectId && (
-                    <div className="space-y-10 pt-4 border-t animate-in fade-in">
+              {formStep === 2 && (
+                <div className="space-y-8 animate-in slide-in-from-right-4">
+                  <div className="space-y-10">
                       <div className="space-y-6">
                         <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">0. Dados do Relatório</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -658,12 +648,11 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                             </div>
                           </div>
                         </div>
-                      </div>
                     </div>
-                  )}
+                  </div>
                 </div>
               )}
-              {formStep === 2 && (
+              {formStep === 3 && (
                 <div className="space-y-8 animate-in slide-in-from-right-4">
                   <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em] border-b pb-2">Registros Fotográficos</h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -701,8 +690,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
             <div className="mt-6 md:mt-10 flex flex-wrap gap-4 pt-6 border-t bg-baccarim-card">
               {formStep > 1 && <button onClick={() => setFormStep(prev => prev - 1)} className="px-6 md:px-10 py-4 bg-baccarim-active text-baccarim-text-muted rounded-2xl font-black uppercase text-[10px]">Voltar</button>}
-              {formStep < 2 ? (
-                <button onClick={() => setFormStep(prev => prev + 1)} disabled={!draftReport.projectId} className="flex-1 py-4 bg-baccarim-navy/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl disabled:opacity-30">Próximo Passo</button>
+              {formStep < 3 ? (
+                <button onClick={() => setFormStep(prev => prev + 1)} disabled={formStep === 1 && !draftReport.projectId} className="flex-1 py-4 bg-baccarim-navy/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl disabled:opacity-30">Próximo Passo</button>
               ) : (
                 <>
                   <button onClick={() => setSelectedReport(draftReport as PhotoReport)} disabled={!draftReport.photos?.length} className="px-6 md:px-10 py-4 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl">Visualizar Prévia</button>
