@@ -743,8 +743,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               {/* Middle Section - Baccarim Branding */}
               <div className="text-center w-full space-y-16 relative z-10">
                 <div className="space-y-6 flex flex-col items-center">
-                  <img src="/logo_baccarim.jpg" alt="Baccarim Logo" className="w-32 h-32 mb-4 object-contain" />
-                  <h1 className="text-[42px] font-black text-[#002D62] leading-[1.1] tracking-tighter uppercase">Baccarim<br />Engenharia de<br />Loteamentos</h1>
+                  <img src="/logo_baccarim.jpg" alt="Logo" className="w-32 h-32 mb-4 object-contain" />
+                  <h1 className="text-[42px] font-black text-[#002D62] leading-[1.1] tracking-tighter uppercase max-w-[400px] break-words">
+                    {selectedReport.respCompany || 'Baccarim Engenharia'}
+                  </h1>
                 </div>
 
                 <div className="space-y-4 flex flex-col items-center">
