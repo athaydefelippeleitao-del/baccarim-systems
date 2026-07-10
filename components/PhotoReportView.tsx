@@ -694,8 +694,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                 <button onClick={() => setFormStep(prev => prev + 1)} disabled={formStep === 1 && !draftReport.projectId} className="flex-1 py-4 bg-baccarim-navy/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl disabled:opacity-30">Próximo Passo</button>
               ) : (
                 <>
-                  <button onClick={() => setSelectedReport(draftReport as PhotoReport)} disabled={!draftReport.photos?.length} className="px-6 md:px-10 py-4 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl">Visualizar Prévia</button>
-                  <button onClick={handleSaveReport} disabled={!draftReport.photos?.length} className="flex-1 py-4 bg-baccarim-green/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl">Finalizar e Gerar Laudo</button>
+                  <button onClick={() => setSelectedReport(draftReport as PhotoReport)} className="px-6 md:px-10 py-4 bg-baccarim-blue/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl">Visualizar Prévia</button>
+                  <button onClick={handleSaveReport} className="flex-1 py-4 bg-baccarim-green/10 border border-baccarim-border text-baccarim-text rounded-2xl font-black uppercase text-[10px] shadow-xl">Finalizar e Gerar Laudo</button>
                 </>
               )}
             </div>
