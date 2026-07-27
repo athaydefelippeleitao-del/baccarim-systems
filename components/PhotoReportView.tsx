@@ -112,10 +112,26 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       let finalLng = photo.lng;
 
       if ((!finalLat || !finalLng) && photo.coordE && photo.coordN) {
-        const converted = utmToDecimal(parseFloat(photo.coordE), parseFloat(photo.coordN), zone);
-        if (converted) {
-          finalLat = converted.lat;
-          finalLng = converted.lng;
+        // Sanitize Brazilian number formats (e.g., "7.420.123,45" or "7420123,45" -> 7420123.45)
+        const cleanCoord = (val: string) => {
+          let cleaned = val.replace(/\s/g, '');
+          if (cleaned.includes(',') && cleaned.includes('.')) {
+            cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+          } else if (cleaned.includes(',')) {
+            cleaned = cleaned.replace(',', '.');
+          }
+          return parseFloat(cleaned);
+        };
+
+        const eNum = cleanCoord(photo.coordE);
+        const nNum = cleanCoord(photo.coordN);
+
+        if (!isNaN(eNum) && !isNaN(nNum)) {
+          const converted = utmToDecimal(eNum, nNum, zone);
+          if (converted) {
+            finalLat = converted.lat;
+            finalLng = converted.lng;
+          }
         }
       }
 
