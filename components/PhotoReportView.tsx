@@ -105,7 +105,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
   const getUniquePoints = (photos: PhotoItem[]) => {
     const points: { lat: number; lng: number; photos: PhotoItem[]; pointNumber: number }[] = [];
     const project = projects.find(p => p.id === selectedReport?.projectId);
-    const zone = project?.specs?.zone || 22;
+    const zoneRaw = project?.specs?.zone || 22;
+    const zone = parseInt(zoneRaw.toString(), 10) || 22;
 
     photos.forEach(photo => {
       let finalLat = photo.lat;
