@@ -421,7 +421,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
   const getPointInfoLabel = (photo: PhotoItem, allPhotos: PhotoItem[]) => {
     const points = getUniquePoints(allPhotos);
-    const point = points.find(p => Math.abs(p.lat - (photo.lat || 0)) < 0.00001 && Math.abs(p.lng - (photo.lng || 0)) < 0.00001);
+    const point = points.find(p => p.photos.some(pt => pt.id === photo.id));
     if (!point) return '';
 
     return `PONTO ${point.pointNumber}`;
