@@ -2,6 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PhotoReport, Project, PhotoItem } from '../types';
 import { analyzeVistoriaImage } from '../services/openaiClient';
+import { utmToDecimal } from '../utils/geoUtils';
 
 declare const L: any;
 
@@ -103,13 +104,27 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
   const getUniquePoints = (photos: PhotoItem[]) => {
     const points: { lat: number; lng: number; photos: PhotoItem[]; pointNumber: number }[] = [];
+    const project = projects.find(p => p.id === selectedReport?.projectId);
+    const zone = project?.specs?.zone || 22;
+
     photos.forEach(photo => {
-      if (photo.lat && photo.lng) {
-        let existingPoint = points.find(p => Math.abs(p.lat - photo.lat!) < 0.00001 && Math.abs(p.lng - photo.lng!) < 0.00001);
+      let finalLat = photo.lat;
+      let finalLng = photo.lng;
+
+      if ((!finalLat || !finalLng) && photo.coordE && photo.coordN) {
+        const converted = utmToDecimal(parseFloat(photo.coordE), parseFloat(photo.coordN), zone);
+        if (converted) {
+          finalLat = converted.lat;
+          finalLng = converted.lng;
+        }
+      }
+
+      if (finalLat && finalLng) {
+        let existingPoint = points.find(p => Math.abs(p.lat - finalLat!) < 0.00001 && Math.abs(p.lng - finalLng!) < 0.00001);
         if (existingPoint) {
           existingPoint.photos.push(photo);
         } else {
-          points.push({ lat: photo.lat!, lng: photo.lng!, photos: [photo], pointNumber: points.length + 1 });
+          points.push({ lat: finalLat!, lng: finalLng!, photos: [photo], pointNumber: points.length + 1 });
         }
       }
     });
