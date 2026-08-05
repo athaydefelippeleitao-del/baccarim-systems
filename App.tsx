@@ -769,18 +769,47 @@ const App: React.FC = () => {
   }, [filteredProjects]);
 
   const chartDataCompliance = useMemo(() => {
-    const phases = [LicenseType.LP, LicenseType.LI, LicenseType.LAS, LicenseType.LO];
-    return phases.map(phase => {
-      const phaseProjects = filteredProjects.filter(p => p.currentPhase === phase);
-      const avgProgress = phaseProjects.length > 0
-        ? Math.round(phaseProjects.reduce((acc, curr) => acc + curr.progress, 0) / phaseProjects.length)
+    const progressMap: Record<string, number[]> = {};
+    
+    const addProgress = (licencaName: string, progress: number) => {
+      let key = licencaName.trim();
+      if (/^l\.?\s*p\.?$/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
+      else if (/^l\.?\s*i\.?$/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
+      else if (/^l\.?\s*o\.?$/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
+      else if (/^l\.?\s*a\.?\s*s\.?$/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
+      else if (/^a\.?\s*s\.?\s*v\.?$/i.test(key) || /supress/i.test(key)) key = 'ASV';
+      else if (/^a\.?\s*a\.?$/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
+      else if (/outorga/i.test(key)) key = 'Outorga';
+      else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
+      else key = 'Outros';
+      
+      if (!progressMap[key]) progressMap[key] = [];
+      progressMap[key].push(progress);
+    };
+
+    filteredProjects.forEach(p => {
+      addProgress(p.specs?.licencaObtida || 'Nenhuma', p.progress);
+    });
+
+    filteredNotifications.forEach(n => {
+      if (n.category === 'Licença' && n.status === 'Open') {
+        const proj = filteredProjects.find(p => p.id === n.projectId);
+        if (proj) {
+          addProgress(n.title, proj.progress);
+        }
+      }
+    });
+
+    return Object.entries(progressMap).map(([name, progresses]) => {
+      const avgProgress = progresses.length > 0
+        ? Math.round(progresses.reduce((acc, curr) => acc + curr, 0) / progresses.length)
         : 0;
       return {
-        name: phase.split(' (')[0],
+        name,
         progresso: avgProgress
       };
-    });
-  }, [filteredProjects]);
+    }).sort((a, b) => b.progresso - a.progresso);
+  }, [filteredProjects, filteredNotifications]);
 
   const stats = useMemo(() => {
     const iatNotifs = filteredNotifications.filter(n => n.agency === 'IAT' && n.status === 'Open').length;
