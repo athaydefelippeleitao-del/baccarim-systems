@@ -745,6 +745,7 @@ const App: React.FC = () => {
       else if (/\ba\.?\s*a\.?\b/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
       else if (/outorga/i.test(key)) key = 'Outorga';
       else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
+      else key = 'Outros'; // Prevent clutter
       counts[key] = (counts[key] || 0) + 1;
     };
 
@@ -780,6 +781,7 @@ const App: React.FC = () => {
       else if (/\ba\.?\s*a\.?\b/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
       else if (/outorga/i.test(key)) key = 'Outorga';
       else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
+      else key = 'Outros';
       return key;
     };
 
