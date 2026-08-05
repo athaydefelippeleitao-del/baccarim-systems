@@ -737,12 +737,12 @@ const App: React.FC = () => {
     
     const countLicense = (licencaName: string) => {
       let key = licencaName.trim();
-      if (/^l\.?\s*p\.?$/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
-      else if (/^l\.?\s*i\.?$/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
-      else if (/^l\.?\s*o\.?$/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
-      else if (/^l\.?\s*a\.?\s*s\.?$/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
-      else if (/^a\.?\s*s\.?\s*v\.?$/i.test(key) || /supress/i.test(key)) key = 'ASV';
-      else if (/^a\.?\s*a\.?$/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
+      if (/\bl\.?\s*p\.?\b/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
+      else if (/\bl\.?\s*i\.?\b/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
+      else if (/\bl\.?\s*o\.?\b/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
+      else if (/\bl\.?\s*a\.?\s*s\.?\b/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
+      else if (/\ba\.?\s*s\.?\s*v\.?\b/i.test(key) || /supress/i.test(key)) key = 'ASV';
+      else if (/\ba\.?\s*a\.?\b/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
       else if (/outorga/i.test(key)) key = 'Outorga';
       else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
       else key = 'Outros'; // Prevent clutter
@@ -773,12 +773,12 @@ const App: React.FC = () => {
     
     const addProgress = (licencaName: string, progress: number) => {
       let key = licencaName.trim();
-      if (/^l\.?\s*p\.?$/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
-      else if (/^l\.?\s*i\.?$/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
-      else if (/^l\.?\s*o\.?$/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
-      else if (/^l\.?\s*a\.?\s*s\.?$/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
-      else if (/^a\.?\s*s\.?\s*v\.?$/i.test(key) || /supress/i.test(key)) key = 'ASV';
-      else if (/^a\.?\s*a\.?$/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
+      if (/\bl\.?\s*p\.?\b/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
+      else if (/\bl\.?\s*i\.?\b/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
+      else if (/\bl\.?\s*o\.?\b/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
+      else if (/\bl\.?\s*a\.?\s*s\.?\b/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
+      else if (/\ba\.?\s*s\.?\s*v\.?\b/i.test(key) || /supress/i.test(key)) key = 'ASV';
+      else if (/\ba\.?\s*a\.?\b/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
       else if (/outorga/i.test(key)) key = 'Outorga';
       else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
       else key = 'Outros';
@@ -788,16 +788,7 @@ const App: React.FC = () => {
     };
 
     filteredProjects.forEach(p => {
-      addProgress(p.specs?.licencaObtida || 'Nenhuma', p.progress);
-    });
-
-    filteredNotifications.forEach(n => {
-      if (n.category === 'Licença' && n.status === 'Open') {
-        const proj = filteredProjects.find(p => p.id === n.projectId);
-        if (proj) {
-          addProgress(n.title, proj.progress);
-        }
-      }
+      addProgress(p.currentPhase || 'Em Requerimento', p.progress);
     });
 
     return Object.entries(progressMap).map(([name, progresses]) => {
@@ -809,7 +800,7 @@ const App: React.FC = () => {
         progresso: avgProgress
       };
     }).sort((a, b) => b.progresso - a.progresso);
-  }, [filteredProjects, filteredNotifications]);
+  }, [filteredProjects]);
 
   const stats = useMemo(() => {
     const iatNotifs = filteredNotifications.filter(n => n.agency === 'IAT' && n.status === 'Open').length;
