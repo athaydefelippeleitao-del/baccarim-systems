@@ -771,7 +771,7 @@ const App: React.FC = () => {
   const chartDataCompliance = useMemo(() => {
     const progressMap: Record<string, number[]> = {};
     
-    const addProgress = (licencaName: string, progress: number) => {
+    const parseLicenseKey = (licencaName: string) => {
       let key = licencaName.trim();
       if (/\bl\.?\s*p\.?\b/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
       else if (/\bl\.?\s*i\.?\b/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
@@ -782,13 +782,35 @@ const App: React.FC = () => {
       else if (/outorga/i.test(key)) key = 'Outorga';
       else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
       else key = 'Outros';
-      
-      if (!progressMap[key]) progressMap[key] = [];
-      progressMap[key].push(progress);
+      return key;
     };
 
     filteredProjects.forEach(p => {
-      addProgress(p.currentPhase || 'Em Requerimento', p.progress);
+      const projectContributions: Record<string, number> = {};
+
+      const addContribution = (name: string, val: number) => {
+        const key = parseLicenseKey(name);
+        projectContributions[key] = Math.max(projectContributions[key] || 0, val);
+      };
+
+      // 1. Current Phase checklist progress
+      addContribution(p.currentPhase || 'Em Requerimento', p.progress || 0);
+
+      // 2. Already obtained primary license (100% compliant)
+      if (p.specs?.licencaObtida && !/nenhuma|em requerimento/i.test(p.specs.licencaObtida)) {
+        addContribution(p.specs.licencaObtida, 100);
+      }
+
+      // 3. Additional active licenses (100% compliant)
+      const projectNotifs = filteredNotifications.filter(n => n.projectId === p.id && n.category === 'Licença' && n.status === 'Open');
+      projectNotifs.forEach(n => {
+        addContribution(n.title, 100);
+      });
+
+      Object.entries(projectContributions).forEach(([key, val]) => {
+        if (!progressMap[key]) progressMap[key] = [];
+        progressMap[key].push(val);
+      });
     });
 
     return Object.entries(progressMap).map(([name, progresses]) => {
@@ -800,7 +822,7 @@ const App: React.FC = () => {
         progresso: avgProgress
       };
     }).sort((a, b) => b.progresso - a.progresso);
-  }, [filteredProjects]);
+  }, [filteredProjects, filteredNotifications]);
 
   const stats = useMemo(() => {
     const iatNotifs = filteredNotifications.filter(n => n.agency === 'IAT' && n.status === 'Open').length;
