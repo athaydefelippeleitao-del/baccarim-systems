@@ -18,7 +18,7 @@ import PhotoReportView from './components/PhotoReportView';
 import ServerManagementView from './components/ServerManagementView';
 import AIDocumentsView from './components/AIDocumentsView';
 import LoadingScreen from './components/LoadingScreen';
-import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import ProjectStatusSummary from './components/ProjectStatusSummary';
 import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb, loadEssentialStateFromSupabase, loadHeavyStateFromSupabase, saveKeyToSupabase, deleteKeyFromSupabase, getUsers } from './services/supabaseService';
 
@@ -733,15 +733,28 @@ const App: React.FC = () => {
   }, [currentUser, clients, adminClientFilter]);
 
   const chartDataStatus = useMemo(() => {
-    const active = filteredLicenses.filter(l => l.status === LicenseStatus.ACTIVE).length;
-    const expiring = filteredLicenses.filter(l => l.status === LicenseStatus.EXPIRING).length;
-    const expired = filteredLicenses.filter(l => l.status === LicenseStatus.EXPIRED).length;
-    return [
-      { name: 'Ativas', value: active, color: '#00B08E' },
-      { name: 'Vencendo', value: expiring, color: '#3FA9F5' },
-      { name: 'Vencidas', value: expired, color: '#EF4444' }
-    ];
-  }, [filteredLicenses]);
+    const counts: Record<string, number> = {};
+    filteredProjects.forEach(p => {
+      const licenca = p.specs?.licencaObtida || 'Nenhuma';
+      // Normalize common variations
+      let key = licenca.trim();
+      if (/^l\.?\s*p\.?$/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
+      else if (/^l\.?\s*i\.?$/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
+      else if (/^l\.?\s*o\.?$/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
+      else if (/^l\.?\s*a\.?\s*s\.?$/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
+      else if (/^a\.?\s*s\.?\s*v\.?$/i.test(key) || /supress/i.test(key)) key = 'ASV';
+      else if (/outorga/i.test(key)) key = 'Outorga';
+      else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
+      counts[key] = (counts[key] || 0) + 1;
+    });
+    const colorMap: Record<string, string> = {
+      'LP': '#3FA9F5', 'LI': '#00B08E', 'LO': '#8B5CF6', 'LAS': '#F59E0B',
+      'ASV': '#EF4444', 'Outorga': '#EC4899', 'Em Requerimento': '#94A3B8'
+    };
+    return Object.entries(counts)
+      .map(([name, value]) => ({ name, value, color: colorMap[name] || '#64748b' }))
+      .sort((a, b) => b.value - a.value);
+  }, [filteredProjects]);
 
   const chartDataCompliance = useMemo(() => {
     const phases = [LicenseType.LP, LicenseType.LI, LicenseType.LAS, LicenseType.LO];
@@ -1075,10 +1088,11 @@ const App: React.FC = () => {
                 <div className="flex-1">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
-                      <Pie data={chartDataStatus} innerRadius={60} outerRadius={100} paddingAngle={5} dataKey="value" stroke="none">
+                      <Pie data={chartDataStatus} innerRadius={50} outerRadius={85} paddingAngle={4} dataKey="value" stroke="none">
                         {chartDataStatus.map((entry, index) => <Cell key={`cell-${index}`} fill={entry.color} />)}
                       </Pie>
                       <Tooltip contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '12px', color: '#fff' }} itemStyle={{ color: '#fff' }} />
+                      <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 800 }} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
