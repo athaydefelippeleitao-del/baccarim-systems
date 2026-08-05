@@ -813,7 +813,9 @@ const App: React.FC = () => {
       });
     });
 
-    return Object.entries(progressMap).map(([name, progresses]) => {
+    return Object.entries(progressMap)
+      .filter(([name]) => name !== 'Outros')
+      .map(([name, progresses]) => {
       const avgProgress = progresses.length > 0
         ? Math.round(progresses.reduce((acc, curr) => acc + curr, 0) / progresses.length)
         : 0;
