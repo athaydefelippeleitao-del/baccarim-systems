@@ -743,13 +743,14 @@ const App: React.FC = () => {
       else if (/^l\.?\s*o\.?$/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
       else if (/^l\.?\s*a\.?\s*s\.?$/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
       else if (/^a\.?\s*s\.?\s*v\.?$/i.test(key) || /supress/i.test(key)) key = 'ASV';
+      else if (/^a\.?\s*a\.?$/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
       else if (/outorga/i.test(key)) key = 'Outorga';
       else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
       counts[key] = (counts[key] || 0) + 1;
     });
     const colorMap: Record<string, string> = {
       'LP': '#3FA9F5', 'LI': '#00B08E', 'LO': '#8B5CF6', 'LAS': '#F59E0B',
-      'ASV': '#EF4444', 'Outorga': '#EC4899', 'Em Requerimento': '#94A3B8'
+      'ASV': '#EF4444', 'AA': '#F43F5E', 'Outorga': '#EC4899', 'Em Requerimento': '#94A3B8'
     };
     return Object.entries(counts)
       .map(([name, value]) => ({ name, value, color: colorMap[name] || '#64748b' }))
