@@ -768,64 +768,6 @@ const App: React.FC = () => {
       .sort((a, b) => b.value - a.value);
   }, [filteredProjects]);
 
-  const chartDataCompliance = useMemo(() => {
-    const progressMap: Record<string, number[]> = {};
-    
-    const parseLicenseKey = (licencaName: string) => {
-      let key = licencaName.trim();
-      if (/\bl\.?\s*p\.?\b/i.test(key) || /pr[eé]via/i.test(key)) key = 'LP';
-      else if (/\bl\.?\s*i\.?\b/i.test(key) || /instala[çc][aã]o/i.test(key)) key = 'LI';
-      else if (/\bl\.?\s*o\.?\b/i.test(key) || /opera[çc][aã]o/i.test(key)) key = 'LO';
-      else if (/\bl\.?\s*a\.?\s*s\.?\b/i.test(key) || /simplificada/i.test(key)) key = 'LAS';
-      else if (/\ba\.?\s*s\.?\s*v\.?\b/i.test(key) || /supress/i.test(key)) key = 'ASV';
-      else if (/\ba\.?\s*a\.?\b/i.test(key) || /autoriza[çc][aã]o/i.test(key)) key = 'AA';
-      else if (/outorga/i.test(key)) key = 'Outorga';
-      else if (/nenhuma/i.test(key) || /em requerimento/i.test(key) || key === '') key = 'Em Requerimento';
-      else key = 'Outros';
-      return key;
-    };
-
-    filteredProjects.forEach(p => {
-      const projectContributions: Record<string, number> = {};
-
-      const addContribution = (name: string, val: number) => {
-        const key = parseLicenseKey(name);
-        projectContributions[key] = Math.max(projectContributions[key] || 0, val);
-      };
-
-      // 1. Current Phase checklist progress
-      addContribution(p.currentPhase || 'Em Requerimento', p.progress || 0);
-
-      // 2. Already obtained primary license (100% compliant)
-      if (p.specs?.licencaObtida && !/nenhuma|em requerimento/i.test(p.specs.licencaObtida)) {
-        addContribution(p.specs.licencaObtida, 100);
-      }
-
-      // 3. Additional active licenses (100% compliant)
-      const projectNotifs = filteredNotifications.filter(n => n.projectId === p.id && n.category === 'Licença' && n.status === 'Open');
-      projectNotifs.forEach(n => {
-        addContribution(n.title, 100);
-      });
-
-      Object.entries(projectContributions).forEach(([key, val]) => {
-        if (!progressMap[key]) progressMap[key] = [];
-        progressMap[key].push(val);
-      });
-    });
-
-    return Object.entries(progressMap)
-      .filter(([name]) => name !== 'Outros')
-      .map(([name, progresses]) => {
-      const avgProgress = progresses.length > 0
-        ? Math.round(progresses.reduce((acc, curr) => acc + curr, 0) / progresses.length)
-        : 0;
-      return {
-        name,
-        progresso: avgProgress
-      };
-    }).sort((a, b) => b.progresso - a.progresso);
-  }, [filteredProjects, filteredNotifications]);
-
   const stats = useMemo(() => {
     const iatNotifs = filteredNotifications.filter(n => n.agency === 'IAT' && n.status === 'Open').length;
     const semaNotifs = filteredNotifications.filter(n => n.agency === 'SEMA' && n.status === 'Open').length;
@@ -1138,7 +1080,7 @@ const App: React.FC = () => {
               </div>
             )}
 
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 gap-8">
               <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
                 <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Status Ambiental</h3>
                 <div className="flex-1">
@@ -1150,21 +1092,6 @@ const App: React.FC = () => {
                       <Tooltip contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', fontSize: '12px', color: '#fff' }} itemStyle={{ color: '#fff' }} />
                       <Legend verticalAlign="bottom" iconType="circle" wrapperStyle={{ fontSize: '10px', fontWeight: 800 }} />
                     </PieChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-
-              <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
-                <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Média de Conformidade por Fase</h3>
-                <div className="flex-1">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart data={chartDataCompliance}>
-                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="rgba(255,255,255,0.05)" />
-                      <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} />
-                      <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 10, fontWeight: 800, fill: '#64748b' }} unit="%" />
-                      <Tooltip cursor={{ fill: 'rgba(255,255,255,0.02)' }} contentStyle={{ backgroundColor: '#001A3A', borderRadius: '15px', border: '1px solid rgba(255,255,255,0.1)', boxShadow: '0 10px 15px -3px rgb(0 0 0 / 0.1)', color: '#fff' }} itemStyle={{ color: '#fff' }} />
-                      <Bar dataKey="progresso" fill="#3FA9F5" radius={[10, 10, 0, 0]} barSize={40} />
-                    </BarChart>
                   </ResponsiveContainer>
                 </div>
               </div>
