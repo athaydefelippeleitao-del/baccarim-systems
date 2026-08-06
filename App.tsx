@@ -1147,7 +1147,7 @@ const App: React.FC = () => {
           />
         )}
         {activeTab === 'notifications' && <NotificationsView notifications={filteredNotifications} clients={filteredClientsList} projects={filteredProjects} onAddNotification={handleAddNotification} onUpdateNotification={handleUpdateNotification} onDeleteNotification={handleDeleteNotification} />}
-        {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onRenameClient={handleRenameClient} onDeleteProject={handleDeleteProject} onSelectClient={(n) => setAdminClientFilter(n)} onDeleteClient={(client) => {
+        {activeTab === 'clients' && <ClientsView userRole={currentUser.role} clients={filteredClientsList} licenses={filteredLicenses} notifications={filteredNotifications} projects={filteredProjects} checklistTemplates={checklistTemplates} projectCategories={projectCategories} onUpdateProject={handleUpdateProject} onAddProject={handleAddProject} onAddClient={handleAddClient} onRenameClient={handleRenameClient} onDeleteProject={handleDeleteProject} onSelectClient={() => {}} onDeleteClient={(client) => {
           if (window.confirm(`Excluir o cliente ${client} e todos os seus dados?`)) {
             setClients(prev => prev.filter(c => c !== client));
             emitDelete('clients', client);
