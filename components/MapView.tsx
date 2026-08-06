@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Project } from '../types';
 import { utmToDecimal, parseKML } from '../utils/geoUtils';
 
@@ -10,121 +10,128 @@ interface MapViewProps {
 
 declare const L: any;
 
+// Pré-compila o KML uma vez por projeto para não repetir o trabalho em cada render
+const kmlCoordsCache = new Map<string, [number, number][]>();
+
+const getKmlCoords = (project: Project): [number, number][] => {
+  if (!project.specs?.kmlFile?.fileData) return [];
+  const cacheKey = `${project.id}-${project.specs.kmlFile.fileName}`;
+  if (kmlCoordsCache.has(cacheKey)) return kmlCoordsCache.get(cacheKey)!;
+  try {
+    const kmlText = decodeURIComponent(escape(atob(project.specs.kmlFile.fileData)));
+    const coords = parseKML(kmlText);
+    kmlCoordsCache.set(cacheKey, coords);
+    return coords;
+  } catch {
+    return [];
+  }
+};
+
 const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject }) => {
   const mapContainerRef = useRef<HTMLDivElement>(null);
   const mapInstanceRef = useRef<any>(null);
   const layersRef = useRef<Record<string, any>>({});
+  const layerGroupRef = useRef<any>(null); // LayerGroup único para todos markers/polygons
   const markersRef = useRef<Record<string, any>>({});
   const polygonsRef = useRef<Record<string, any>>({});
-  
+
   const [isLeafletLoaded, setIsLeafletLoaded] = useState(typeof L !== 'undefined');
   const [visibleProjectIds, setVisibleProjectIds] = useState<Set<string>>(new Set(projects.map(p => p.id)));
   const [showControls, setShowControls] = useState(window.innerWidth > 768);
   const [mapMode, setMapMode] = useState<'streets' | 'satellite'>('streets');
   const [selectedClient, setSelectedClient] = useState<string | null>(null);
 
-  const filteredProjectsByClient = selectedClient 
+  const filteredProjectsByClient = selectedClient
     ? projects.filter(p => p.clientName === selectedClient)
     : projects;
 
-  // Verificar se o Leaflet carregou (caso o script demore)
+  // Verificar se o Leaflet carregou
   useEffect(() => {
-    if (typeof L !== 'undefined') {
-      setIsLeafletLoaded(true);
-      return;
-    }
-
+    if (typeof L !== 'undefined') { setIsLeafletLoaded(true); return; }
     const interval = setInterval(() => {
-      if (typeof L !== 'undefined') {
-        setIsLeafletLoaded(true);
-        clearInterval(interval);
-      }
+      if (typeof L !== 'undefined') { setIsLeafletLoaded(true); clearInterval(interval); }
     }, 100);
-
     return () => clearInterval(interval);
   }, []);
 
-  // Sincronizar projetos visíveis quando a lista de projetos mudar
+  // Sincronizar projetos visíveis apenas para novos
   useEffect(() => {
     setVisibleProjectIds(prev => {
       const next = new Set(prev);
       let changed = false;
-      projects.forEach(p => {
-        if (!next.has(p.id)) {
-          next.add(p.id);
-          changed = true;
-        }
-      });
+      projects.forEach(p => { if (!next.has(p.id)) { next.add(p.id); changed = true; } });
       return changed ? next : prev;
     });
   }, [projects]);
 
-  // Inicialização Robusta
+  // Inicialização — roda apenas uma vez
   useEffect(() => {
     if (!isLeafletLoaded || !mapContainerRef.current || mapInstanceRef.current) return;
 
-    const initMap = () => {
-      try {
-        // Determine initial center using lat/lng if available, otherwise convert UTM coordinates.
-        const firstProj = projects[0];
-        let initLat = firstProj?.specs?.lat;
-        let initLng = firstProj?.specs?.lng;
-        if ((initLat == null || initLng == null) && firstProj?.specs?.coordE && firstProj?.specs?.coordN) {
-          const { lat, lng } = utmToDecimal(parseFloat(firstProj.specs.coordE), parseFloat(firstProj.specs.coordN), firstProj.specs.zone || 22);
-          initLat = lat;
-          initLng = lng;
-        }
-        const initialLat = initLat ?? -23.3106;
-        const initialLng = initLng ?? -51.1628;
-
-        mapInstanceRef.current = L.map(mapContainerRef.current, {
-          center: [initialLat, initialLng],
-          zoom: 14,
-          zoomControl: false,
-          fadeAnimation: true
-        });
-
-        layersRef.current.streets = L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
-          attribution: '&copy; CARTO'
-        });
-
-        layersRef.current.satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-          attribution: '&copy; Esri'
-        });
-
-        layersRef.current.streets.addTo(mapInstanceRef.current);
-        L.control.zoom({ position: 'bottomright' }).addTo(mapInstanceRef.current);
-
-        // Garante que o mapa preencha o container
-        setTimeout(() => {
-          if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
-        }, 500);
-      } catch (error) {
-        console.error('Erro ao inicializar o mapa:', error);
+    try {
+      const firstProj = projects.find(p => p.specs?.lat || p.specs?.coordE);
+      let initLat = firstProj?.specs?.lat;
+      let initLng = firstProj?.specs?.lng;
+      if ((initLat == null || initLng == null) && firstProj?.specs?.coordE && firstProj?.specs?.coordN) {
+        const { lat, lng } = utmToDecimal(
+          parseFloat(firstProj.specs.coordE),
+          parseFloat(firstProj.specs.coordN),
+          firstProj.specs.zone || 22
+        );
+        initLat = lat; initLng = lng;
       }
-    };
 
-    initMap();
+      mapInstanceRef.current = L.map(mapContainerRef.current, {
+        center: [initLat ?? -23.3106, initLng ?? -51.1628],
+        zoom: 14,
+        zoomControl: false,
+        // Animações mais leves
+        zoomAnimation: true,
+        zoomAnimationThreshold: 4,
+        fadeAnimation: false,       // desativa fade de tiles (causa engasgos)
+        markerZoomAnimation: true,
+        // Melhor performance de render
+        preferCanvas: true,         // renderiza markers em canvas (muito mais rápido)
+        renderer: L.canvas({ padding: 0.5 }),
+        // Evita trava ao mover rápido
+        wheelDebounceTime: 40,
+        wheelPxPerZoomLevel: 80,
+        // Limitar zoom máximo para não carregar tiles desnecessários
+        maxZoom: 19,
+        minZoom: 4,
+      });
 
-    // Observer para detectar mudanças de tamanho do container (evita tela branca)
-    const observer = new ResizeObserver(() => {
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.invalidateSize();
-      }
-    });
+      // Tiles com crossOrigin para melhor cache do browser
+      layersRef.current.streets = L.tileLayer(
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        { attribution: '&copy; CARTO', crossOrigin: true, maxZoom: 19, updateWhenIdle: true }
+      );
+      layersRef.current.satellite = L.tileLayer(
+        'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+        { attribution: '&copy; Esri', crossOrigin: true, maxZoom: 19, updateWhenIdle: true }
+      );
 
-    if (mapContainerRef.current) {
-      observer.observe(mapContainerRef.current);
+      layersRef.current.streets.addTo(mapInstanceRef.current);
+      L.control.zoom({ position: 'bottomright' }).addTo(mapInstanceRef.current);
+
+      // LayerGroup único — muito mais eficiente que adicionar layers diretamente ao mapa
+      layerGroupRef.current = L.layerGroup().addTo(mapInstanceRef.current);
+
+      setTimeout(() => { if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize(); }, 300);
+    } catch (e) {
+      console.error('Erro ao inicializar mapa:', e);
     }
+
+    const observer = new ResizeObserver(() => {
+      if (mapInstanceRef.current) mapInstanceRef.current.invalidateSize();
+    });
+    if (mapContainerRef.current) observer.observe(mapContainerRef.current);
 
     return () => {
       observer.disconnect();
-      if (mapInstanceRef.current) {
-        mapInstanceRef.current.remove();
-        mapInstanceRef.current = null;
-      }
+      if (mapInstanceRef.current) { mapInstanceRef.current.remove(); mapInstanceRef.current = null; }
     };
-  }, []);
+  }, [isLeafletLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Alternância de Camadas
   useEffect(() => {
@@ -138,126 +145,98 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
     }
   }, [mapMode]);
 
-  // Atualização de Marcadores
+  // Atualização INTELIGENTE de Marcadores — só adiciona/remove o que mudou
   useEffect(() => {
-    if (!isLeafletLoaded || !mapInstanceRef.current) return;
+    if (!isLeafletLoaded || !mapInstanceRef.current || !layerGroupRef.current) return;
 
-    // Limpar marcadores antigos
+    const visibleProjects = filteredProjectsByClient.filter(p => visibleProjectIds.has(p.id));
+    const visibleIds = new Set(visibleProjects.map(p => p.id));
+
+    // Remove markers/polygons de projetos que não estão mais visíveis
     Object.keys(markersRef.current).forEach(id => {
-      markersRef.current[id].remove();
-      delete markersRef.current[id];
+      if (!visibleIds.has(id)) {
+        layerGroupRef.current.removeLayer(markersRef.current[id]);
+        delete markersRef.current[id];
+      }
     });
-
-    // Limpar polígonos antigos
     Object.keys(polygonsRef.current).forEach(id => {
-      polygonsRef.current[id].remove();
-      delete polygonsRef.current[id];
+      if (!visibleIds.has(id)) {
+        layerGroupRef.current.removeLayer(polygonsRef.current[id]);
+        delete polygonsRef.current[id];
+      }
     });
 
-    filteredProjectsByClient.forEach(project => {
-      const markerColor = project.status === 'Concluído' ? '#00B08E' : project.status === 'Em Execução' ? '#3FA9F5' : '#002D62';
+    // Adiciona apenas os que ainda não existem
+    visibleProjects.forEach(project => {
+      const markerColor = project.status === 'Concluído' ? '#00B08E'
+        : project.status === 'Em Execução' ? '#3FA9F5' : '#002D62';
 
-      // --- Desenhar polígono KML se disponível ---
-      if (project.specs?.kmlFile?.fileData && visibleProjectIds.has(project.id)) {
-        try {
-          const kmlText = decodeURIComponent(escape(atob(project.specs.kmlFile.fileData)));
-          const coords = parseKML(kmlText);
-          if (coords.length > 2) {
-            const polygon = L.polygon(coords, {
-              color: markerColor,
-              fillColor: markerColor,
-              fillOpacity: 0.25,
-              weight: 2.5,
-              opacity: 0.9
-            }).addTo(mapInstanceRef.current);
-            polygonsRef.current[project.id] = polygon;
-          }
-        } catch (err) {
-          console.warn('Erro ao renderizar KML para projeto', project.name, err);
+      // Polígono KML — cria apenas se não existe ainda
+      if (!polygonsRef.current[project.id]) {
+        const coords = getKmlCoords(project);
+        if (coords.length > 2) {
+          const polygon = L.polygon(coords, {
+            color: markerColor, fillColor: markerColor,
+            fillOpacity: 0.22, weight: 2, opacity: 0.85
+          });
+          layerGroupRef.current.addLayer(polygon);
+          polygonsRef.current[project.id] = polygon;
         }
       }
 
-      if (project.specs.lat && project.specs.lng && visibleProjectIds.has(project.id)) {
-        
+      // Marcador — cria apenas se não existe ainda
+      if (!markersRef.current[project.id]) {
+        const hasCoords = project.specs?.lat && project.specs?.lng;
+        const hasUTM = project.specs?.coordE && project.specs?.coordN;
+        if (!hasCoords && !hasUTM) return;
+
+        const [markerLat, markerLng] = hasCoords
+          ? [project.specs.lat!, project.specs.lng!]
+          : (() => {
+              const { lat, lng } = utmToDecimal(
+                parseFloat(project.specs.coordE!),
+                parseFloat(project.specs.coordN!),
+                project.specs.zone || 22
+              );
+              return [lat, lng];
+            })();
+
         const customIcon = L.divIcon({
           className: 'custom-div-icon',
-          html: `
-            <div class="marker-pin" style="
-              background-color: ${markerColor}; 
-              width: 32px; 
-              height: 32px; 
-              border-radius: 50% 50% 50% 0; 
-              transform: rotate(-45deg); 
-              border: 3px solid white; 
-              box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
-              display: flex;
-              align-items: center;
-              justify-content: center;
-            ">
-              <i class="fas fa-building" style="transform: rotate(45deg); color: white; font-size: 12px;"></i>
-            </div>
-          `,
-          iconSize: [32, 32],
-          iconAnchor: [16, 32]
+          html: `<div style="background:${markerColor};width:28px;height:28px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);border:2px solid white;box-shadow:0 4px 12px rgba(0,0,0,0.3);display:flex;align-items:center;justify-content:center;"><i class="fas fa-building" style="transform:rotate(45deg);color:white;font-size:10px;"></i></div>`,
+          iconSize: [28, 28],
+          iconAnchor: [14, 28]
         });
 
-        // Use lat/lng if present, otherwise convert UTM coordinates for marker position.
-        const [markerLat, markerLng] = (project.specs.lat != null && project.specs.lng != null)
-          ? [project.specs.lat, project.specs.lng]
-          : (project.specs.coordE && project.specs.coordN
-            ? (() => {
-                const { lat, lng } = utmToDecimal(parseFloat(project.specs.coordE), parseFloat(project.specs.coordN), project.specs.zone || 22);
-                return [lat, lng];
-              })()
-            : [0, 0]);
-        const marker = L.marker([markerLat, markerLng], { icon: customIcon }).addTo(mapInstanceRef.current);
-        
-        const popupContent = `
-          <div style="padding: 10px; min-width: 220px; font-family: 'Plus Jakarta Sans', sans-serif;">
-            <p style="margin: 0; font-size: 9px; font-weight: 800; color: #3FA9F5; text-transform: uppercase; letter-spacing: 0.1em;">${project.clientName}</p>
-            <h4 style="margin: 4px 0; font-size: 18px; font-weight: 900; color: #000000; line-height: 1.1;">${project.name}</h4>
-            <p style="margin: 0 0 4px 0; font-size: 10px; color: #000000; font-weight: 500;">${project.location}</p>
-            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-              <div style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <p style="margin: 0; font-size: 7px; color: #64748b; text-transform: uppercase; font-weight: 800;">UTM E</p>
-                <p style="margin: 0; font-size: 9px; color: #000000; font-weight: 700;">${project.specs.coordE || '-'}</p>
-              </div>
-              <div style="background: #f1f5f9; padding: 4px 8px; border-radius: 6px; border: 1px solid #e2e8f0;">
-                <p style="margin: 0; font-size: 7px; color: #64748b; text-transform: uppercase; font-weight: 800;">UTM N</p>
-                <p style="margin: 0; font-size: 9px; color: #000000; font-weight: 700;">${project.specs.coordN || '-'}</p>
-              </div>
-            </div>
-            <button id="btn-map-details-${project.id}" style="
-              width: 100%; 
-              padding: 12px; 
-              background: #f1f5f9; 
-              color: #000000; 
-              border: 1px solid #cbd5e1; 
-              border-radius: 10px; 
-              font-size: 10px; 
-              font-weight: 800; 
-              text-transform: uppercase; 
-              cursor: pointer;
-            ">Abrir Dossiê Técnico</button>
-          </div>
-        `;
+        const marker = L.marker([markerLat, markerLng], { icon: customIcon });
 
-        marker.bindPopup(popupContent);
+        const popupContent = `
+          <div style="padding:10px;min-width:200px;font-family:'Plus Jakarta Sans',sans-serif;">
+            <p style="margin:0;font-size:9px;font-weight:800;color:#3FA9F5;text-transform:uppercase;letter-spacing:.1em;">${project.clientName}</p>
+            <h4 style="margin:4px 0;font-size:16px;font-weight:900;color:#000;line-height:1.1;">${project.name}</h4>
+            <p style="margin:0 0 10px;font-size:10px;color:#555;font-weight:500;">${project.location || ''}</p>
+            <button id="btn-map-${project.id}" style="width:100%;padding:10px;background:#f1f5f9;color:#000;border:1px solid #cbd5e1;border-radius:8px;font-size:10px;font-weight:800;text-transform:uppercase;cursor:pointer;">Abrir Dossiê</button>
+          </div>`;
+
+        marker.bindPopup(popupContent, { maxWidth: 240, autoPanPadding: [20, 20] });
         marker.on('popupopen', () => {
-          const btn = document.getElementById(`btn-map-details-${project.id}`);
+          const btn = document.getElementById(`btn-map-${project.id}`);
           if (btn) btn.onclick = () => onSelectProject(project.id);
         });
+
+        layerGroupRef.current.addLayer(marker);
         markersRef.current[project.id] = marker;
       }
     });
-  }, [visibleProjectIds, projects]);
+  }, [visibleProjectIds, filteredProjectsByClient, isLeafletLoaded]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const toggleProjectVisibility = (id: string) => {
-    const newVisible = new Set(visibleProjectIds);
-    if (newVisible.has(id)) newVisible.delete(id);
-    else newVisible.add(id);
-    setVisibleProjectIds(newVisible);
-  };
+  const toggleProjectVisibility = useCallback((id: string) => {
+    setVisibleProjectIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }, []);
 
   return (
     <div className="flex flex-col h-full space-y-4 md:space-y-6 animate-in fade-in duration-700">
@@ -275,25 +254,24 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
           <p className="hidden md:block text-baccarim-text-muted font-medium text-sm">Controle de empreendimentos no território.</p>
         </div>
         <div className="flex items-center space-x-2 bg-baccarim-card p-1 rounded-xl shadow-sm border border-slate-100">
-           <button onClick={() => setMapMode('streets')} className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${mapMode === 'streets' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Mapa</button>
-           <button onClick={() => setMapMode('satellite')} className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${mapMode === 'satellite' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Satélite</button>
+          <button onClick={() => setMapMode('streets')} className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${mapMode === 'streets' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Mapa</button>
+          <button onClick={() => setMapMode('satellite')} className={`px-4 py-2 rounded-lg text-[9px] font-black uppercase transition-all ${mapMode === 'satellite' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Satélite</button>
         </div>
       </header>
 
       {/* Mobile Map Controls */}
       <div className="md:hidden flex items-center justify-between px-4 pt-4 absolute top-0 left-0 right-0 z-[20]">
         <div className="bg-baccarim-card/90 backdrop-blur-md p-1 rounded-xl shadow-xl border border-slate-100 flex items-center">
-           <button onClick={() => setMapMode('streets')} className={`px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${mapMode === 'streets' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Mapa</button>
-           <button onClick={() => setMapMode('satellite')} className={`px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${mapMode === 'satellite' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Satélite</button>
+          <button onClick={() => setMapMode('streets')} className={`px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${mapMode === 'streets' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Mapa</button>
+          <button onClick={() => setMapMode('satellite')} className={`px-4 py-2 rounded-lg text-[8px] font-black uppercase transition-all ${mapMode === 'satellite' ? 'bg-baccarim-navy text-baccarim-text' : 'text-baccarim-text-muted'}`}>Satélite</button>
         </div>
       </div>
 
-      {/* Container Principal do Mapa com altura fixa no mobile para garantir renderização */}
       <div className="relative flex-1 min-h-[500px] md:min-h-0 bg-baccarim-card md:rounded-[3rem] shadow-2xl border border-slate-100 overflow-hidden">
         <div ref={mapContainerRef} className="absolute inset-0 z-0 bg-baccarim-active"></div>
-        
+
         {/* Controles Flutuantes */}
-        <button 
+        <button
           onClick={() => setShowControls(!showControls)}
           className="absolute top-16 md:top-4 left-4 z-[10] w-12 h-12 bg-baccarim-card rounded-xl shadow-xl flex items-center justify-center text-baccarim-navy hover:scale-110 transition-all border border-slate-100"
         >
@@ -303,8 +281,8 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         {/* Filtro de Clientes */}
         <div className="absolute top-4 left-20 z-[10] hidden md:flex items-center space-x-2 bg-baccarim-card/90 backdrop-blur-md px-4 py-2 rounded-xl shadow-xl border border-slate-100">
           <i className="fas fa-filter text-[10px] text-baccarim-blue"></i>
-          <select 
-            value={selectedClient || ''} 
+          <select
+            value={selectedClient || ''}
             onChange={(e) => setSelectedClient(e.target.value || null)}
             className="bg-transparent text-[10px] font-black uppercase text-baccarim-navy outline-none cursor-pointer"
           >
@@ -321,11 +299,11 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
             <div className="space-y-1">
               {filteredProjectsByClient.map(p => (
                 <div key={p.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-baccarim-hover transition-colors cursor-pointer" onClick={() => toggleProjectVisibility(p.id)}>
-                   <div className="flex items-center space-x-3 min-w-0">
-                      <div className={`w-2 h-2 rounded-full ${visibleProjectIds.has(p.id) ? 'bg-baccarim-blue' : 'bg-slate-300'}`}></div>
-                      <span className="text-[10px] font-bold text-baccarim-navy truncate">{p.name}</span>
-                   </div>
-                   <i className={`fas ${visibleProjectIds.has(p.id) ? 'fa-eye' : 'fa-eye-slash'} text-[10px] text-slate-300`}></i>
+                  <div className="flex items-center space-x-3 min-w-0">
+                    <div className={`w-2 h-2 rounded-full ${visibleProjectIds.has(p.id) ? 'bg-baccarim-blue' : 'bg-slate-300'}`}></div>
+                    <span className="text-[10px] font-bold text-baccarim-navy truncate">{p.name}</span>
+                  </div>
+                  <i className={`fas ${visibleProjectIds.has(p.id) ? 'fa-eye' : 'fa-eye-slash'} text-[10px] text-slate-300`}></i>
                 </div>
               ))}
             </div>
@@ -336,6 +314,8 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
       <style>{`
         .custom-div-icon { background: transparent !important; border: none !important; }
         .leaflet-container { font-family: 'Plus Jakarta Sans', sans-serif !important; border-radius: inherit; }
+        .leaflet-tile { will-change: transform; }
+        .leaflet-zoom-animated { will-change: transform; }
       `}</style>
     </div>
   );
