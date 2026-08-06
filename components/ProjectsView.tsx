@@ -401,21 +401,33 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
     });
   };
 
-  const handleKmlUploadForProject = (project: Project, e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleKmlUploadForProject = async (project: Project, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = (ev) => {
-      const text = ev.target?.result as string;
-      if (text) {
-        const base64 = btoa(unescape(encodeURIComponent(text)));
-        onUpdateProject({
-          ...project,
-          specs: { ...project.specs, kmlFile: { fileName: file.name, fileData: base64 } }
-        });
-      }
+
+    const saveKml = (text: string, fileName: string) => {
+      const base64 = btoa(unescape(encodeURIComponent(text)));
+      onUpdateProject({
+        ...project,
+        specs: { ...project.specs, kmlFile: { fileName, fileData: base64 } }
+      });
     };
-    reader.readAsText(file);
+
+    if (file.name.toLowerCase().endsWith('.kmz')) {
+      const JSZip = (await import('jszip')).default;
+      const zip = await JSZip.loadAsync(file);
+      const kmlEntry = Object.values(zip.files).find(f => f.name.toLowerCase().endsWith('.kml'));
+      if (!kmlEntry) { alert('Nenhum arquivo KML encontrado dentro do KMZ.'); return; }
+      const kmlText = await kmlEntry.async('text');
+      saveKml(kmlText, file.name);
+    } else {
+      const reader = new FileReader();
+      reader.onload = (ev) => {
+        const text = ev.target?.result as string;
+        if (text) saveKml(text, file.name);
+      };
+      reader.readAsText(file);
+    }
     e.target.value = '';
   };
 
@@ -1136,7 +1148,7 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               <label className="flex items-center gap-3 cursor-pointer bg-baccarim-hover border-2 border-dashed border-baccarim-border hover:border-baccarim-green/50 p-3 rounded-xl transition-all group">
                                 <input
                                   type="file"
-                                  accept=".kml"
+                                  accept=".kml,.kmz"
                                   className="hidden"
                                   onChange={(e) => handleKmlUploadForProject(project, e)}
                                 />
