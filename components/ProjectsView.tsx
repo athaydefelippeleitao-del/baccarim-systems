@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { Project, ChecklistItem, Attachment, EnvironmentalLicense, Notification } from '../types';
 import ProjectProcessReportView from './ProjectProcessReportView';
-import { utmToDecimal } from '../utils/geoUtils';
+import { utmToDecimal, parseKML } from '../utils/geoUtils';
 import { downloadFile, convertPdfToImage } from '../utils/fileUtils';
 import { exportProjectDocumentsAsZip } from '../utils/zipUtils';
 import ProjectExtensionReportView from './ProjectExtensionReportView';
@@ -399,6 +399,24 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
       ...project,
       specs: updatedSpecs
     });
+  };
+
+  const handleKmlUploadForProject = (project: Project, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      if (text) {
+        const base64 = btoa(unescape(encodeURIComponent(text)));
+        onUpdateProject({
+          ...project,
+          specs: { ...project.specs, kmlFile: { fileName: file.name, fileData: base64 } }
+        });
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
   };
 
   const handleAddCustomSpec = (project: Project) => {
@@ -1090,6 +1108,50 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                               {[21, 22, 23, 24, 25].map(z => <option key={z} value={z} className="bg-baccarim-card">{z}S</option>)}
                             </select>
                           ) : <p className="text-[14px] font-black text-baccarim-text">{project.specs.zone || 22}S</p>}
+                        </div>
+                        {/* KML Terrain File */}
+                        <div className="space-y-1.5 col-span-2">
+                          <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest flex items-center gap-2">
+                            <i className="fas fa-draw-polygon text-baccarim-green"></i>
+                            Área do Terreno (KML)
+                            {!project.specs.kmlFile && <span className="text-[7px] text-baccarim-green animate-pulse">Desenha no mapa</span>}
+                          </label>
+                          {project.specs.kmlFile ? (
+                            <div className="flex items-center gap-3 bg-baccarim-green/10 border border-baccarim-green/30 p-2.5 rounded-xl">
+                              <i className="fas fa-map text-baccarim-green text-sm"></i>
+                              <span className="text-xs font-bold text-baccarim-green flex-1 truncate">{project.specs.kmlFile.fileName}</span>
+                              {isEditing && (
+                                <button
+                                  type="button"
+                                  onClick={() => onUpdateProject({ ...project, specs: { ...project.specs, kmlFile: undefined } })}
+                                  className="text-red-400 hover:text-red-500 transition-colors"
+                                  title="Remover KML"
+                                >
+                                  <i className="fas fa-times"></i>
+                                </button>
+                              )}
+                            </div>
+                          ) : (
+                            isEditing ? (
+                              <label className="flex items-center gap-3 cursor-pointer bg-baccarim-hover border-2 border-dashed border-baccarim-border hover:border-baccarim-green/50 p-3 rounded-xl transition-all group">
+                                <input
+                                  type="file"
+                                  accept=".kml"
+                                  className="hidden"
+                                  onChange={(e) => handleKmlUploadForProject(project, e)}
+                                />
+                                <div className="w-7 h-7 bg-baccarim-green/10 rounded-lg flex items-center justify-center group-hover:bg-baccarim-green/20 transition-colors">
+                                  <i className="fas fa-upload text-baccarim-green text-xs"></i>
+                                </div>
+                                <div>
+                                  <p className="text-xs font-bold text-baccarim-text">Clique para selecionar arquivo KML</p>
+                                  <p className="text-[9px] text-baccarim-text-muted">Exportado do Google Earth / ArcGIS</p>
+                                </div>
+                              </label>
+                            ) : (
+                              <p className="text-[14px] font-black text-baccarim-text-muted">Nenhum arquivo</p>
+                            )
+                          )}
                         </div>
                         <div className="space-y-1.5">
                           <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Protocolo / SEI</label>
