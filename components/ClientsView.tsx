@@ -468,14 +468,27 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
           return (
             <div
               key={client}
-              className="bg-baccarim-card rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-2xl border border-baccarim-border hover:border-baccarim-blue/20 hover:-translate-y-1 transition-all duration-500 group cursor-pointer flex flex-col relative overflow-hidden"
+              className="bg-baccarim-card rounded-[2rem] md:rounded-[3rem] p-6 md:p-10 shadow-lg border border-slate-100 hover:border-baccarim-blue/30 hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-500 group cursor-pointer flex flex-col relative overflow-hidden"
               onClick={() => {
                 setSelectedClientForProjects(client);
                 onSelectClient(client);
               }}
             >
-              <div className="flex items-start justify-between mb-8 md:mb-10 relative z-10">
-                <div className="flex items-center space-x-4 md:space-x-6">
+              {/* Action Buttons Overlay (Delete) */}
+              {userRole !== 'client' && (
+                <div className="absolute top-6 right-6 md:top-8 md:right-8 opacity-0 group-hover:opacity-100 transition-all duration-300 z-20">
+                  <button 
+                    onClick={(e) => { e.stopPropagation(); onDeleteClient(client); }} 
+                    className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-white text-slate-400 hover:text-red-500 hover:bg-red-50 shadow-md flex items-center justify-center transition-all" 
+                    title="Excluir Cliente"
+                  >
+                    <i className="fas fa-trash-can text-sm"></i>
+                  </button>
+                </div>
+              )}
+
+              <div className="flex items-start justify-between mb-8 md:mb-10 relative z-10 pr-12">
+                <div className="flex items-center space-x-4 md:space-x-5">
                   {/* Logo / Avatar with upload on hover */}
                   <div className="relative group/logo">
                     <input
@@ -489,7 +502,7 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                     <label
                       htmlFor={`logo-upload-${client}`}
                       onClick={(e) => e.stopPropagation()}
-                      className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center overflow-hidden cursor-pointer shadow-lg transition-all duration-500 group-hover:rotate-3 relative"
+                      className="w-16 h-16 md:w-20 md:h-20 rounded-2xl md:rounded-[2rem] flex items-center justify-center overflow-hidden cursor-pointer shadow-md border border-slate-100 transition-all duration-500 group-hover:rotate-3 relative bg-slate-50"
                     >
                       {clientLogos[client] ? (
                         <img
@@ -498,13 +511,14 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                           className="w-full h-full object-cover"
                         />
                       ) : (
-                        <div className="w-full h-full bg-baccarim-blue/10 flex items-center justify-center text-baccarim-blue font-black text-2xl md:text-3xl group-hover:bg-baccarim-blue group-hover:text-white transition-all duration-500">
+                        <div className="w-full h-full bg-gradient-to-br from-baccarim-blue/10 to-baccarim-blue/20 flex items-center justify-center text-baccarim-blue font-black text-2xl md:text-3xl group-hover:from-baccarim-blue group-hover:to-baccarim-navy group-hover:text-white transition-all duration-500">
                           {client.charAt(0)}
                         </div>
                       )}
                       {/* Upload overlay */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-200 flex items-center justify-center rounded-2xl md:rounded-[2rem]">
-                        <i className="fas fa-camera text-white text-sm"></i>
+                      <div className="absolute inset-0 bg-baccarim-navy/60 opacity-0 group-hover/logo:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center rounded-2xl md:rounded-[2rem]">
+                        <i className="fas fa-camera text-white text-sm mb-1"></i>
+                        <span className="text-[7px] text-white font-bold uppercase tracking-widest">Alterar</span>
                       </div>
                     </label>
                   </div>
@@ -531,12 +545,12 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                               setEditingClient(null);
                             }
                           }}
-                          className="bg-baccarim-card border-2 border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-xl md:text-2xl font-black text-baccarim-text outline-none focus:ring-4 focus:ring-baccarim-blue/30 w-full max-w-[250px]"
+                          className="bg-white border-2 border-baccarim-blue px-3 py-1.5 -ml-3 rounded-xl text-xl md:text-2xl font-black text-baccarim-navy outline-none focus:ring-4 focus:ring-baccarim-blue/20 w-full max-w-[250px] shadow-sm"
                         />
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <h3 className="text-xl md:text-2xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors duration-500">{client}</h3>
+                        <h3 className="text-xl md:text-2xl font-black text-baccarim-navy tracking-tight group-hover:text-baccarim-blue transition-colors duration-300 truncate max-w-[200px]" title={client}>{client}</h3>
                         {userRole !== 'client' && (
                           <button
                             onClick={(e) => {
@@ -544,38 +558,48 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                               setEditingClient(client);
                               setTempClientName(client);
                             }}
-                            className="opacity-0 group-hover/name:opacity-100 text-baccarim-text-muted hover:text-baccarim-blue transition-all"
+                            className="opacity-0 group-hover/name:opacity-100 text-slate-300 hover:text-baccarim-blue hover:bg-baccarim-blue/10 p-1.5 rounded-md transition-all"
                             title="Editar Nome do Cliente"
                           >
-                            <i className="fas fa-pencil-alt text-sm"></i>
+                            <i className="fas fa-pencil-alt text-xs"></i>
                           </button>
                         )}
                       </div>
                     )}
-                    <p className="text-[9px] text-baccarim-text-muted font-black uppercase tracking-widest mt-1">Cliente Estratégico</p>
+                    <div className="flex items-center gap-2 mt-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-baccarim-blue"></span>
+                      <p className="text-[9px] text-slate-400 font-black uppercase tracking-widest">Cliente Estratégico</p>
+                    </div>
                   </div>
-                </div>
-                <div className="flex flex-col items-end space-y-2">
-                  <div className="w-10 h-10 rounded-full bg-baccarim-green border-2 border-baccarim-dark flex flex-col items-center justify-center text-baccarim-text text-[10px] font-black shadow-md shrink-0">
-                    {clientProjectsCount}
-                  </div>
-                  {userRole !== 'client' && (
-                    <button onClick={(e) => { e.stopPropagation(); onDeleteClient(client); }} className="p-2 text-baccarim-text-muted hover:text-red-500 transition-colors" title="Excluir Cliente"><i className="fas fa-trash-can text-sm"></i></button>
-                  )}
                 </div>
               </div>
 
-              <div className="mb-8 md:mb-10 relative z-10">
-                <div className="bg-baccarim-hover p-4 md:p-6 rounded-2xl md:rounded-[2rem] border border-baccarim-border group-hover:bg-baccarim-active group-hover:border-baccarim-blue/10 transition-all duration-500">
-                  <p className="text-[8px] md:text-[9px] text-baccarim-text-muted font-black uppercase tracking-widest mb-1">Total Licenças</p>
-                  <p className="text-xl md:text-2xl font-black text-baccarim-text">{totalLicensesCount}</p>
+              <div className="flex flex-col gap-3 mb-8 md:mb-10 relative z-10">
+                <div className="flex items-center justify-between bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-100 group-hover:bg-baccarim-blue/5 group-hover:border-baccarim-blue/20 transition-all duration-500">
+                  <div>
+                    <p className="text-[8px] md:text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1 group-hover:text-baccarim-blue/70 transition-colors">Empreendimentos</p>
+                    <p className="text-xl md:text-2xl font-black text-baccarim-navy">{clientProjectsCount}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-baccarim-blue shadow-sm group-hover:scale-110 group-hover:bg-baccarim-blue group-hover:text-white group-hover:border-baccarim-blue transition-all duration-300">
+                    <i className="fas fa-building text-sm"></i>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-between bg-slate-50 p-4 md:p-6 rounded-2xl border border-slate-100 group-hover:bg-baccarim-green/5 group-hover:border-baccarim-green/20 transition-all duration-500">
+                  <div>
+                    <p className="text-[8px] md:text-[9px] text-slate-500 font-black uppercase tracking-widest mb-1 group-hover:text-baccarim-green/70 transition-colors">Total Licenças</p>
+                    <p className="text-xl md:text-2xl font-black text-baccarim-navy">{totalLicensesCount}</p>
+                  </div>
+                  <div className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-baccarim-green shadow-sm group-hover:scale-110 group-hover:bg-baccarim-green group-hover:text-white group-hover:border-baccarim-green transition-all duration-300">
+                    <i className="fas fa-file-contract text-sm"></i>
+                  </div>
                 </div>
               </div>
 
-              <div className="mt-auto pt-6 md:pt-8 border-t border-baccarim-border relative z-10">
-                <div className="flex items-center justify-between text-baccarim-text group-hover:text-baccarim-blue transition-all duration-500">
-                  <span className="text-[9px] md:text-[11px] font-black uppercase tracking-widest">Ver Empreendimentos</span>
-                  <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-baccarim-border-hover flex items-center justify-center group-hover:bg-baccarim-blue group-hover:text-white group-hover:border-baccarim-blue transition-all duration-500">
+              <div className="mt-auto pt-6 border-t border-slate-100 relative z-10">
+                <div className="flex items-center justify-between text-baccarim-navy group-hover:text-baccarim-blue transition-all duration-300">
+                  <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest">Acessar Painel</span>
+                  <div className="w-8 h-8 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:bg-baccarim-blue group-hover:text-white group-hover:border-baccarim-blue transition-all duration-300 group-hover:translate-x-1">
                     <i className="fas fa-arrow-right text-[10px]"></i>
                   </div>
                 </div>
