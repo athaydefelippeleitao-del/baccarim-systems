@@ -689,13 +689,13 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
         const isEditing = isEditingSpecs === project.id;
 
         return (
-          <div key={project.id} className="bg-baccarim-card rounded-[2rem] shadow-2xl border border-baccarim-border overflow-hidden transition-all duration-500 mb-6">
+          <div key={project.id} className="bg-white rounded-[1.5rem] shadow-sm hover:shadow-md border border-slate-100 overflow-hidden transition-all duration-300 mb-4">
             <div
-              className="p-6 md:p-8 flex items-center justify-between cursor-pointer hover:bg-baccarim-hover transition-colors"
+              className="p-4 md:p-5 flex items-center justify-between cursor-pointer hover:bg-slate-50 transition-colors"
               onClick={() => setExpandedProjectId(isExpanded ? null : project.id)}
             >
-              <div className="flex items-center space-x-5">
-                <div className={`w-12 h-12 rounded-2xl flex items-center justify-center text-white text-lg shadow-lg ${isExpanded ? 'bg-baccarim-blue' : 'bg-baccarim-navy'}`}>
+              <div className="flex items-center space-x-4">
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm shadow-sm transition-colors ${isExpanded ? 'bg-baccarim-blue' : 'bg-baccarim-navy'}`}>
                   <i className="fas fa-building"></i>
                 </div>
                 <div>
@@ -719,19 +719,19 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                             setEditingProjectName(null);
                           }
                         }}
-                        className="bg-baccarim-card border-2 border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-xl md:text-2xl font-black text-baccarim-text outline-none focus:ring-4 focus:ring-baccarim-blue/30 w-full max-w-[250px]"
+                        className="bg-white border-2 border-baccarim-blue px-2 py-1 -ml-2 rounded-lg text-lg font-black text-baccarim-navy outline-none focus:ring-4 focus:ring-baccarim-blue/20 w-full max-w-[200px] shadow-sm"
                       />
                     </div>
                   ) : (
-                    <div className="flex items-center gap-2 group/name">
-                      <h3 className="text-xl font-black text-baccarim-text tracking-tight">{project.name}</h3>
+                    <div className="flex items-center gap-1.5 group/name">
+                      <h3 className="text-lg md:text-xl font-black text-baccarim-navy tracking-tight truncate max-w-[250px] sm:max-w-[400px]">{project.name}</h3>
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           setEditingProjectName(project.id);
                           setTempProjectName(project.name);
                         }}
-                        className="opacity-0 group-hover/name:opacity-100 text-baccarim-text-muted hover:text-baccarim-blue transition-all"
+                        className="opacity-0 group-hover/name:opacity-100 text-slate-300 hover:text-baccarim-blue hover:bg-baccarim-blue/10 p-1 rounded transition-all"
                       >
                         <i className="fas fa-pen text-[10px]"></i>
                       </button>
@@ -740,22 +740,22 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                           e.stopPropagation();
                           handleDeleteProject(project);
                         }}
-                        className="opacity-0 group-hover/name:opacity-100 text-baccarim-text-muted hover:text-red-500 transition-all"
+                        className="opacity-0 group-hover/name:opacity-100 text-slate-300 hover:text-red-500 hover:bg-red-50 p-1 rounded transition-all"
                       >
                         <i className="fas fa-trash-can text-[10px]"></i>
                       </button>
                     </div>
                   )}
-                  <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">{project.clientName}</p>
+                  <p className="text-[8px] font-black text-slate-400 uppercase tracking-wider">{project.clientName}</p>
                 </div>
               </div>
-              <div className="flex items-center space-x-6">
-                <div className="hidden md:block">
-                  <span className="text-[8px] font-black text-baccarim-text-muted uppercase tracking-widest block mb-1">Checklist Ativo</span>
-                  <span className="text-[10px] font-black text-baccarim-blue uppercase">{project.currentPhase || 'Não Definido'}</span>
+              <div className="flex items-center space-x-4 md:space-x-6">
+                <div className="hidden md:block text-right">
+                  <span className="text-[7px] font-black text-slate-400 uppercase tracking-widest block mb-0.5">Checklist Ativo</span>
+                  <span className="text-[9px] font-black text-baccarim-blue uppercase">{project.currentPhase || 'Não Definido'}</span>
                 </div>
-                <div className="w-8 h-8 rounded-full border border-baccarim-border flex items-center justify-center text-baccarim-text-muted">
-                  <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-[10px]`}></i>
+                <div className="w-7 h-7 rounded-full border border-slate-200 flex items-center justify-center text-slate-400 bg-white shadow-sm">
+                  <i className={`fas ${isExpanded ? 'fa-chevron-up' : 'fa-chevron-down'} text-[9px]`}></i>
                 </div>
               </div>
             </div>
@@ -770,28 +770,28 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                   {activeNotifs.map(activeNotif => (
                     <div 
                       key={activeNotif.id}
-                      className="mx-6 md:mx-8 mb-6 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
+                      className="mx-4 md:mx-5 mb-4 bg-baccarim-rose/5 hover:bg-baccarim-rose/10 transition-all border border-baccarim-rose/20 rounded-2xl p-3 flex items-center space-x-3 cursor-pointer group shadow-sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'notifications' }));
                       }}
                       title="Vá para o Centro de Notificações para gerenciar."
                     >
-                      <div className="w-10 h-10 rounded-xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <i className="fas fa-triangle-exclamation text-lg animate-pulse"></i>
+                      <div className="w-8 h-8 rounded-lg bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-triangle-exclamation text-sm animate-pulse"></i>
                       </div>
-                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 min-w-0">
                         <div className="overflow-hidden">
-                          <p className="text-[9px] font-black text-baccarim-rose uppercase tracking-[0.2em] mb-0.5">Atenção: Notificação Ativa</p>
-                          <h5 className="text-xs font-bold text-baccarim-text truncate" title={activeNotif.title}>{activeNotif.title}</h5>
+                          <p className="text-[8px] font-black text-baccarim-rose uppercase tracking-wider mb-0.5 truncate">Atenção: Notificação Ativa</p>
+                          <h5 className="text-[11px] font-bold text-baccarim-navy truncate" title={activeNotif.title}>{activeNotif.title}</h5>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-[10px] font-black bg-baccarim-rose/10 text-baccarim-rose px-3 py-1.5 rounded-xl uppercase tracking-widest whitespace-nowrap shadow-sm">
+                        <div className="flex items-center gap-2 shrink-0 mt-1 sm:mt-0">
+                          <span className="text-[9px] font-black bg-white border border-baccarim-rose/20 text-baccarim-rose px-2.5 py-1 rounded-lg uppercase tracking-wider whitespace-nowrap shadow-sm">
                             Prazo: {activeNotif.deadline}
                           </span>
-                          <div className="hidden sm:flex text-[9px] font-black text-baccarim-rose uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-baccarim-rose/5 px-2 py-1 rounded-lg">
-                            <span>Ir para Notificações</span>
-                            <i className="fas fa-arrow-right ml-2"></i>
+                          <div className="hidden sm:flex text-[8px] font-black text-baccarim-rose uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-white px-2 py-1 rounded-lg shadow-sm border border-baccarim-rose/20">
+                            <span>Ir</span>
+                            <i className="fas fa-arrow-right ml-1.5"></i>
                           </div>
                         </div>
                       </div>
@@ -801,28 +801,28 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
                   {activeLicenses.map(activeLicense => (
                     <div 
                       key={activeLicense.id}
-                      className="mx-6 md:mx-8 mb-6 bg-baccarim-blue/5 hover:bg-baccarim-blue/10 transition-all border border-baccarim-blue/20 rounded-[1.5rem] p-4 flex items-center space-x-4 cursor-pointer group shadow-sm hover:shadow-md"
+                      className="mx-4 md:mx-5 mb-4 bg-blue-50/50 hover:bg-blue-50 transition-all border border-blue-100 rounded-2xl p-3 flex items-center space-x-3 cursor-pointer group shadow-sm"
                       onClick={(e) => {
                         e.stopPropagation();
                         window.dispatchEvent(new CustomEvent('navigate-tab', { detail: 'notifications' }));
                       }}
                       title="Vá para o Centro de Notificações para gerenciar licenças."
                     >
-                      <div className="w-10 h-10 rounded-xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
-                        <i className="fas fa-file-shield text-lg animate-pulse"></i>
+                      <div className="w-8 h-8 rounded-lg bg-blue-100 text-baccarim-blue flex items-center justify-center shrink-0 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-file-shield text-sm animate-pulse"></i>
                       </div>
-                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                      <div className="flex-1 flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 min-w-0">
                         <div className="overflow-hidden">
-                          <p className="text-[9px] font-black text-baccarim-blue uppercase tracking-[0.2em] mb-0.5">Licença Pendente / Ativa</p>
-                          <h5 className="text-xs font-bold text-baccarim-text truncate" title={activeLicense.title}>{activeLicense.title}</h5>
+                          <p className="text-[8px] font-black text-baccarim-blue uppercase tracking-wider mb-0.5 truncate">Licença Pendente / Ativa</p>
+                          <h5 className="text-[11px] font-bold text-baccarim-navy truncate" title={activeLicense.title}>{activeLicense.title}</h5>
                         </div>
-                        <div className="flex items-center gap-3 shrink-0">
-                          <span className="text-[10px] font-black bg-baccarim-blue/10 text-baccarim-blue px-3 py-1.5 rounded-xl uppercase tracking-widest whitespace-nowrap shadow-sm">
+                        <div className="flex items-center gap-2 shrink-0 mt-1 sm:mt-0">
+                          <span className="text-[9px] font-black bg-white border border-blue-200 text-baccarim-blue px-2.5 py-1 rounded-lg uppercase tracking-wider whitespace-nowrap shadow-sm">
                             Prazo: {activeLicense.deadline}
                           </span>
-                          <div className="hidden sm:flex text-[9px] font-black text-baccarim-blue uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-baccarim-blue/5 px-2 py-1 rounded-lg">
-                            <span>Ir para Notificações</span>
-                            <i className="fas fa-arrow-right ml-2"></i>
+                          <div className="hidden sm:flex text-[8px] font-black text-baccarim-blue uppercase tracking-widest items-center opacity-0 group-hover:opacity-100 transition-opacity bg-white px-2 py-1 rounded-lg shadow-sm border border-blue-200">
+                            <span>Ir</span>
+                            <i className="fas fa-arrow-right ml-1.5"></i>
                           </div>
                         </div>
                       </div>
