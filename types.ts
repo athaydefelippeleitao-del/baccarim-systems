@@ -251,6 +251,7 @@ export interface PhotoReport {
   projectName: string;
   clientName: string;
   title: string;
+  customName?: string; // Nome personalizado exibido no card (independente da empresa)
   date: string;
   
   // 1. Identificação do Empreendedor

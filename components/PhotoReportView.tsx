@@ -490,7 +490,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               {report.photos[0] ? <img src={report.photos[0].url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" /> : <div className="flex items-center justify-center h-full text-slate-200"><i className="fas fa-image text-5xl"></i></div>}
               <div className="absolute top-4 right-4"><span className="px-3 py-1 bg-baccarim-card/90 backdrop-blur text-[8px] font-black uppercase rounded-full text-baccarim-navy shadow-sm">{report.photos.length} FOTOS</span></div>
             </div>
-            <h3 className="text-lg font-black text-baccarim-navy truncate">{report.clientName}</h3>
+            <h3 className="text-lg font-black text-baccarim-navy truncate">{report.customName || report.clientName}</h3>
+            {report.customName && <p className="text-[10px] text-baccarim-text-muted font-medium truncate mt-0.5">{report.clientName}</p>}
           </div>
         ))}
       </div>
@@ -537,6 +538,19 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                       <div className="space-y-6">
                         <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-[0.2em]">0. Dados do Relatório</h4>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1 flex items-center gap-2">
+                              <i className="fas fa-tag text-baccarim-green"></i>
+                              Nome do Relatório (exibido no card)
+                              <span className="text-[7px] text-baccarim-green">Apelido — não altera dados internos</span>
+                            </label>
+                            <input
+                              value={draftReport.customName || ''}
+                              onChange={e => setDraftReport({ ...draftReport, customName: e.target.value })}
+                              className="w-full bg-baccarim-hover border border-baccarim-green/30 p-4 rounded-xl text-sm font-bold shadow-sm focus:ring-2 focus:ring-baccarim-green outline-none"
+                              placeholder={`Ex: ${draftReport.clientName || 'Vitta Residencial'}`}
+                            />
+                          </div>
                           <div className="space-y-1">
                             <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Título do Documento</label>
                             <input value={draftReport.title || 'RELATÓRIO FOTOGRÁFICO'} onChange={e => setDraftReport({ ...draftReport, title: e.target.value })} className="w-full bg-baccarim-hover border p-4 rounded-xl text-sm font-bold shadow-sm" placeholder="Ex: RELATÓRIO FOTOGRÁFICO" />
