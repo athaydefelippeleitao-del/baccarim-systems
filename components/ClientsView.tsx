@@ -52,6 +52,25 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
     e.target.value = '';
   };
 
+  const handleKmlUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const text = ev.target?.result as string;
+      if (text) {
+        // Store as base64 for persistence
+        const base64 = btoa(unescape(encodeURIComponent(text)));
+        setNewProjectForm(prev => ({
+          ...prev,
+          specs: { ...prev.specs, kmlFile: { fileName: file.name, fileData: base64 } }
+        }));
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
   const [newProjectForm, setNewProjectForm] = useState({
     name: '',
     razaoSocial: '',
@@ -79,7 +98,8 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
       coordN: '',
       zone: 22,
       lat: '',
-      lng: ''
+      lng: '',
+      kmlFile: undefined as any
     }
   });
 
@@ -158,7 +178,8 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
         numeroProtocolo: '', dataProtocolo: new Date().toLocaleDateString('pt-BR'),
         coordE: '', coordN: '',
         zone: 22,
-        lat: '', lng: ''
+        lat: '', lng: '',
+        kmlFile: undefined as any
       }
     });
   };
@@ -284,6 +305,45 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
                           {[21, 22, 23, 24, 25].map(z => <option key={z} value={z} className="bg-baccarim-card">{z}S</option>)}
                         </select>
                       </div>
+                    </div>
+
+                    {/* KML Upload */}
+                    <div className="space-y-2">
+                      <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1 flex items-center gap-2">
+                        <i className="fas fa-draw-polygon text-baccarim-green"></i>
+                        Área do Terreno (arquivo .kml)
+                        <span className="text-[7px] text-baccarim-green animate-pulse">Desenha no mapa</span>
+                      </label>
+                      {newProjectForm.specs.kmlFile ? (
+                        <div className="flex items-center gap-3 bg-baccarim-green/10 border border-baccarim-green/30 p-3 rounded-xl">
+                          <i className="fas fa-map text-baccarim-green text-sm"></i>
+                          <span className="text-xs font-bold text-baccarim-green flex-1 truncate">{newProjectForm.specs.kmlFile.fileName}</span>
+                          <button
+                            type="button"
+                            onClick={() => setNewProjectForm(prev => ({ ...prev, specs: { ...prev.specs, kmlFile: undefined as any } }))}
+                            className="text-red-400 hover:text-red-500 transition-colors"
+                            title="Remover KML"
+                          >
+                            <i className="fas fa-times"></i>
+                          </button>
+                        </div>
+                      ) : (
+                        <label className="flex items-center gap-3 cursor-pointer bg-baccarim-hover border-2 border-dashed border-baccarim-border hover:border-baccarim-green/50 p-4 rounded-xl transition-all group">
+                          <input
+                            type="file"
+                            accept=".kml"
+                            className="hidden"
+                            onChange={handleKmlUpload}
+                          />
+                          <div className="w-8 h-8 bg-baccarim-green/10 rounded-lg flex items-center justify-center group-hover:bg-baccarim-green/20 transition-colors">
+                            <i className="fas fa-upload text-baccarim-green text-xs"></i>
+                          </div>
+                          <div>
+                            <p className="text-xs font-bold text-baccarim-text">Clique para selecionar o arquivo KML</p>
+                            <p className="text-[9px] text-baccarim-text-muted">Exportado do Google Earth ou ArcGIS</p>
+                          </div>
+                        </label>
+                      )}
                     </div>
                   </div>
 

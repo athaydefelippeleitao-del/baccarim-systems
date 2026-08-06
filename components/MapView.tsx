@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Project } from '../types';
-import { utmToDecimal } from '../utils/geoUtils';
+import { utmToDecimal, parseKML } from '../utils/geoUtils';
 
 interface MapViewProps {
   projects: Project[];
@@ -15,6 +15,7 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
   const mapInstanceRef = useRef<any>(null);
   const layersRef = useRef<Record<string, any>>({});
   const markersRef = useRef<Record<string, any>>({});
+  const polygonsRef = useRef<Record<string, any>>({});
   
   const [isLeafletLoaded, setIsLeafletLoaded] = useState(typeof L !== 'undefined');
   const [visibleProjectIds, setVisibleProjectIds] = useState<Set<string>>(new Set(projects.map(p => p.id)));
@@ -147,9 +148,36 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
       delete markersRef.current[id];
     });
 
+    // Limpar polígonos antigos
+    Object.keys(polygonsRef.current).forEach(id => {
+      polygonsRef.current[id].remove();
+      delete polygonsRef.current[id];
+    });
+
     filteredProjectsByClient.forEach(project => {
+      const markerColor = project.status === 'Concluído' ? '#00B08E' : project.status === 'Em Execução' ? '#3FA9F5' : '#002D62';
+
+      // --- Desenhar polígono KML se disponível ---
+      if (project.specs?.kmlFile?.fileData && visibleProjectIds.has(project.id)) {
+        try {
+          const kmlText = decodeURIComponent(escape(atob(project.specs.kmlFile.fileData)));
+          const coords = parseKML(kmlText);
+          if (coords.length > 2) {
+            const polygon = L.polygon(coords, {
+              color: markerColor,
+              fillColor: markerColor,
+              fillOpacity: 0.25,
+              weight: 2.5,
+              opacity: 0.9
+            }).addTo(mapInstanceRef.current);
+            polygonsRef.current[project.id] = polygon;
+          }
+        } catch (err) {
+          console.warn('Erro ao renderizar KML para projeto', project.name, err);
+        }
+      }
+
       if (project.specs.lat && project.specs.lng && visibleProjectIds.has(project.id)) {
-        const markerColor = project.status === 'Concluído' ? '#00B08E' : project.status === 'Em Execução' ? '#3FA9F5' : '#002D62';
         
         const customIcon = L.divIcon({
           className: 'custom-div-icon',

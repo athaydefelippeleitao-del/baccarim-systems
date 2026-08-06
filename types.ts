@@ -198,6 +198,7 @@ export interface ProjectTechnicalSpecs {
   qtdLotes?: number | string; // Kept for compatibility
   customSpecs?: CustomSpec[];
   rapData?: Record<string, string>;
+  kmlFile?: { fileName: string; fileData: string }; // KML terrain polygon file
   customExtensionReport?: string;
   extensionDays?: string;
   extensionReason?: string;

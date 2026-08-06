@@ -50,3 +50,37 @@ export function utmToDecimal(e: number, n: number, zone: number = 22, south: boo
     lng: lng * (180 / Math.PI) 
   };
 }
+
+/**
+ * Faz o parse de um arquivo KML e extrai as coordenadas do primeiro Polygon encontrado.
+ * Retorna um array de [lat, lng] compatível com Leaflet.
+ * @param kmlString Conteúdo textual do arquivo KML
+ */
+export function parseKML(kmlString: string): [number, number][] {
+  try {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(kmlString, 'application/xml');
+
+    // Tenta obter as coordenadas do primeiro Polygon
+    const coordsEl = doc.querySelector('Polygon coordinates, Polygon outerBoundaryIs coordinates, coordinates');
+    if (!coordsEl || !coordsEl.textContent) return [];
+
+    const raw = coordsEl.textContent.trim();
+    const points = raw.split(/\s+/).filter(Boolean);
+
+    const result: [number, number][] = [];
+    for (const point of points) {
+      const parts = point.split(',');
+      if (parts.length >= 2) {
+        const lng = parseFloat(parts[0]);
+        const lat = parseFloat(parts[1]);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          result.push([lat, lng]);
+        }
+      }
+    }
+    return result;
+  } catch {
+    return [];
+  }
+}
