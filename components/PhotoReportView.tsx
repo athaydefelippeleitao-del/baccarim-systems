@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PhotoReport, Project, PhotoItem } from '../types';
 import { analyzeVistoriaImage } from '../services/openaiClient';
-import { utmToDecimal } from '../utils/geoUtils';
+import { utmToDecimal, parseUTMCoord } from '../utils/geoUtils';
 
 declare const L: any;
 
@@ -113,19 +113,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       let finalLng = photo.lng;
 
       if ((!finalLat || !finalLng) && photo.coordE && photo.coordN) {
-        // Sanitize Brazilian number formats (e.g., "7.420.123,45" or "7420123,45" -> 7420123.45)
-        const cleanCoord = (val: string) => {
-          let cleaned = val.replace(/\s/g, '');
-          if (cleaned.includes(',') && cleaned.includes('.')) {
-            cleaned = cleaned.replace(/\./g, '').replace(',', '.');
-          } else if (cleaned.includes(',')) {
-            cleaned = cleaned.replace(',', '.');
-          }
-          return parseFloat(cleaned);
-        };
-
-        const eNum = cleanCoord(photo.coordE);
-        const nNum = cleanCoord(photo.coordN);
+        const eNum = parseUTMCoord(photo.coordE);
+        const nNum = parseUTMCoord(photo.coordN);
 
         if (!isNaN(eNum) && !isNaN(nNum)) {
           const converted = utmToDecimal(eNum, nNum, zone);

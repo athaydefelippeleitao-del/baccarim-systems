@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { Project } from '../types';
-import { utmToDecimal, parseKML } from '../utils/geoUtils';
+import { utmToDecimal, parseKML, parseUTMCoord } from '../utils/geoUtils';
 
 interface MapViewProps {
   projects: Project[];
@@ -74,9 +74,9 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
       let initLng = firstProj?.specs?.lng;
       if ((initLat == null || initLng == null) && firstProj?.specs?.coordE && firstProj?.specs?.coordN) {
         const { lat, lng } = utmToDecimal(
-          parseFloat(firstProj.specs.coordE),
-          parseFloat(firstProj.specs.coordN),
-          firstProj.specs.zone || 22
+          parseUTMCoord(firstProj.specs.coordE),
+          parseUTMCoord(firstProj.specs.coordN),
+          parseInt(String(firstProj.specs.zone) || '22', 10)
         );
         initLat = lat; initLng = lng;
       }
@@ -190,16 +190,19 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         const hasUTM = project.specs?.coordE && project.specs?.coordN;
         if (!hasCoords && !hasUTM) return;
 
-        const [markerLat, markerLng] = hasCoords
+        let [markerLat, markerLng] = hasCoords
           ? [project.specs.lat!, project.specs.lng!]
-          : (() => {
-              const { lat, lng } = utmToDecimal(
-                parseFloat(project.specs.coordE!),
-                parseFloat(project.specs.coordN!),
-                project.specs.zone || 22
-              );
-              return [lat, lng];
-            })();
+          : [0, 0];
+        
+        if (!hasCoords) {
+          const { lat, lng } = utmToDecimal(
+            parseUTMCoord(project.specs.coordE!),
+            parseUTMCoord(project.specs.coordN!),
+            project.specs.zone || 22
+          );
+          markerLat = lat;
+          markerLng = lng;
+        }
 
         const customIcon = L.divIcon({
           className: 'custom-div-icon',

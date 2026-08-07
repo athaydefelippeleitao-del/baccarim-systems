@@ -4,6 +4,56 @@
  */
 
 /**
+ * Converte string formatada de coordenada para número, tratando formatos brasileiros
+ * Ex: "7.322.678,45" -> 7322678.45
+ * Ex: "506.360" -> 506360
+ */
+export function parseUTMCoord(val: string | number): number {
+  if (typeof val === 'number') return val;
+  if (!val) return NaN;
+  
+  let cleaned = val.toString().replace(/[^\d.,-]/g, '');
+  if (!cleaned) return NaN;
+
+  const commaCount = (cleaned.match(/,/g) || []).length;
+  const dotCount = (cleaned.match(/\./g) || []).length;
+
+  if (commaCount > 0 && dotCount > 0) {
+    const lastComma = cleaned.lastIndexOf(',');
+    const lastDot = cleaned.lastIndexOf('.');
+    if (lastComma > lastDot) {
+      // Formato brasileiro: 7.322.678,45
+      cleaned = cleaned.replace(/\./g, '').replace(',', '.');
+    } else {
+      // Formato US: 7,322,678.45
+      cleaned = cleaned.replace(/,/g, '');
+    }
+  } else if (commaCount > 0) {
+    // Apenas vírgulas
+    const parts = cleaned.split(',');
+    if (parts.length > 2 || parts[parts.length - 1].length === 3) {
+      // milhar (ex: 7,322,678)
+      cleaned = cleaned.replace(/,/g, '');
+    } else {
+      // decimal (ex: 7322678,45)
+      cleaned = cleaned.replace(',', '.');
+    }
+  } else if (dotCount > 0) {
+    // Apenas pontos
+    const parts = cleaned.split('.');
+    if (parts.length > 2 || parts[parts.length - 1].length === 3) {
+      // milhar (ex: 7.322.678 ou 506.360)
+      cleaned = cleaned.replace(/\./g, '');
+    } else {
+      // decimal (ex: 7322678.45)
+      // mantém como está
+    }
+  }
+  
+  return parseFloat(cleaned);
+}
+
+/**
  * Converte coordenadas UTM para Decimal (Latitude/Longitude)
  * Calibrado para o elipsoide GRS80 / SIRGAS 2000 (padrão brasileiro)
  * @param e UTM Easting (Leste)

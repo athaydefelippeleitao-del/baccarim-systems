@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { EnvironmentalLicense, LicenseStatus, Project, LicenseType, ChecklistItem, Notification } from '../types';
 import ProjectsView from './ProjectsView';
-import { utmToDecimal } from '../utils/geoUtils';
+import { utmToDecimal, parseUTMCoord } from '../utils/geoUtils';
 
 interface ClientsViewProps {
   userRole: 'admin' | 'engineer' | 'client';
@@ -151,10 +151,11 @@ const ClientsView: React.FC<ClientsViewProps> = ({ userRole, clients, licenses, 
     };
 
     // Conversão automática se UTM estiver presente
-    if (specs.coordE && specs.coordN) {
-      const e = parseFloat(specs.coordE.replace(/[^\d.]/g, ''));
-      const n = parseFloat(specs.coordN.replace(/[^\d.]/g, ''));
-      const zone = specs.zone || 22;
+    if ((!specs.lat || !specs.lng) && specs.coordE && specs.coordN) {
+      const e = parseUTMCoord(specs.coordE);
+      const n = parseUTMCoord(specs.coordN);
+      const zone = parseInt(String(specs.zone) || '22', 10);
+      
       if (!isNaN(e) && !isNaN(n)) {
         const converted = utmToDecimal(e, n, zone);
         specs.lat = converted.lat;
