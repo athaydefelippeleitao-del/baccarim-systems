@@ -184,8 +184,14 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         }
       }
 
-      // Marcador — cria apenas se não existe ainda
-      if (!markersRef.current[project.id]) {
+      // Marcador — always recalculate from UTM if available (prevents stale bad lat/lng from DB)
+      const shouldRecreateMarker = !markersRef.current[project.id] || !!project.specs?.coordE;
+      if (markersRef.current[project.id] && project.specs?.coordE) {
+        // Remove stale marker so it's rebuilt with correct coordinates
+        layerGroupRef.current.removeLayer(markersRef.current[project.id]);
+        delete markersRef.current[project.id];
+      }
+      if (shouldRecreateMarker && !markersRef.current[project.id]) {
         const hasCoords = project.specs?.lat && project.specs?.lng;
         const hasUTM = project.specs?.coordE && project.specs?.coordN;
         if (!hasCoords && !hasUTM) return;
@@ -194,16 +200,17 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         let markerLng = project.specs?.lng || 0;
         
         if (hasUTM) {
-          const { lat, lng } = utmToDecimal(
-            parseUTMCoord(project.specs.coordE!),
-            parseUTMCoord(project.specs.coordN!),
-            project.specs.zone || 22
-          );
-          if (!isNaN(lat) && !isNaN(lng)) {
-            markerLat = lat;
-            markerLng = lng;
+          const eVal = parseUTMCoord(project.specs.coordE!);
+          const nVal = parseUTMCoord(project.specs.coordN!);
+          if (!isNaN(eVal) && !isNaN(nVal) && eVal > 100000 && nVal > 100000) {
+            const { lat, lng } = utmToDecimal(eVal, nVal, Number(project.specs.zone) || 22);
+            // Only use if within a valid lat/lng range (Brazil: lat -35 to 5, lng -75 to -30)
+            if (lat > -35 && lat < 10 && lng > -80 && lng < -25) {
+              markerLat = lat;
+              markerLng = lng;
+            }
           }
-        }
+        } else if (!hasCoords) return;
 
         const customIcon = L.divIcon({
           className: 'custom-div-icon',
