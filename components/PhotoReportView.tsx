@@ -112,7 +112,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       let finalLat = photo.lat;
       let finalLng = photo.lng;
 
-      if ((!finalLat || !finalLng) && photo.coordE && photo.coordN) {
+      if (photo.coordE && photo.coordN) {
         const eNum = parseUTMCoord(photo.coordE);
         const nNum = parseUTMCoord(photo.coordN);
 

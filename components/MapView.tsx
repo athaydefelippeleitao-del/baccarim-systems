@@ -190,18 +190,19 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         const hasUTM = project.specs?.coordE && project.specs?.coordN;
         if (!hasCoords && !hasUTM) return;
 
-        let [markerLat, markerLng] = hasCoords
-          ? [project.specs.lat!, project.specs.lng!]
-          : [0, 0];
+        let markerLat = project.specs?.lat || 0;
+        let markerLng = project.specs?.lng || 0;
         
-        if (!hasCoords) {
+        if (hasUTM) {
           const { lat, lng } = utmToDecimal(
             parseUTMCoord(project.specs.coordE!),
             parseUTMCoord(project.specs.coordN!),
             project.specs.zone || 22
           );
-          markerLat = lat;
-          markerLng = lng;
+          if (!isNaN(lat) && !isNaN(lng)) {
+            markerLat = lat;
+            markerLng = lng;
+          }
         }
 
         const customIcon = L.divIcon({
