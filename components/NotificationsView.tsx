@@ -488,165 +488,157 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         </div>
       </header>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-baccarim-card p-6 rounded-[2rem] border border-baccarim-border flex items-center space-x-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-2xl bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center text-xl shadow-sm"><i className="fas fa-bolt"></i></div>
+      <div className="grid grid-cols-3 gap-3">
+        <div className="bg-white p-4 rounded-xl border border-slate-100 flex items-center space-x-3 shadow-sm">
+          <div className="w-9 h-9 rounded-lg bg-baccarim-rose/10 text-baccarim-rose flex items-center justify-center text-sm"><i className="fas fa-bolt"></i></div>
           <div>
-            <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Urgência Alta</p>
-            <p className="text-xl font-black text-baccarim-text">{stats.high}</p>
+            <p className="text-[7px] font-black text-slate-400 uppercase tracking-wider">Urgência Alta</p>
+            <p className="text-lg font-black text-baccarim-navy leading-none">{stats.high}</p>
           </div>
         </div>
-        <div className="bg-baccarim-card p-6 rounded-[2rem] border border-baccarim-border flex items-center space-x-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-2xl bg-baccarim-amber/10 text-baccarim-amber flex items-center justify-center text-xl shadow-sm"><i className="fas fa-hourglass-half"></i></div>
+        <div className="bg-white p-4 rounded-xl border border-slate-100 flex items-center space-x-3 shadow-sm">
+          <div className="w-9 h-9 rounded-lg bg-baccarim-amber/10 text-baccarim-amber flex items-center justify-center text-sm"><i className="fas fa-hourglass-half"></i></div>
           <div>
-            <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Total Pendentes</p>
-            <p className="text-xl font-black text-baccarim-text">{stats.open}</p>
+            <p className="text-[7px] font-black text-slate-400 uppercase tracking-wider">Pendentes</p>
+            <p className="text-lg font-black text-baccarim-navy leading-none">{stats.open}</p>
           </div>
         </div>
-        <div className="bg-baccarim-card p-6 rounded-[2rem] border border-baccarim-border flex items-center space-x-4 shadow-2xl">
-          <div className="w-12 h-12 rounded-2xl bg-baccarim-green/10 text-baccarim-green flex items-center justify-center text-xl shadow-sm"><i className="fas fa-check-double"></i></div>
+        <div className="bg-white p-4 rounded-xl border border-slate-100 flex items-center space-x-3 shadow-sm">
+          <div className="w-9 h-9 rounded-lg bg-baccarim-green/10 text-baccarim-green flex items-center justify-center text-sm"><i className="fas fa-check-double"></i></div>
           <div>
-            <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Resolvidas (Ciclo)</p>
-            <p className="text-xl font-black text-baccarim-text">{stats.resolved}</p>
+            <p className="text-[7px] font-black text-slate-400 uppercase tracking-wider">Resolvidas</p>
+            <p className="text-lg font-black text-baccarim-navy leading-none">{stats.resolved}</p>
           </div>
         </div>
       </div>
 
-      <div className="space-y-6">
+      <div className="space-y-3">
         {filtered.map(notif => (
-          <div key={notif.id} className={`bg-baccarim-card rounded-[2.5rem] border p-8 shadow-2xl transition-all hover:shadow-baccarim-blue/5 relative overflow-hidden group ${notif.status === 'Resolved' ? 'opacity-60 grayscale-[0.5]' : 'border-baccarim-border'}`}>
-            <div className={`absolute left-0 top-0 bottom-0 w-2 ${getSeverityColor(notif.severity)}`}></div>
+          <div key={notif.id} className={`bg-white rounded-[1.5rem] border p-5 shadow-sm hover:shadow-md transition-all relative overflow-hidden group ${notif.status === 'Resolved' ? 'opacity-60 grayscale-[0.5]' : 'border-slate-100'}`}>
+            <div className={`absolute left-0 top-0 bottom-0 w-1.5 ${getSeverityColor(notif.severity)}`}></div>
 
-            <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-8">
-              <div className="flex-1 space-y-4">
-                <div className="flex items-center space-x-3">
-                  <span className="bg-baccarim-hover px-3 py-1 rounded-lg text-[8px] font-black uppercase text-baccarim-text-muted">{notif.agency}</span>
-                  <span className={`px-3 py-1 rounded-lg text-[8px] font-black uppercase text-white ${getSeverityColor(notif.severity)}`}>Severidade {notif.severity}</span>
+            <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-5 pl-3">
+              <div className="flex-1 space-y-3">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="bg-slate-50 px-2 py-0.5 rounded-md text-[7px] font-black uppercase text-slate-500 border border-slate-100">{notif.agency}</span>
+                  <span className={`px-2 py-0.5 rounded-md text-[7px] font-black uppercase text-white ${getSeverityColor(notif.severity)}`}>Severidade {notif.severity}</span>
                   {notif.category && (
-                    <span className="bg-baccarim-hover px-3 py-1 rounded-lg text-[8px] font-black uppercase text-baccarim-text-muted border border-baccarim-border">{notif.category}</span>
+                    <span className="bg-slate-50 px-2 py-0.5 rounded-md text-[7px] font-black uppercase text-slate-500 border border-slate-100">{notif.category}</span>
                   )}
+                  <span className="ml-auto text-[8px] font-bold text-slate-400">{notif.dateReceived}</span>
                 </div>
                 <div>
-                  <h3 className="text-xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors">{notif.title}</h3>
-                  <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
-                    <p className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-widest">{notif.clientName}</p>
-                    <span className="text-[9px] text-baccarim-text opacity-30">•</span>
+                  <h3 className="text-base font-black text-baccarim-navy tracking-tight group-hover:text-baccarim-blue transition-colors leading-tight">{notif.title}</h3>
+                  <div className="flex flex-wrap items-center gap-x-1.5 mt-0.5">
+                    <p className="text-[8px] font-bold text-slate-400 uppercase tracking-wider">{notif.clientName}</p>
                     {notif.projectId && (
                       <>
-                        <p className="text-[9px] font-black text-baccarim-blue uppercase tracking-widest">
+                        <span className="text-[8px] text-slate-300">•</span>
+                        <p className="text-[8px] font-bold text-baccarim-blue uppercase tracking-wider">
                           {projects.find(p => p.id === notif.projectId)?.name || 'Projeto Vinc.'}
                         </p>
-                        <span className="text-[9px] text-baccarim-text opacity-30">•</span>
                       </>
                     )}
-                    <p className="text-[9px] font-black text-baccarim-text opacity-70 uppercase tracking-widest">Recebida em {notif.dateReceived}</p>
                   </div>
                 </div>
-                <div className="bg-baccarim-hover p-5 rounded-2xl border border-baccarim-border">
-                  <p className="text-xs text-baccarim-text-muted font-medium leading-relaxed italic">"{notif.description}"</p>
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100">
+                  <p className="text-[11px] text-slate-500 font-medium leading-relaxed italic truncate">"{notif.description}"</p>
                 </div>
 
                 {/* Anexos da Notificação */}
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest">Documentos Anexos</h4>
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-[7px] font-black text-slate-400 uppercase tracking-wider">Anexos:</span>
+                  <button
+                    onClick={() => handleAddFileClick(notif)}
+                    disabled={loadingFilesId === notif.id}
+                    className="text-[8px] font-bold text-baccarim-blue hover:underline disabled:opacity-50"
+                  >
+                    {loadingFilesId === notif.id ? '⏳...' : '+ Arquivo'}
+                  </button>
+                  {notif.attachedFiles !== undefined ? (
+                    <>
+                      {notif.attachedFiles.map((file, fIdx) => (
+                        <div key={fIdx} className="flex items-center space-x-1.5 bg-slate-50 border border-slate-100 px-2 py-1 rounded-lg animate-in slide-in-from-left-2">
+                          <i className="fas fa-file-pdf text-baccarim-rose text-[9px]"></i>
+                          <button
+                            onClick={() => downloadFile(file)}
+                            className="text-[8px] font-bold text-baccarim-navy hover:text-baccarim-blue truncate max-w-[100px]"
+                          >
+                            {file.fileName}
+                          </button>
+                          <button
+                            onClick={() => handleRemoveAttachment(notif, fIdx)}
+                            className="text-slate-300 hover:text-red-500 transition-colors"
+                          >
+                            <i className="fas fa-times text-[8px]"></i>
+                          </button>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
                     <button
-                      onClick={() => handleAddFileClick(notif)}
+                      onClick={async () => {
+                        setLoadingFilesId(notif.id);
+                        import('../services/supabaseService').then(async (s) => {
+                          const files = await s.getNotificationFiles(notif.id);
+                          setLoadedFiles(prev => ({ ...prev, [notif.id]: files }));
+                          onUpdateNotification({ ...notif, attachedFiles: files });
+                          setLoadingFilesId(null);
+                        });
+                      }}
                       disabled={loadingFilesId === notif.id}
-                      className="text-[9px] font-black text-baccarim-blue hover:underline uppercase tracking-widest disabled:opacity-50"
+                      className="text-[8px] font-bold text-amber-500 hover:bg-amber-50 px-2 py-1 rounded-lg border border-amber-200 transition-colors disabled:opacity-50 flex items-center"
                     >
-                      {loadingFilesId === notif.id ? '⏳ Carregando...' : '+ Adicionar Arquivo'}
+                      <i className="fas fa-cloud-download-alt mr-1"></i> {loadingFilesId === notif.id ? 'Carregando...' : 'Ver Anexos'}
                     </button>
-                  </div>
-                  <div className="flex flex-wrap gap-2">
-                    {notif.attachedFiles !== undefined ? (
-                      <>
-                        {notif.attachedFiles.map((file, fIdx) => (
-                          <div key={fIdx} className="flex items-center space-x-2 bg-baccarim-hover border border-baccarim-border px-3 py-1.5 rounded-xl shadow-sm animate-in slide-in-from-left-2">
-                            <i className="fas fa-file-pdf text-baccarim-rose text-[10px]"></i>
-                            <button
-                              onClick={() => downloadFile(file)}
-                              className="text-[9px] font-bold text-baccarim-text hover:text-baccarim-blue truncate max-w-[120px]"
-                            >
-                              {file.fileName}
-                            </button>
-                            <button
-                              onClick={() => handleRemoveAttachment(notif, fIdx)}
-                              className="text-baccarim-text-muted hover:text-red-500 transition-colors"
-                            >
-                              <i className="fas fa-times-circle text-[10px]"></i>
-                            </button>
-                          </div>
-                        ))}
-                        {notif.attachedFiles.length === 0 && (
-                          <p className="text-[9px] text-baccarim-text-muted italic">Nenhum documento anexado. Clique em "+ Adicionar Arquivo" para carregar.</p>
-                        )}
-                      </>
-                    ) : (
-                      <button
-                        onClick={async () => {
-                          setLoadingFilesId(notif.id);
-                          import('../services/supabaseService').then(async (s) => {
-                            const files = await s.getNotificationFiles(notif.id);
-                            setLoadedFiles(prev => ({ ...prev, [notif.id]: files }));
-                            onUpdateNotification({ ...notif, attachedFiles: files });
-                            setLoadingFilesId(null);
-                          });
-                        }}
-                        disabled={loadingFilesId === notif.id}
-                        className="text-[9px] font-black text-baccarim-amber hover:bg-baccarim-hover px-3 py-1.5 rounded-xl border border-baccarim-amber/30 transition-colors uppercase tracking-widest disabled:opacity-50 flex items-center"
-                      >
-                        <i className="fas fa-cloud-download-alt mr-2"></i> {loadingFilesId === notif.id ? 'Carregando arquivos...' : 'Visualizar Anexos do Servidor'}
-                      </button>
-                    )}
-                  </div>
+                  )}
                 </div>
 
                 {notif.responseDraft && (
-                  <div className="bg-baccarim-blue/5 p-6 rounded-3xl border border-baccarim-blue/10 space-y-3 animate-in fade-in zoom-in-95">
+                  <div className="bg-blue-50/50 p-3 rounded-xl border border-blue-100 space-y-2 animate-in fade-in zoom-in-95">
                     <div className="flex items-center justify-between">
-                      <h4 className="text-[10px] font-black text-baccarim-blue uppercase tracking-widest flex items-center">
-                        <i className="fas fa-robot mr-2"></i> Sugestão de Resposta Gemini
+                      <h4 className="text-[8px] font-black text-baccarim-blue uppercase tracking-wider flex items-center">
+                        <i className="fas fa-robot mr-1.5 text-[10px]"></i> Sugestão IA
                       </h4>
-                      <button onClick={() => onUpdateNotification({ ...notif, responseDraft: undefined })} className="text-baccarim-text-muted hover:text-red-500 transition-colors"><i className="fas fa-times-circle"></i></button>
+                      <button onClick={() => onUpdateNotification({ ...notif, responseDraft: undefined })} className="text-slate-300 hover:text-red-500 transition-colors text-xs"><i className="fas fa-times"></i></button>
                     </div>
-                    <div className="text-[11px] text-baccarim-text leading-relaxed whitespace-pre-wrap font-medium">
+                    <div className="text-[10px] text-baccarim-navy leading-relaxed whitespace-pre-wrap font-medium max-h-24 overflow-y-auto custom-scrollbar">
                       {notif.responseDraft}
                     </div>
-                    <button className="text-[9px] font-black text-white bg-baccarim-blue px-4 py-2 rounded-xl uppercase tracking-widest hover:bg-baccarim-green transition-all">Copiar Rascunho</button>
+                    <button className="text-[8px] font-black text-white bg-baccarim-blue px-3 py-1.5 rounded-lg uppercase tracking-wider hover:bg-baccarim-green transition-all">Copiar</button>
                   </div>
                 )}
               </div>
 
-              <div className="lg:w-72 space-y-4">
-                <div className="bg-baccarim-hover p-5 rounded-2xl border border-baccarim-border text-center">
-                  <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest mb-1">Prazo Fatal</p>
-                  <p className={`text-lg font-black ${notif.status === 'Open' ? 'text-baccarim-rose' : 'text-baccarim-text-muted'}`}>{notif.deadline}</p>
+              <div className="lg:w-56 space-y-3 shrink-0">
+                <div className="bg-slate-50 p-3 rounded-xl border border-slate-100 text-center">
+                  <p className="text-[7px] font-black text-slate-400 uppercase tracking-wider mb-0.5">Prazo Fatal</p>
+                  <p className={`text-base font-black leading-none ${notif.status === 'Open' ? 'text-baccarim-rose' : 'text-slate-400'}`}>{notif.deadline}</p>
                 </div>
 
-                <div className="grid grid-cols-1 gap-3">
+                <div className="grid grid-cols-1 gap-2">
                   <button
                     onClick={() => handleToggleStatus(notif)}
-                    className={`w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${notif.status === 'Open' ? 'bg-baccarim-green text-white shadow-lg shadow-emerald-500/20' : 'bg-baccarim-hover text-baccarim-text-muted'}`}
+                    className={`w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all ${notif.status === 'Open' ? 'bg-baccarim-green text-white shadow-sm' : 'bg-slate-50 text-slate-400 border border-slate-100'}`}
                   >
-                    {notif.status === 'Open' ? 'Marcar como Resolvida' : 'Reabrir Notificação'}
+                    {notif.status === 'Open' ? 'Marcar Resolvida' : 'Reabrir'}
                   </button>
 
                   {!notif.responseDraft && notif.status === 'Open' && (
                     <button
                       onClick={() => generateAiDraft(notif)}
                       disabled={aiLoadingId === notif.id}
-                      className="w-full py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-green transition-all flex items-center justify-center space-x-3"
+                      className="w-full py-2.5 bg-baccarim-blue text-white rounded-lg text-[9px] font-black uppercase tracking-wider hover:bg-baccarim-green transition-all flex items-center justify-center space-x-2"
                     >
                       {aiLoadingId === notif.id ? (
                         <>
-                          <div className="w-3 h-3 border-2 border-baccarim-border/20 border-t-white rounded-full animate-spin"></div>
+                          <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
                           <span>Analisando...</span>
                         </>
                       ) : (
                         <>
-                          <i className="fas fa-wand-magic-sparkles"></i>
-                          <span>Análise Inteligente</span>
+                          <i className="fas fa-wand-magic-sparkles text-[9px]"></i>
+                          <span>Análise IA</span>
                         </>
                       )}
                     </button>
@@ -656,33 +648,35 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
                     <button
                       onClick={() => triggerManualPush(notif.id)}
                       disabled={pushSendingId === notif.id}
-                      className={`w-full py-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center space-x-3 ${
+                      className={`w-full py-2.5 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all flex items-center justify-center space-x-2 ${
                         pushSentIds[notif.id]
-                          ? 'bg-baccarim-green text-white shadow-lg shadow-emerald-500/20'
-                          : 'bg-baccarim-amber text-baccarim-dark hover:bg-baccarim-green hover:text-white shadow-lg shadow-baccarim-amber/20'
+                          ? 'bg-baccarim-green text-white shadow-sm'
+                          : 'bg-baccarim-amber text-baccarim-dark hover:bg-baccarim-green hover:text-white'
                       }`}
                     >
                       {pushSendingId === notif.id ? (
                         <>
-                          <div className="w-3 h-3 border-2 border-baccarim-border/20 border-t-white rounded-full animate-spin"></div>
-                          <span>Disparando...</span>
+                          <div className="w-3 h-3 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                          <span>Enviando...</span>
                         </>
                       ) : pushSentIds[notif.id] ? (
                         <>
-                          <i className="fas fa-check-double"></i>
-                          <span>Notificação Enviada!</span>
+                          <i className="fas fa-check-double text-[9px]"></i>
+                          <span>Enviada!</span>
                         </>
                       ) : (
                         <>
-                          <i className="fas fa-paper-plane"></i>
-                          <span>Notificar no Celular</span>
+                          <i className="fas fa-paper-plane text-[9px]"></i>
+                          <span>Push Celular</span>
                         </>
                       )}
                     </button>
                   )}
 
-                  <button onClick={() => handleEditClick(notif)} className="w-full py-3 text-baccarim-blue hover:text-baccarim-text text-[10px] font-black uppercase tracking-widest transition-colors">Editar Registro</button>
-                  <button onClick={() => onDeleteNotification(notif.id)} className="w-full py-3 text-baccarim-text-muted hover:text-red-500 text-[10px] font-black uppercase tracking-widest transition-colors">Excluir Registro</button>
+                  <div className="flex gap-2">
+                    <button onClick={() => handleEditClick(notif)} className="flex-1 py-2 text-baccarim-blue hover:bg-baccarim-blue/10 text-[8px] font-black uppercase tracking-wider transition-all rounded-lg">Editar</button>
+                    <button onClick={() => onDeleteNotification(notif.id)} className="flex-1 py-2 text-slate-400 hover:text-red-500 hover:bg-red-50 text-[8px] font-black uppercase tracking-wider transition-all rounded-lg">Excluir</button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -690,9 +684,9 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
         ))}
 
         {filtered.length === 0 && (
-          <div className="py-20 text-center bg-baccarim-card rounded-[3rem] border border-dashed border-baccarim-border-hover">
-            <i className="fas fa-clipboard-check text-5xl text-baccarim-text/5 mb-4"></i>
-            <p className="text-baccarim-text-muted font-bold uppercase tracking-widest text-[10px]">Tudo limpo! Nenhuma notificação pendente.</p>
+          <div className="py-12 text-center bg-white rounded-2xl border border-dashed border-slate-200">
+            <i className="fas fa-clipboard-check text-3xl text-slate-200 mb-3"></i>
+            <p className="text-slate-400 font-bold uppercase tracking-wider text-[9px]">Tudo limpo! Nenhuma notificação pendente.</p>
           </div>
         )}
       </div>
