@@ -429,13 +429,6 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     }
   };
 
-  const photoPages = useMemo(() => {
-    if (!selectedReport) return [];
-    const pages = [];
-    for (let i = 0; i < selectedReport.photos.length; i += 4) pages.push(selectedReport.photos.slice(i, i + 4));
-    return pages;
-  }, [selectedReport]);
-
   const getPointInfoLabel = (photo: PhotoItem, allPhotos: PhotoItem[]) => {
     const points = getUniquePoints(allPhotos);
     const point = points.find(p => p.photos.some(pt => pt.id === photo.id));
@@ -443,6 +436,51 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
     return `PONTO ${point.pointNumber}`;
   };
+
+  const photoPages = useMemo(() => {
+    if (!selectedReport) return [];
+    const pages = [];
+    for (let i = 0; i < selectedReport.photos.length; i += 4) pages.push(selectedReport.photos.slice(i, i + 4));
+    return pages;
+  }, [selectedReport]);
+
+  const { figureIndexPages, mapPageNumber } = useMemo(() => {
+    if (!selectedReport) return { figureIndexPages: [], mapPageNumber: 7 };
+    const allFigures = [
+      { isMap: true, label: "Figura 1 – Mapa de localização dos Pontos do Relatório fotográfico", pageNum: -1, id: 'map-fig' }
+    ];
+    
+    selectedReport.photos.forEach((photo, idx) => {
+      allFigures.push({
+        isMap: false,
+        id: photo.id,
+        label: `Figura ${idx + 2} – ${getPointInfoLabel(photo, selectedReport.photos)}`,
+        pageNum: -1
+      });
+    });
+
+    const ITEMS_PER_PAGE = 22; // Safely fits in 297mm height A4 page
+    const numIndexPages = Math.ceil(allFigures.length / ITEMS_PER_PAGE);
+    
+    // Page 1 to 5 are fixed (Cover, Tech Signatures, Empreendedor, Empreendimento, Resp Tecnico).
+    // Index pages start at 6.
+    const mapPageNum = 5 + numIndexPages + 1;
+    
+    allFigures.forEach((fig, i) => {
+      if (fig.isMap) fig.pageNum = mapPageNum;
+      else {
+        const photoIdx = i - 1;
+        fig.pageNum = mapPageNum + 1 + Math.floor(photoIdx / 4);
+      }
+    });
+
+    const pages = [];
+    for (let i = 0; i < allFigures.length; i += ITEMS_PER_PAGE) {
+      pages.push(allFigures.slice(i, i + ITEMS_PER_PAGE));
+    }
+
+    return { figureIndexPages: pages, mapPageNumber: mapPageNum };
+  }, [selectedReport]);
 
   const BaccarimLogo = ({ className = "" }: { className?: string }) => (
     <div className={`flex flex-col items-end ${className}`}>
@@ -945,37 +983,31 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               </div>
             </div>
 
-            <div className="page-a4 p-[25mm] space-y-14 page-break relative" style={{ height: '297mm' }}>
-              <WatermarkLogo />
-              <div className="absolute top-12 right-12"><BaccarimLogo className="scale-75" /></div>
-              <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">6</div>
-              <div className="pt-24 space-y-12 text-[12px] relative z-10">
-                <h3 className="text-[20px] font-black text-center uppercase text-[#002D62] mb-10">LISTA DE FIGURAS</h3>
-                <div className="space-y-4">
-                  <div className="flex items-end gap-2">
-                    <span className="font-bold text-[#002D62] whitespace-nowrap">Figura 1 – Mapa de localização dos Pontos do Relatório fotográfico</span>
-                    <div className="flex-1 border-b border-dotted border-slate-400 mb-1"></div>
-                    <span className="font-bold text-[#002D62]">7</span>
-                  </div>
-                  {selectedReport.photos.map((photo, idx) => {
-                    const pointLabel = getPointInfoLabel(photo, selectedReport.photos);
-                    const pageNum = Math.floor(idx / 4) + 8;
-                    return (
-                      <div key={photo.id} className="flex items-end gap-2">
-                        <span className="font-bold text-[#002D62] whitespace-nowrap">Figura {idx + 2} – {pointLabel}</span>
+            {figureIndexPages.map((pageItems, pageIndex) => (
+              <div key={pageIndex} className="page-a4 p-[25mm] space-y-14 page-break relative" style={{ height: '297mm' }}>
+                <WatermarkLogo />
+                <div className="absolute top-12 right-12"><BaccarimLogo className="scale-75" /></div>
+                <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">{6 + pageIndex}</div>
+                <div className="pt-24 space-y-12 text-[12px] relative z-10">
+                  {pageIndex === 0 && <h3 className="text-[20px] font-black text-center uppercase text-[#002D62] mb-10">LISTA DE FIGURAS</h3>}
+                  {pageIndex > 0 && <h3 className="text-[20px] font-black text-center uppercase text-[#002D62] mb-10 opacity-0">LISTA DE FIGURAS</h3>}
+                  <div className="space-y-4">
+                    {pageItems.map((item) => (
+                      <div key={item.id} className="flex items-end gap-2">
+                        <span className="font-bold text-[#002D62] whitespace-nowrap">{item.label}</span>
                         <div className="flex-1 border-b border-dotted border-slate-400 mb-1"></div>
-                        <span className="font-bold text-[#002D62]">{pageNum}</span>
+                        <span className="font-bold text-[#002D62]">{item.pageNum}</span>
                       </div>
-                    );
-                  })}
+                    ))}
+                  </div>
                 </div>
               </div>
-            </div>
+            ))}
 
             <div className="page-a4 p-[25mm] space-y-10 page-break relative" style={{ height: '297mm' }}>
               <WatermarkLogo />
               <div className="absolute top-12 right-12"><BaccarimLogo className="scale-75" /></div>
-              <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">7</div>
+              <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">{mapPageNumber}</div>
               <div className="pt-24 flex flex-col h-full relative z-10">
                 <h4 className="text-[16px] font-black uppercase mb-10 border-b-2 border-[#002D62] pb-4 text-[#002D62]">MAPA DE LOCALIZAÇÃO DOS PONTOS</h4>
                 <div className="bg-white rounded-3xl border-4 border-slate-100 relative z-10 w-full" style={{ height: '700px' }}>
@@ -989,7 +1021,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               <div key={pageIdx} className="page-a4 p-[20mm] page-break relative" style={{ height: '297mm' }}>
                 <WatermarkLogo />
                 <div className="absolute top-12 right-12"><BaccarimLogo className="scale-75" /></div>
-                <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">{pageIdx + 8}</div>
+                <div className="absolute bottom-10 right-10 text-[12px] font-bold text-[#002D62]">{mapPageNumber + 1 + pageIdx}</div>
                 <div className="pt-24 grid grid-cols-2 gap-x-12 gap-y-14 relative z-10">
                   {pagePhotos.map((photo, photoIdx) => {
                     const globalIndex = pageIdx * 4 + photoIdx + 1;
