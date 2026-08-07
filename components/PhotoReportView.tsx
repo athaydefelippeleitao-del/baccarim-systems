@@ -113,12 +113,20 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       let finalLng = photo.lng;
 
       if (photo.coordE && photo.coordN) {
-        const eNum = parseUTMCoord(photo.coordE);
-        const nNum = parseUTMCoord(photo.coordN);
+        let eNum = parseUTMCoord(photo.coordE);
+        let nNum = parseUTMCoord(photo.coordN);
+
+        // Auto-swap se a IA tiver invertido E e N (N no Brasil é sempre na casa dos milhões, E na casa dos milhares)
+        if (eNum > 1000000 && nNum < 1000000) {
+          const temp = eNum;
+          eNum = nNum;
+          nNum = temp;
+        }
 
         if (!isNaN(eNum) && !isNaN(nNum)) {
           const converted = utmToDecimal(eNum, nNum, zone);
-          if (converted) {
+          // Safety check: só aceita se cair no Brasil (lat -35 a 10, lng -80 a -25)
+          if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
             finalLat = converted.lat;
             finalLng = converted.lng;
           }

@@ -200,8 +200,16 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         let markerLng = project.specs?.lng || 0;
         
         if (hasUTM) {
-          const eVal = parseUTMCoord(project.specs.coordE!);
-          const nVal = parseUTMCoord(project.specs.coordN!);
+          let eVal = parseUTMCoord(project.specs.coordE!);
+          let nVal = parseUTMCoord(project.specs.coordN!);
+
+          // Auto-swap se a IA tiver invertido E e N
+          if (eVal > 1000000 && nVal < 1000000) {
+            const temp = eVal;
+            eVal = nVal;
+            nVal = temp;
+          }
+
           if (!isNaN(eVal) && !isNaN(nVal) && eVal > 100000 && nVal > 100000) {
             const { lat, lng } = utmToDecimal(eVal, nVal, Number(project.specs.zone) || 22);
             // Only use if within a valid lat/lng range (Brazil: lat -35 to 5, lng -75 to -30)
