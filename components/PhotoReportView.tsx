@@ -306,7 +306,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
     // Processar imagens sequencialmente para não estourar os limites da OpenAI (Too Many Requests / 429)
     const processImages = async () => {
-      for (const photo of incoming) {
+      for (let i = 0; i < incoming.length; i++) {
+        const photo = incoming[i];
         try {
           // Usar a imagem já otimizada para análise
           const res = await analyzeVistoriaImage(photo.url);
@@ -318,8 +319,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
             }));
           }
         } catch (error: any) {
-          console.error("Erro na análise da imagem:", error);
-          alert(`Erro na OpenAI: ${error?.message || error || 'Erro desconhecido'}`);
+          console.warn("Erro na análise da imagem (continuando):", error?.message || error);
+          // Não mostrar alert — apenas deixar a foto sem coordenadas para preenchimento manual
         } finally {
           // Garantir que o estado de carregamento seja removido mesmo em caso de erro ou se res for nulo
           setDraftReport(prev => ({
@@ -327,8 +328,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
             photos: prev.photos?.map(p => p.id === photo.id ? { ...p, isAnalyzing: false } : p)
           }));
         }
-        // Aguardar 1 segundo entre uma requisição e outra para proteger contra Rate Limit
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        // Aguardar 3 segundos entre requisições para proteger contra Rate Limit
+        if (i < incoming.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
       }
     };
 

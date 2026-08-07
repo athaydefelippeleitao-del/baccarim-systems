@@ -1,11 +1,15 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 
-function withTimeout<T>(promise: Promise<T>, ms = 25000): Promise<T> {
+function withTimeout<T>(promise: Promise<T>, ms = 55000): Promise<T> {
   const timeout = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error(`Timeout após ${ms / 1000}s`)), ms)
   );
   return Promise.race([promise, timeout]);
+}
+
+function sleep(ms: number) {
+  return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -32,22 +36,43 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const prompt = `Extraia as coordenadas UTM Leste (E) e Norte (N) da marca d'água desta foto de vistoria.
 Retorne EXCLUSIVAMENTE um JSON no formato: {"coordE": "string", "coordN": "string"}`;
 
-    const result = await withTimeout(openai.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: [{
-        role: 'user',
-        content: [
-          { type: 'text', text: prompt },
-          { type: 'image_url', image_url: { url: dataUri, detail: 'high' } }
-        ]
-      }],
-      response_format: { type: 'json_object' },
-      temperature: 0.2
-    }));
+    // Retry with exponential backoff on rate limit (429)
+    const MAX_RETRIES = 3;
+    let lastError: any = null;
 
-    const text = result.choices[0]?.message?.content || '{}';
-    const parsed = JSON.parse(text);
-    return res.status(200).json({ result: parsed });
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      try {
+        const result = await withTimeout(openai.chat.completions.create({
+          model: 'gpt-4o-mini',
+          messages: [{
+            role: 'user',
+            content: [
+              { type: 'text', text: prompt },
+              { type: 'image_url', image_url: { url: dataUri, detail: 'low' } }
+            ]
+          }],
+          response_format: { type: 'json_object' },
+          temperature: 0.2
+        }));
+
+        const text = result.choices[0]?.message?.content || '{}';
+        const parsed = JSON.parse(text);
+        return res.status(200).json({ result: parsed });
+      } catch (err: any) {
+        lastError = err;
+        const is429 = err?.status === 429 || err?.message?.includes('429') || err?.message?.includes('Rate limit');
+        if (is429 && attempt < MAX_RETRIES - 1) {
+          // Wait progressively longer: 5s, 15s, 30s
+          const waitMs = [5000, 15000, 30000][attempt];
+          console.log(`Rate limit hit, retrying in ${waitMs / 1000}s (attempt ${attempt + 1}/${MAX_RETRIES})`);
+          await sleep(waitMs);
+          continue;
+        }
+        throw err;
+      }
+    }
+
+    throw lastError;
   } catch (e: any) {
     console.error('analyze-image error:', e);
     return res.status(200).json({ error: e.message || 'Erro ao analisar imagem' });
