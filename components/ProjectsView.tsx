@@ -2,7 +2,7 @@
 import React, { useState, useRef } from 'react';
 import { Project, ChecklistItem, Attachment, EnvironmentalLicense, Notification } from '../types';
 import ProjectProcessReportView from './ProjectProcessReportView';
-import { utmToDecimal, parseKML } from '../utils/geoUtils';
+import { utmToDecimal, parseKML, parseUTMCoord } from '../utils/geoUtils';
 import { downloadFile, convertPdfToImage } from '../utils/fileUtils';
 import { exportProjectDocumentsAsZip } from '../utils/zipUtils';
 import ProjectExtensionReportView from './ProjectExtensionReportView';
@@ -384,8 +384,8 @@ const ProjectsView: React.FC<ProjectsViewProps> = ({ projects, licenses, notific
 
     // Se mudou coordE, coordN ou zone, tenta converter para lat/lng
     if (field === 'coordE' || field === 'coordN' || field === 'zone') {
-      const e = parseFloat(updatedSpecs.coordE?.replace(/[^\d.]/g, '') || '');
-      const n = parseFloat(updatedSpecs.coordN?.replace(/[^\d.]/g, '') || '');
+      const e = parseUTMCoord(updatedSpecs.coordE || '');
+      const n = parseUTMCoord(updatedSpecs.coordN || '');
       const zone = updatedSpecs.zone || 22;
 
       if (!isNaN(e) && !isNaN(n)) {
