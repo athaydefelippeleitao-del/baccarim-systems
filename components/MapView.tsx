@@ -219,6 +219,12 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
           iconAnchor: [14, 28]
         });
 
+        // Final safety check - never plot outside Brazil bounding box
+        if (markerLat < -35 || markerLat > 10 || markerLng < -80 || markerLng > -25) {
+          console.warn(`[MapView] Project "${project.name}" has invalid final coordinates (${markerLat?.toFixed(2)}, ${markerLng?.toFixed(2)}), skipping marker.`);
+          return;
+        }
+
         const marker = L.marker([markerLat, markerLng], { icon: customIcon });
 
         const popupContent = `
