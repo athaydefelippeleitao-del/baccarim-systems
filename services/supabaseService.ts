@@ -460,6 +460,15 @@ export async function upsertReports(reports: PhotoReport[]): Promise<void> {
   }
 }
 
+export async function upsertReport(report: PhotoReport): Promise<void> {
+  const row = mapReportToDb(report);
+  const { error } = await supabase.from('reports').upsert(row, { onConflict: 'id' });
+  if (error) {
+    console.error('upsertReport error:', error);
+    throw error;
+  }
+}
+
 export async function deleteReport(id: string): Promise<void> {
   const { error } = await supabase.from('reports').delete().eq('id', id);
   if (error) console.error('deleteReport error:', error);

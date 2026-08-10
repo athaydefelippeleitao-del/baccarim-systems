@@ -20,7 +20,7 @@ import AIDocumentsView from './components/AIDocumentsView';
 import LoadingScreen from './components/LoadingScreen';
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid, Legend } from 'recharts';
 import ProjectStatusSummary from './components/ProjectStatusSummary';
-import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb, loadEssentialStateFromSupabase, loadHeavyStateFromSupabase, saveKeyToSupabase, deleteKeyFromSupabase, getUsers } from './services/supabaseService';
+import { supabase, mapProjectFromDb, mapLicenseFromDb, mapNotificationFromDb, loadEssentialStateFromSupabase, loadHeavyStateFromSupabase, saveKeyToSupabase, deleteKeyFromSupabase, getUsers, upsertReport } from './services/supabaseService';
 
 
 const App: React.FC = () => {
@@ -540,11 +540,11 @@ const App: React.FC = () => {
   const handleUpdateReport = (updatedReport: PhotoReport) => {
     setReports(prev => {
       const exists = prev.find(r => r.id === updatedReport.id);
-      const newState = exists ? prev.map(r => r.id === updatedReport.id ? updatedReport : r) : [updatedReport, ...prev];
-      saveKeyToSupabase('reports', newState).catch(err => {
-        console.error('Erro ao salvar relatório:', err);
-      });
-      return newState;
+      return exists ? prev.map(r => r.id === updatedReport.id ? updatedReport : r) : [updatedReport, ...prev];
+    });
+    upsertReport(updatedReport).catch(err => {
+      console.error('Erro ao salvar relatório:', err);
+      alert('Atenção: Falha ao salvar o relatório no servidor. Tente reduzir o número ou o tamanho das fotos. Detalhes: ' + (err.message || 'Erro desconhecido'));
     });
   };
 
