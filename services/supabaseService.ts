@@ -500,7 +500,9 @@ function mapReportToDb(r: PhotoReport): any {
     resp_name: r.respName, resp_role: r.respRole || null, resp_crea: r.respCrea,
     resp_reg: r.respReg, resp_company: r.respCompany, resp_email: r.respEmail,
     resp_cnpj: r.respCnpj, resp_address: r.respAddress, resp_city: r.respCity,
-    resp_cep: r.respCep, resp_phone: r.respPhone, photos: r.photos || [],
+    // Remover urlHD das fotos antes de salvar (só mantém o thumbnail para o banco)
+    resp_cep: r.respCep, resp_phone: r.respPhone,
+    photos: (r.photos || []).map(({ urlHD: _urlHD, ...photo }) => photo),
     updated_at: new Date().toISOString(),
   };
 }

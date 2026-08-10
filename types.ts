@@ -233,7 +233,8 @@ export interface Project {
 
 export interface PhotoItem {
   id: string;
-  url: string;
+  url: string;       // versão thumbnail (400px) - salva no banco
+  urlHD?: string;    // versão HD (800px) - apenas em memória, usada no PDF
   caption: string;
   timestamp: string;
   coordE?: string;

@@ -247,7 +247,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     };
   }, [selectedReport, projects, isLeafletLoaded]);
 
-  const resizeImage = (base64Str: string, maxWidth = 1024, maxHeight = 1024): Promise<string> => {
+  const resizeImage = (base64Str: string, maxWidth = 1024, maxHeight = 1024, quality = 0.7): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64Str;
@@ -272,7 +272,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         canvas.height = height;
         const ctx = canvas.getContext('2d');
         ctx?.drawImage(img, 0, 0, width, height);
-        resolve(canvas.toDataURL('image/jpeg', 0.7));
+        resolve(canvas.toDataURL('image/jpeg', quality));
       };
     });
   };
@@ -286,12 +286,15 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Redimensionar a imagem original para um tamanho razoável (ex: 1280px) para não sobrecarregar o db.json
-      const optimizedBase64 = await resizeImage(base64, 1280, 1280);
+      // Versão pequena para salvar no banco (400px, qualidade 0.5 ~30-60KB por foto)
+      const thumbBase64 = await resizeImage(base64, 400, 400, 0.5);
+      // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
+      const hdBase64 = await resizeImage(base64, 800, 800, 0.75);
 
       incoming.push({
         id: `ph-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-        url: optimizedBase64,
+        url: thumbBase64,     // salvo no banco (pequeno)
+        urlHD: hdBase64,      // apenas em memória para o PDF
         caption: '',
         timestamp: new Date().toLocaleDateString('pt-BR'),
         coordE: '',
@@ -1029,7 +1032,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                     return (
                       <div key={photo.id} className="space-y-4">
                         <div className="relative aspect-[3/4] bg-white rounded-xl border-4 border-slate-100 overflow-hidden shadow-lg group">
-                          <img src={photo.url} className="w-full h-full object-contain" />
+                          <img src={photo.urlHD || photo.url} className="w-full h-full object-contain" />
 
                         </div>
                         <div className="px-4 space-y-2">
