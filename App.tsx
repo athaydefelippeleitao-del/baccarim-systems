@@ -1081,9 +1081,20 @@ const App: React.FC = () => {
             )}
 
                 <div className="grid grid-cols-1 gap-8">
-              <div className="bg-baccarim-card p-8 rounded-[2.5rem] shadow-2xl border border-baccarim-border h-[380px] flex flex-col">
-                <h3 className="text-xs font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Status Ambiental</h3>
-                <div className="flex-1">
+              <div className="bg-white/90 backdrop-blur-xl p-8 md:p-10 rounded-[3rem] shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white h-[400px] flex flex-col relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)]">
+                <div className="absolute inset-0 bg-gradient-to-br from-baccarim-blue/5 via-transparent to-baccarim-green/5 pointer-events-none"></div>
+                
+                <div className="relative z-10 flex items-center justify-between mb-8">
+                  <div>
+                    <h3 className="text-[10px] font-black text-slate-400 uppercase tracking-[0.3em]">Visão Geral</h3>
+                    <h2 className="text-2xl font-black text-slate-800 tracking-tighter mt-1">Status Ambiental</h2>
+                  </div>
+                  <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-baccarim-blue shadow-inner border border-slate-100">
+                    <i className="fas fa-chart-pie text-lg"></i>
+                  </div>
+                </div>
+                
+                <div className="flex-1 relative z-10">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
                       <Pie data={chartDataStatus} innerRadius={50} outerRadius={85} paddingAngle={4} dataKey="value" stroke="none">
@@ -1098,10 +1109,19 @@ const App: React.FC = () => {
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2"><SmartAnalysis licenses={filteredLicenses} notifications={filteredNotifications} /></div>
-              <div className="bg-baccarim-card rounded-[3rem] p-10 shadow-xl border border-baccarim-border flex flex-col items-center justify-center text-center">
-                <AppLogo className="w-16 h-16 mb-4" customIcon={appConfig.appIcon} />
-                <h3 className="mt-4 text-lg font-black text-baccarim-text">{currentClientFocus || 'Visão Geral'}</h3>
-                <button onClick={() => setActiveTab('reports')} className="mt-6 w-full py-4 bg-baccarim-blue text-white rounded-2xl font-bold uppercase text-[10px] tracking-widest shadow-lg hover:bg-baccarim-green transition-all">Novo Relatório Fotográfico</button>
+              <div className="bg-white/90 backdrop-blur-xl rounded-[3rem] p-10 shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-white flex flex-col items-center justify-center text-center relative overflow-hidden transition-all duration-500 hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)]">
+                <div className="absolute inset-0 bg-gradient-to-t from-baccarim-blue/5 to-transparent pointer-events-none"></div>
+                
+                <div className="relative z-10 w-20 h-20 bg-white rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.08)] border border-slate-50 flex items-center justify-center mb-6 p-4">
+                  <AppLogo className="w-full h-full" customIcon={appConfig.appIcon} />
+                </div>
+                <h3 className="relative z-10 mt-2 text-xl font-black text-slate-800 tracking-tight">{currentClientFocus || 'Visão Geral'}</h3>
+                <p className="relative z-10 text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1 mb-6">Central de Operações</p>
+                
+                <button onClick={() => setActiveTab('reports')} className="relative z-10 w-full py-4 bg-gradient-to-r from-baccarim-blue to-blue-500 text-white rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-lg shadow-baccarim-blue/30 hover:shadow-xl hover:shadow-baccarim-blue/40 hover:-translate-y-1 transition-all duration-300">
+                  <i className="fas fa-camera mr-2"></i>
+                  Novo Relatório Fotográfico
+                </button>
               </div>
             </div>
           </div>

@@ -32,15 +32,19 @@ const SmartAnalysis: React.FC<SmartAnalysisProps> = ({ licenses, notifications }
   }, [licenses, notifications]);
 
   return (
-    <div className="bg-baccarim-card rounded-[3rem] p-10 text-baccarim-text shadow-2xl relative overflow-hidden h-full border border-baccarim-border">
-      {/* Background Accents */}
+    <div className="bg-white/90 backdrop-blur-xl rounded-[3rem] p-8 md:p-10 text-slate-800 shadow-[0_8px_30px_rgb(0,0,0,0.08)] relative overflow-hidden h-full border border-white transition-all duration-500 hover:shadow-[0_20px_50px_rgb(0,0,0,0.12)]">
+      {/* Subtle background glow */}
+      <div className="absolute inset-0 bg-gradient-to-br from-baccarim-blue/5 via-transparent to-purple-500/5 pointer-events-none"></div>
+      
       <div className="absolute top-0 right-0 w-64 h-64 bg-baccarim-blue/10 rounded-full blur-[100px]"></div>
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-baccarim-green/10 rounded-full blur-[100px]"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-purple-500/10 rounded-full blur-[100px]"></div>
 
       <div className="relative z-10 flex flex-col h-full">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-black flex items-center tracking-tighter">
-            <i className="fas fa-microchip mr-4 text-baccarim-blue animate-pulse"></i>
+          <h2 className="text-2xl font-black flex items-center tracking-tighter text-slate-800">
+            <div className="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-baccarim-blue shadow-inner border border-slate-100 mr-4">
+              <i className="fas fa-microchip animate-pulse text-lg"></i>
+            </div>
             Análise Estratégica AI
           </h2>
           <span className="px-3 py-1 bg-baccarim-hover rounded-full text-[9px] font-black uppercase tracking-widest border border-baccarim-border text-baccarim-blue">Cloud Processing</span>
