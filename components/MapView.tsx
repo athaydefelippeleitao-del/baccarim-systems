@@ -319,18 +319,36 @@ const MapView: React.FC<MapViewProps> = ({ projects, clients, onSelectProject })
         </div>
 
         {showControls && (
-          <div className="absolute top-16 md:top-16 left-20 z-[10] w-64 max-h-[80%] bg-baccarim-card/95 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-100 overflow-y-auto p-4 custom-scrollbar">
-            <p className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest mb-3 px-2">Lista de Projetos</p>
-            <div className="space-y-1">
-              {filteredProjectsByClient.map(p => (
-                <div key={p.id} className="flex items-center justify-between p-2 rounded-lg hover:bg-baccarim-hover transition-colors cursor-pointer" onClick={() => toggleProjectVisibility(p.id)}>
-                  <div className="flex items-center space-x-3 min-w-0">
-                    <div className={`w-2 h-2 rounded-full ${visibleProjectIds.has(p.id) ? 'bg-baccarim-blue' : 'bg-slate-300'}`}></div>
-                    <span className="text-[10px] font-bold text-baccarim-navy truncate">{p.name}</span>
+          <div className="absolute top-16 md:top-16 left-20 z-[10] w-72 max-h-[80%] bg-white/80 backdrop-blur-xl rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/50 overflow-hidden flex flex-col animate-in slide-in-from-left-4 fade-in duration-300">
+            <div className="p-5 border-b border-slate-100/50 bg-gradient-to-r from-baccarim-card to-white/50">
+              <h3 className="text-[11px] font-black text-baccarim-navy uppercase tracking-[0.2em] mb-1">Projetos</h3>
+              <p className="text-[9px] text-baccarim-text-muted font-bold">Clique para exibir ou ocultar no mapa</p>
+            </div>
+            
+            <div className="p-3 overflow-y-auto custom-scrollbar flex-1 space-y-1" style={{ maxHeight: 'calc(80vh - 80px)' }}>
+              {filteredProjectsByClient.map(p => {
+                const isVisible = visibleProjectIds.has(p.id);
+                return (
+                  <div 
+                    key={p.id} 
+                    className={`group flex items-center justify-between p-3 rounded-2xl cursor-pointer transition-all duration-300 ${isVisible ? 'bg-baccarim-blue/5 border border-baccarim-blue/10 shadow-sm' : 'hover:bg-slate-50 border border-transparent'}`} 
+                    onClick={() => toggleProjectVisibility(p.id)}
+                  >
+                    <div className="flex items-center space-x-3 min-w-0">
+                      <div className={`w-8 h-8 flex-shrink-0 rounded-full flex items-center justify-center transition-colors ${isVisible ? 'bg-baccarim-blue text-white shadow-md' : 'bg-slate-100 text-slate-400 group-hover:bg-slate-200'}`}>
+                         <i className="fas fa-map-marker-alt text-[10px]"></i>
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className={`text-[11px] font-bold truncate transition-colors ${isVisible ? 'text-baccarim-blue' : 'text-slate-600'}`}>{p.name}</span>
+                        <span className="text-[9px] text-slate-400 font-semibold truncate">{p.clientName}</span>
+                      </div>
+                    </div>
+                    <div className={`w-6 h-6 flex-shrink-0 rounded-full flex items-center justify-center transition-colors ${isVisible ? 'bg-blue-100 text-baccarim-blue' : 'bg-transparent text-slate-300'}`}>
+                      <i className={`fas ${isVisible ? 'fa-eye' : 'fa-eye-slash'} text-[10px]`}></i>
+                    </div>
                   </div>
-                  <i className={`fas ${visibleProjectIds.has(p.id) ? 'fa-eye' : 'fa-eye-slash'} text-[10px] text-slate-300`}></i>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
