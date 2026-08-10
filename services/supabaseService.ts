@@ -477,7 +477,7 @@ export async function deleteReport(id: string): Promise<void> {
 function mapReportFromDb(row: any): PhotoReport {
   return {
     id: row.id, projectId: row.project_id, projectName: row.project_name, clientName: row.client_name,
-    title: row.title, date: row.date, ownerName: row.owner_name, entName: row.ent_name,
+    title: row.title, customName: row.custom_name, date: row.date, ownerName: row.owner_name, entName: row.ent_name,
     entCpf: row.ent_cpf, entAddress: row.ent_address, entDistrict: row.ent_district,
     entCity: row.ent_city, entCep: row.ent_cep, projName: row.proj_name,
     projAddress: row.proj_address, projDistrict: row.proj_district, projCity: row.proj_city,
@@ -492,7 +492,7 @@ function mapReportFromDb(row: any): PhotoReport {
 function mapReportToDb(r: PhotoReport): any {
   return {
     id: r.id, project_id: r.projectId || null, project_name: r.projectName, client_name: r.clientName,
-    title: r.title, date: r.date, owner_name: r.ownerName, ent_name: r.entName,
+    title: r.title, custom_name: r.customName || null, date: r.date, owner_name: r.ownerName, ent_name: r.entName,
     ent_cpf: r.entCpf, ent_address: r.entAddress, ent_district: r.entDistrict,
     ent_city: r.entCity, ent_cep: r.entCep, proj_name: r.projName,
     proj_address: r.projAddress, proj_district: r.projDistrict, proj_city: r.projCity,
