@@ -171,7 +171,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
         setPushStatus('error');
         return;
       }
-      if (permission === 'default') {
+      if (permission === 'default' || permission !== 'granted') {
         permission = await window.Notification.requestPermission();
       }
       if (permission !== 'granted') {
@@ -179,22 +179,35 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
         return;
       }
 
-      // Verifica se já tem subscrição
-      let subscription = await registration.pushManager.getSubscription();
-      if (!subscription) {
-        // Cria nova subscrição usando a VAPID key pública hardcoded
-        subscription = await registration.pushManager.subscribe({
-          userVisibleOnly: true,
-          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-        });
+      try {
+        // Verifica se já tem subscrição
+        let subscription = await registration.pushManager.getSubscription();
+        if (!subscription) {
+          // Cria nova subscrição usando a VAPID key pública hardcoded
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
+        }
+        // Envia ao backend (não bloqueia se falhar)
+        fetch('/api/push/subscribe', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ userId: user.id, subscription })
+        }).catch(e => console.warn('Push subscribe sync error (non-fatal):', e));
+      } catch (pushErr) {
+        console.warn('Erro ao assinar push server. Notificações locais funcionarão.', pushErr);
       }
 
-      // Envia ao backend (não bloqueia se falhar)
-      fetch('/api/push/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ userId: user.id, subscription })
-      }).catch(e => console.warn('Push subscribe sync error (non-fatal):', e));
+      // Dispara uma notificação de teste para provar que funciona
+      if (registration && registration.showNotification) {
+        await registration.showNotification('Baccarim Systems', {
+          body: '✅ Notificações ativadas! Você receberá alertas de prazos aqui.',
+          icon: 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png',
+          badge: 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png',
+          vibrate: [100, 50, 100],
+        });
+      }
 
       setPushStatus('success');
     } catch (err: any) {

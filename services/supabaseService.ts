@@ -492,7 +492,7 @@ function mapReportFromDb(row: any): PhotoReport {
 function mapReportToDb(r: PhotoReport): any {
   return {
     id: r.id, project_id: r.projectId || null, project_name: r.projectName, client_name: r.clientName,
-    title: r.title, custom_name: r.customName || null, date: r.date, owner_name: r.ownerName, ent_name: r.entName,
+    title: r.title, date: r.date, owner_name: r.ownerName, ent_name: r.entName,
     ent_cpf: r.entCpf, ent_address: r.entAddress, ent_district: r.entDistrict,
     ent_city: r.entCity, ent_cep: r.entCep, proj_name: r.projName,
     proj_address: r.projAddress, proj_district: r.projDistrict, proj_city: r.projCity,
