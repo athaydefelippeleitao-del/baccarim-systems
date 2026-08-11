@@ -464,10 +464,24 @@ export async function upsertReports(reports: PhotoReport[]): Promise<void> {
 
 export async function upsertReport(report: PhotoReport): Promise<void> {
   const row = mapReportToDb(report);
-  const { error } = await supabase.from('reports').upsert(row, { onConflict: 'id' });
-  if (error) {
-    console.error('upsertReport error:', error);
-    throw error;
+
+  // Step 1: Save all metadata WITHOUT photos (fast, never times out)
+  const { photos: _photos, ...metadataRow } = row;
+  const { error: metaError } = await supabase.from('reports').upsert(metadataRow, { onConflict: 'id' });
+  if (metaError) {
+    console.error('upsertReport (metadata) error:', metaError);
+    throw metaError;
+  }
+
+  // Step 2: Save photos in a separate UPDATE (isolated from metadata)
+  const photosToSave = row.photos || [];
+  const { error: photosError } = await supabase
+    .from('reports')
+    .update({ photos: photosToSave, updated_at: row.updated_at })
+    .eq('id', report.id);
+  if (photosError) {
+    console.error('upsertReport (photos) error:', photosError);
+    throw photosError;
   }
 }
 

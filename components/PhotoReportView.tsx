@@ -302,8 +302,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Versão pequena para salvar no banco (400px, qualidade 0.5 ~30-60KB por foto)
-      const thumbBase64 = await resizeImage(base64, 400, 400, 0.5);
+      // Versão pequena para salvar no banco (320px, qualidade 0.4 ~15-30KB por foto)
+      const thumbBase64 = await resizeImage(base64, 320, 320, 0.4);
       // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
       const hdBase64 = await resizeImage(base64, 800, 800, 0.75);
 
