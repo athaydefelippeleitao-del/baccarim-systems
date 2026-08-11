@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PhotoReport, Project, PhotoItem } from '../types';
 import { analyzeVistoriaImage } from '../services/openaiClient';
 import { utmToDecimal, parseUTMCoord } from '../utils/geoUtils';
+import { supabase } from '../services/supabaseService';
 
 declare const L: any;
 
@@ -41,7 +42,22 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
     return () => clearInterval(interval);
   }, []);
+  const [isLoadingReport, setIsLoadingReport] = useState(false);
 
+  const handleReportClick = async (report: PhotoReport) => {
+    setIsLoadingReport(true);
+    try {
+      const { data, error } = await supabase.from('reports').select('photos').eq('id', report.id).single();
+      if (!error && data) {
+        report.photos = data.photos || [];
+      }
+    } catch (e) {
+      console.error("Error fetching report photos:", e);
+    } finally {
+      setIsLoadingReport(false);
+      setSelectedReport(report);
+    }
+  };
 
   const initialDraftState: Partial<PhotoReport> = {
     title: 'RELATÓRIO FOTOGRÁFICO',
@@ -504,9 +520,18 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         <button onClick={() => { setDraftReport(initialDraftState); setFormStep(1); setIsEditing(false); setShowNewReportModal(true); }} className="px-8 py-5 bg-baccarim-navy/10 border border-baccarim-border text-baccarim-text rounded-[1.5rem] text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-navy/20 transition-all">Criar Laudo Técnico</button>
       </header>
 
+      {isLoadingReport && (
+        <div className="fixed inset-0 z-[100] bg-white/80 backdrop-blur flex items-center justify-center">
+          <div className="flex flex-col items-center">
+            <div className="w-12 h-12 border-4 border-baccarim-blue border-t-transparent rounded-full animate-spin"></div>
+            <p className="mt-4 text-baccarim-navy font-bold">Carregando fotos do relatório...</p>
+          </div>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {reports.map(report => (
-          <div key={report.id} className="bg-baccarim-card rounded-[3rem] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all cursor-pointer group relative" onClick={() => setSelectedReport(report)}>
+          <div key={report.id} className="bg-baccarim-card rounded-[3rem] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all cursor-pointer group relative" onClick={() => handleReportClick(report)}>
             <div className="absolute top-6 left-6 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all">
               <button
                 onClick={(e) => {
