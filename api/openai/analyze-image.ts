@@ -43,6 +43,8 @@ Sua tarefa:
 2. Encontre o número correspondente a Norte (N, Y, ou Northing) e coloque em coordN.
 3. Se houver Latitude/Longitude em vez de UTM, extraia-os para lat e lng (como número decimal) e deixe coordE e coordN vazios ("").
 4. Retorne APENAS OS NÚMEROS nos campos UTM (remova letras como 'S', 'W', 'E', 'N', '°'). NUNCA coloque letras como "S" no campo coordN ou coordE.
+5. CUIDADO COM ALUCINAÇÃO: NUNCA invente "500000" ou números redondos a menos que esteja EXATAMENTE escrito assim. Se não conseguir ler os 6 dígitos do Leste com clareza, retorne vazio.
+
 
 Retorne EXCLUSIVAMENTE um JSON neste formato exato (sem formatação markdown):
 {"coordE": "506360", "coordN": "7322676", "lat": null, "lng": null}
