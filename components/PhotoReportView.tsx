@@ -335,7 +335,12 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
           if (res) {
             setDraftReport(prev => ({
               ...prev,
-              photos: prev.photos?.map(p => p.id === photo.id ? { ...p, ...res, isAnalyzing: false } : p)
+              photos: prev.photos?.map(p => p.id === photo.id ? { 
+                ...p, 
+                ...res, 
+                isAnalyzing: false,
+                caption: `DEBUG: AI Res = ${JSON.stringify(res)}`
+              } : p)
             }));
           }
         } catch (error: any) {
