@@ -308,35 +308,52 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       const img = new Image();
       img.onload = async () => {
         try {
-          // Recortar os 40% superiores e 50% direitos da imagem (onde fica o watermark)
-          const cropW = Math.floor(img.width * 0.55);
-          const cropH = Math.floor(img.height * 0.30);
+          // Recortar 35% superiores e 60% direitos (onde fica o watermark)
+          // Escalar 2x para melhorar a legibilidade do Tesseract
+          const SCALE = 2;
+          const cropW = Math.floor(img.width * 0.60);
+          const cropH = Math.floor(img.height * 0.28);
           const cropX = img.width - cropW;
           const cropY = 0;
 
           const canvas = document.createElement('canvas');
-          canvas.width = cropW;
-          canvas.height = cropH;
+          canvas.width = cropW * SCALE;
+          canvas.height = cropH * SCALE;
           const ctx = canvas.getContext('2d')!;
-          // Alto contraste para OCR
-          ctx.filter = 'contrast(300%) grayscale(100%) brightness(60%)';
+          ctx.scale(SCALE, SCALE);
+          // Filtro balanceado: contraste alto mas sem escurecer demais
+          ctx.filter = 'contrast(250%) brightness(85%) grayscale(100%)';
           ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
 
           const croppedBase64 = canvas.toDataURL('image/png');
 
           const worker = await createWorker('eng');
+          // Configurar Tesseract para reconhecer dígitos e letras isoladas
+          await (worker as any).setParameters({
+            tessedit_char_whitelist: 'ENS0123456789 .°W',
+          });
           const { data: { text } } = await worker.recognize(croppedBase64);
           await worker.terminate();
 
           console.log('Tesseract OCR result:', text);
 
-          // Tenta extrair E XXXXXX N XXXXXXX com regex flexível
-          const match = text.match(/E[\s:]*([\d]{5,7})[\s\S]{0,10}N[\s:]*([\d]{6,8})/i);
+          // Regex flexível: aceita E seguido de 5-7 dígitos e N seguido de 6-8 dígitos
+          // Aceita erros de OCR comuns: '5' lido como 'S', espaços extras
+          const cleanText = text.replace(/[Il|]/g, '1').replace(/[Oo]/g, '0').replace(/[Ss]/g, '5');
+          const match =
+            cleanText.match(/E[\s]*([\d]{5,7})[\s\S]{0,15}N[\s]*([\d]{6,8})/i) ||
+            text.match(/([\d]{6})\s+([\d]{7})/); // fallback: dois números seguidos
+
           if (match) {
-            resolve({ coordE: match[1], coordN: match[2] });
-          } else {
-            resolve(null);
+            // Valida que parecem coordenadas UTM válidas para o Brasil (E: ~5-6 dígitos, N: 7 dígitos)
+            const eVal = match[1];
+            const nVal = match[2];
+            if (eVal && nVal && eVal.length >= 5 && nVal.length >= 6) {
+              resolve({ coordE: eVal, coordN: nVal });
+              return;
+            }
           }
+          resolve(null);
         } catch (err) {
           console.warn('Tesseract OCR error:', err);
           resolve(null);
@@ -356,10 +373,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Versão pequena para salvar no banco (320px, qualidade 0.4 ~15-30KB por foto)
-      const thumbBase64 = await resizeImage(base64, 320, 320, 0.4);
-      // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
-      const hdBase64 = await resizeImage(base64, 800, 800, 0.75);
+      // Versão pequena para salvar no banco (320px, qualidade 0.72 para boa visualização)
+      const thumbBase64 = await resizeImage(base64, 400, 400, 0.72);
+      // Versão HD para exibição no relatório/PDF (800px, qualidade 0.82), guardada só na memória
+      const hdBase64 = await resizeImage(base64, 800, 800, 0.82);
 
       // --- Prioridade 1: EXIF GPS ---
       let coordE = '';
