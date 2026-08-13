@@ -2,8 +2,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { PhotoReport, Project, PhotoItem } from '../types';
 import { analyzeVistoriaImage } from '../services/openaiClient';
-import { utmToDecimal, parseUTMCoord } from '../utils/geoUtils';
+import { utmToDecimal, parseUTMCoord, decimalToUTM } from '../utils/geoUtils';
 import { supabase } from '../services/supabaseService';
+import exifr from 'exifr';
 
 declare const L: any;
 
@@ -308,59 +309,94 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Versão para análise de coordenadas pela IA (resolução muito maior para OCR perfeito e filtro de contraste ativado)
-      const analysisBase64 = await resizeImage(base64, 2048, 2048, 0.95, true);
       // Versão pequena para salvar no banco (320px, qualidade 0.4 ~15-30KB por foto)
       const thumbBase64 = await resizeImage(base64, 320, 320, 0.4);
       // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
       const hdBase64 = await resizeImage(base64, 800, 800, 0.75);
 
+      // --- EXIF GPS: extrair coordenadas direto do arquivo, sem IA ---
+      let coordE = '';
+      let coordN = '';
+      let lat: number | null = null;
+      let lng: number | null = null;
+      let exifOk = false;
+      try {
+        const gps = await exifr.gps(file);
+        if (gps && gps.latitude != null && gps.longitude != null) {
+          lat = gps.latitude;
+          lng = gps.longitude;
+          const utm = decimalToUTM(lat!, lng!);
+          coordE = utm.coordE;
+          coordN = utm.coordN;
+          exifOk = true;
+        }
+      } catch (_) {
+        // EXIF não disponível, seguir para IA
+      }
+
       incoming.push({
         id: `ph-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
-        url: thumbBase64,     // salvo no banco (pequeno)
-        urlHD: hdBase64,      // apenas em memória para o PDF
-        analysisUrl: analysisBase64, // apenas em memória para análise de coordenadas
+        url: thumbBase64,
+        urlHD: hdBase64,
+        analysisUrl: exifOk ? undefined : base64, // só envia para IA se EXIF falhar
         caption: '',
         timestamp: new Date().toLocaleDateString('pt-BR'),
-        coordE: '',
-        coordN: '',
-        isAnalyzing: true
+        coordE,
+        coordN,
+        lat: lat ?? undefined,
+        lng: lng ?? undefined,
+        isAnalyzing: !exifOk // só fica analisando se precisar de IA
       });
     }
     setDraftReport(prev => ({ ...prev, photos: [...(prev.photos || []), ...incoming] }));
 
-    // Processar imagens sequencialmente para não estourar os limites da OpenAI (Too Many Requests / 429)
+    // Processar pela IA apenas as fotos que não tiveram GPS no EXIF
+    const needsAI = incoming.filter(p => (p as any).analysisUrl);
+    if (needsAI.length === 0) return;
+
     const processImages = async () => {
-      for (let i = 0; i < incoming.length; i++) {
-        const photo = incoming[i];
+      for (let i = 0; i < needsAI.length; i++) {
+        const photo = needsAI[i];
         try {
-          // Usar a imagem em alta resolução para que a IA leia a marca d'água com coordenadas UTM corretamente
-          const imageForAnalysis = (photo as any).analysisUrl || photo.urlHD || photo.url;
-          const res = await analyzeVistoriaImage(imageForAnalysis);
+          const analysisBase64 = await resizeImage((photo as any).analysisUrl, 2048, 2048, 0.95, true);
+          const res = await analyzeVistoriaImage(analysisBase64);
 
           if (res) {
+            const aiCoordE = (res.coordE || '').toString().replace(/[^\d]/g, '');
+            const aiCoordN = (res.coordN || '').toString().replace(/[^\d]/g, '');
+            const aiLat = res.lat ?? null;
+            const aiLng = res.lng ?? null;
+
+            // Se a IA retornou lat/lng mas não UTM, converter
+            let finalCoordE = aiCoordE;
+            let finalCoordN = aiCoordN;
+            if (aiLat && aiLng && (!aiCoordE || !aiCoordN)) {
+              const utm = decimalToUTM(aiLat, aiLng);
+              finalCoordE = utm.coordE;
+              finalCoordN = utm.coordN;
+            }
+
             setDraftReport(prev => ({
               ...prev,
-              photos: prev.photos?.map(p => p.id === photo.id ? { 
-                ...p, 
-                ...res, 
+              photos: prev.photos?.map(p => p.id === photo.id ? {
+                ...p,
+                coordE: finalCoordE,
+                coordN: finalCoordN,
+                lat: aiLat ?? undefined,
+                lng: aiLng ?? undefined,
                 isAnalyzing: false,
-                caption: `DEBUG: AI Res = ${JSON.stringify(res)}`
               } : p)
             }));
           }
         } catch (error: any) {
-          console.warn("Erro na análise da imagem (continuando):", error?.message || error);
-          // Não mostrar alert — apenas deixar a foto sem coordenadas para preenchimento manual
+          console.warn('Erro na análise da imagem (continuando):', error?.message || error);
         } finally {
-          // Garantir que o estado de carregamento seja removido mesmo em caso de erro ou se res for nulo
           setDraftReport(prev => ({
             ...prev,
             photos: prev.photos?.map(p => p.id === photo.id ? { ...p, isAnalyzing: false } : p)
           }));
         }
-        // Aguardar 3 segundos entre requisições para proteger contra Rate Limit
-        if (i < incoming.length - 1) {
+        if (i < needsAI.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 3000));
         }
       }

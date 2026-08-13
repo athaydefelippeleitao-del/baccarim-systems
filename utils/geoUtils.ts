@@ -102,6 +102,62 @@ export function utmToDecimal(e: number, n: number, zone: number = 22, south: boo
 }
 
 /**
+ * Converte Latitude/Longitude decimais para coordenadas UTM
+ * Calibrado para o elipsoide GRS80 / SIRGAS 2000 (padrão brasileiro)
+ * @param lat Latitude decimal (negativo para sul)
+ * @param lng Longitude decimal (negativo para oeste)
+ * @returns { coordE, coordN, zone }
+ */
+export function decimalToUTM(lat: number, lng: number): { coordE: string; coordN: string; zone: number } {
+  const a = 6378137.0;
+  const f = 1 / 298.257222101;
+  const k0 = 0.9996;
+  const fe = 500000.0;
+
+  const zone = Math.floor((lng + 180) / 6) + 1;
+  const lon0 = ((zone * 6) - 183) * (Math.PI / 180);
+  const south = lat < 0;
+  const fn = south ? 10000000.0 : 0.0;
+
+  const latRad = lat * (Math.PI / 180);
+  const lngRad = lng * (Math.PI / 180);
+
+  const b = a * (1 - f);
+  const e2 = (Math.pow(a, 2) - Math.pow(b, 2)) / Math.pow(a, 2);
+
+  const N = a / Math.sqrt(1 - e2 * Math.pow(Math.sin(latRad), 2));
+  const T = Math.pow(Math.tan(latRad), 2);
+  const C = (e2 / (1 - e2)) * Math.pow(Math.cos(latRad), 2);
+  const A = Math.cos(latRad) * (lngRad - lon0);
+
+  const M = a * (
+    (1 - e2 / 4 - 3 * Math.pow(e2, 2) / 64 - 5 * Math.pow(e2, 3) / 256) * latRad
+    - (3 * e2 / 8 + 3 * Math.pow(e2, 2) / 32 + 45 * Math.pow(e2, 3) / 1024) * Math.sin(2 * latRad)
+    + (15 * Math.pow(e2, 2) / 256 + 45 * Math.pow(e2, 3) / 1024) * Math.sin(4 * latRad)
+    - (35 * Math.pow(e2, 3) / 3072) * Math.sin(6 * latRad)
+  );
+
+  const easting = fe + k0 * N * (
+    A + (1 - T + C) * Math.pow(A, 3) / 6
+    + (5 - 18 * T + Math.pow(T, 2) + 72 * C - 58 * (e2 / (1 - e2))) * Math.pow(A, 5) / 120
+  );
+
+  const northing = fn + k0 * (
+    M + N * Math.tan(latRad) * (
+      Math.pow(A, 2) / 2
+      + (5 - T + 9 * C + 4 * Math.pow(C, 2)) * Math.pow(A, 4) / 24
+      + (61 - 58 * T + Math.pow(T, 2) + 600 * C - 330 * (e2 / (1 - e2))) * Math.pow(A, 6) / 720
+    )
+  );
+
+  return {
+    coordE: Math.round(easting).toString(),
+    coordN: Math.round(northing).toString(),
+    zone
+  };
+}
+
+/**
  * Faz o parse de um arquivo KML e extrai as coordenadas do primeiro Polygon encontrado.
  * Retorna um array de [lat, lng] compatível com Leaflet.
  * @param kmlString Conteúdo textual do arquivo KML
