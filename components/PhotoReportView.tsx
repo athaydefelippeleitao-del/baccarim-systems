@@ -150,7 +150,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       }
 
       if (finalLat && finalLng) {
-        let existingPoint = points.find(p => Math.abs(p.lat - finalLat!) < 0.0003 && Math.abs(p.lng - finalLng!) < 0.0003);
+        let existingPoint = points.find(p => Math.abs(p.lat - finalLat!) < 0.00015 && Math.abs(p.lng - finalLng!) < 0.00015);
         if (existingPoint) {
           existingPoint.photos.push(photo);
         } else {
