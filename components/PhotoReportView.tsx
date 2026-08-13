@@ -150,7 +150,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       }
 
       if (finalLat && finalLng) {
-        let existingPoint = points.find(p => Math.abs(p.lat - finalLat!) < 0.00001 && Math.abs(p.lng - finalLng!) < 0.00001);
+        let existingPoint = points.find(p => Math.abs(p.lat - finalLat!) < 0.0003 && Math.abs(p.lng - finalLng!) < 0.0003);
         if (existingPoint) {
           existingPoint.photos.push(photo);
         } else {
@@ -451,8 +451,15 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
   const getPointInfoLabel = (photo: PhotoItem, allPhotos: PhotoItem[]) => {
     const points = getUniquePoints(allPhotos);
     const point = points.find(p => p.photos.some(pt => pt.id === photo.id));
-    if (!point) return '';
-
+    if (!point) {
+      // Fallback: inherit label from the nearest previous photo that has a point
+      const photoIdx = allPhotos.findIndex(p => p.id === photo.id);
+      for (let i = photoIdx - 1; i >= 0; i--) {
+        const prevPoint = points.find(p => p.photos.some(pt => pt.id === allPhotos[i].id));
+        if (prevPoint) return `PONTO ${prevPoint.pointNumber}`;
+      }
+      return '';
+    }
     return `PONTO ${point.pointNumber}`;
   };
 
