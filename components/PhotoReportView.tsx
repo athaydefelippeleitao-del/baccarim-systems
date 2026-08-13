@@ -263,7 +263,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     };
   }, [selectedReport, projects, isLeafletLoaded]);
 
-  const resizeImage = (base64Str: string, maxWidth = 1024, maxHeight = 1024, quality = 0.7): Promise<string> => {
+  const resizeImage = (base64Str: string, maxWidth = 1024, maxHeight = 1024, quality = 0.7, ocrEnhance = false): Promise<string> => {
     return new Promise((resolve) => {
       const img = new Image();
       img.src = base64Str;
@@ -287,7 +287,13 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         canvas.width = width;
         canvas.height = height;
         const ctx = canvas.getContext('2d');
-        ctx?.drawImage(img, 0, 0, width, height);
+        if (ctx) {
+          if (ocrEnhance) {
+            // Apply high contrast and grayscale to make white text pop against bright sky/clouds
+            ctx.filter = 'contrast(200%) grayscale(100%) brightness(80%)';
+          }
+          ctx.drawImage(img, 0, 0, width, height);
+        }
         resolve(canvas.toDataURL('image/jpeg', quality));
       };
     });
@@ -302,8 +308,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Versão para análise de coordenadas pela IA (resolução muito maior para OCR perfeito)
-      const analysisBase64 = await resizeImage(base64, 2048, 2048, 0.95);
+      // Versão para análise de coordenadas pela IA (resolução muito maior para OCR perfeito e filtro de contraste ativado)
+      const analysisBase64 = await resizeImage(base64, 2048, 2048, 0.95, true);
       // Versão pequena para salvar no banco (320px, qualidade 0.4 ~15-30KB por foto)
       const thumbBase64 = await resizeImage(base64, 320, 320, 0.4);
       // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
