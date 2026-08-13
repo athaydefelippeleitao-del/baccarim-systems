@@ -33,8 +33,19 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const cleanBase64 = base64Image.replace(/^data:image\/[a-zA-Z+]+;base64,/, '');
     const dataUri = `data:${mimeType};base64,${cleanBase64}`;
 
-    const prompt = `Extraia as coordenadas UTM Leste (E) e Norte (N) da marca d'água desta foto de vistoria.
-Retorne EXCLUSIVAMENTE um JSON no formato: {"coordE": "string", "coordN": "string"}`;
+    const prompt = `Você é um assistente especialista em extração de dados de imagens.
+Esta é uma foto de vistoria de campo com uma marca d'água contendo coordenadas geográficas.
+Leia com cuidado o texto sobreposto na imagem.
+Verifique se as coordenadas estão em formato UTM ou em Latitude/Longitude.
+1. Se estiverem em UTM:
+Extraia EXATAMENTE como escrito os valores de Leste (E ou X) e Norte (N ou Y).
+Retorne-os como string em coordE e coordN. Mantenha os pontos e vírgulas originais! Não invente nem arredonde.
+2. Se estiverem em Latitude e Longitude (graus decimais ou graus/minutos/segundos):
+Converta para graus decimais numéricos (ex: -23.123456) e retorne nos campos lat e lng.
+Deixe coordE e coordN vazios ("").
+Retorne EXCLUSIVAMENTE um JSON neste formato exato (sem formatação markdown):
+{"coordE": "", "coordN": "", "lat": null, "lng": null}
+Se não conseguir ler as coordenadas com certeza, retorne os campos vazios/nulos.`;
 
     // Retry with exponential backoff on rate limit (429)
     const MAX_RETRIES = 3;
@@ -48,7 +59,7 @@ Retorne EXCLUSIVAMENTE um JSON no formato: {"coordE": "string", "coordN": "strin
             role: 'user',
             content: [
               { type: 'text', text: prompt },
-              { type: 'image_url', image_url: { url: dataUri, detail: 'low' } }
+              { type: 'image_url', image_url: { url: dataUri, detail: 'high' } }
             ]
           }],
           response_format: { type: 'json_object' },
