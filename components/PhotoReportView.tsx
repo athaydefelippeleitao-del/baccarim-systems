@@ -302,6 +302,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
+      // Versão para análise de coordenadas pela IA (resolução muito maior para OCR perfeito)
+      const analysisBase64 = await resizeImage(base64, 2048, 2048, 0.95);
       // Versão pequena para salvar no banco (320px, qualidade 0.4 ~15-30KB por foto)
       const thumbBase64 = await resizeImage(base64, 320, 320, 0.4);
       // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
@@ -311,6 +313,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         id: `ph-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         url: thumbBase64,     // salvo no banco (pequeno)
         urlHD: hdBase64,      // apenas em memória para o PDF
+        analysisUrl: analysisBase64, // apenas em memória para análise de coordenadas
         caption: '',
         timestamp: new Date().toLocaleDateString('pt-BR'),
         coordE: '',
@@ -325,8 +328,9 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       for (let i = 0; i < incoming.length; i++) {
         const photo = incoming[i];
         try {
-          // Usar a imagem já otimizada para análise
-          const res = await analyzeVistoriaImage(photo.url);
+          // Usar a imagem em alta resolução para que a IA leia a marca d'água com coordenadas UTM corretamente
+          const imageForAnalysis = (photo as any).analysisUrl || photo.urlHD || photo.url;
+          const res = await analyzeVistoriaImage(imageForAnalysis);
 
           if (res) {
             setDraftReport(prev => ({

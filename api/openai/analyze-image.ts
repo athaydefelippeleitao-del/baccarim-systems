@@ -54,7 +54,7 @@ Se não conseguir ler as coordenadas com certeza, retorne os campos vazios/nulos
     for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
       try {
         const result = await withTimeout(openai.chat.completions.create({
-          model: 'gpt-4o-mini',
+          model: 'gpt-4o',
           messages: [{
             role: 'user',
             content: [
