@@ -22,3 +22,10 @@ Thumbs.db
 .vscode/
 .idea/
 .vercel
+
+# Scratch / temp scripts (NEVER commit - may contain secrets)
+scratch/
+fix_*.mjs
+fix_*.js
+test.js
+{

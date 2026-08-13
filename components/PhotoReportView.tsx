@@ -5,6 +5,7 @@ import { analyzeVistoriaImage } from '../services/openaiClient';
 import { utmToDecimal, parseUTMCoord, decimalToUTM } from '../utils/geoUtils';
 import { supabase } from '../services/supabaseService';
 import exifr from 'exifr';
+import { createWorker } from 'tesseract.js';
 
 declare const L: any;
 
@@ -300,6 +301,52 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     });
   };
 
+  // Recorta o canto superior direito da imagem (onde fica a marca d'água com UTM)
+  // e roda OCR local com Tesseract.js para extrair E e N
+  const extractCoordsFromWatermark = async (base64: string): Promise<{ coordE: string; coordN: string } | null> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.onload = async () => {
+        try {
+          // Recortar os 40% superiores e 50% direitos da imagem (onde fica o watermark)
+          const cropW = Math.floor(img.width * 0.55);
+          const cropH = Math.floor(img.height * 0.30);
+          const cropX = img.width - cropW;
+          const cropY = 0;
+
+          const canvas = document.createElement('canvas');
+          canvas.width = cropW;
+          canvas.height = cropH;
+          const ctx = canvas.getContext('2d')!;
+          // Alto contraste para OCR
+          ctx.filter = 'contrast(300%) grayscale(100%) brightness(60%)';
+          ctx.drawImage(img, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+
+          const croppedBase64 = canvas.toDataURL('image/png');
+
+          const worker = await createWorker('eng');
+          const { data: { text } } = await worker.recognize(croppedBase64);
+          await worker.terminate();
+
+          console.log('Tesseract OCR result:', text);
+
+          // Tenta extrair E XXXXXX N XXXXXXX com regex flexível
+          const match = text.match(/E[\s:]*([\d]{5,7})[\s\S]{0,10}N[\s:]*([\d]{6,8})/i);
+          if (match) {
+            resolve({ coordE: match[1], coordN: match[2] });
+          } else {
+            resolve(null);
+          }
+        } catch (err) {
+          console.warn('Tesseract OCR error:', err);
+          resolve(null);
+        }
+      };
+      img.onerror = () => resolve(null);
+      img.src = base64;
+    });
+  };
+
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files;
     if (!files) return;
@@ -314,12 +361,13 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       // Versão HD para exibição no relatório/PDF (800px, qualidade 0.75), guardada só na memória
       const hdBase64 = await resizeImage(base64, 800, 800, 0.75);
 
-      // --- EXIF GPS: extrair coordenadas direto do arquivo, sem IA ---
+      // --- Prioridade 1: EXIF GPS ---
       let coordE = '';
       let coordN = '';
       let lat: number | null = null;
       let lng: number | null = null;
-      let exifOk = false;
+      let coordsFound = false;
+
       try {
         const gps = await exifr.gps(file);
         if (gps && gps.latitude != null && gps.longitude != null) {
@@ -328,81 +376,38 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
           const utm = decimalToUTM(lat!, lng!);
           coordE = utm.coordE;
           coordN = utm.coordN;
-          exifOk = true;
+          coordsFound = true;
+          console.log('Coords from EXIF:', coordE, coordN);
         }
       } catch (_) {
-        // EXIF não disponível, seguir para IA
+        // EXIF não disponível
+      }
+
+      // --- Prioridade 2: Tesseract.js OCR local ---
+      if (!coordsFound) {
+        const ocrResult = await extractCoordsFromWatermark(base64);
+        if (ocrResult && ocrResult.coordE && ocrResult.coordN) {
+          coordE = ocrResult.coordE;
+          coordN = ocrResult.coordN;
+          coordsFound = true;
+          console.log('Coords from Tesseract OCR:', coordE, coordN);
+        }
       }
 
       incoming.push({
         id: `ph-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         url: thumbBase64,
         urlHD: hdBase64,
-        analysisUrl: exifOk ? undefined : base64, // só envia para IA se EXIF falhar
         caption: '',
         timestamp: new Date().toLocaleDateString('pt-BR'),
         coordE,
         coordN,
         lat: lat ?? undefined,
         lng: lng ?? undefined,
-        isAnalyzing: !exifOk // só fica analisando se precisar de IA
+        isAnalyzing: false,
       });
     }
     setDraftReport(prev => ({ ...prev, photos: [...(prev.photos || []), ...incoming] }));
-
-    // Processar pela IA apenas as fotos que não tiveram GPS no EXIF
-    const needsAI = incoming.filter(p => (p as any).analysisUrl);
-    if (needsAI.length === 0) return;
-
-    const processImages = async () => {
-      for (let i = 0; i < needsAI.length; i++) {
-        const photo = needsAI[i];
-        try {
-          const analysisBase64 = await resizeImage((photo as any).analysisUrl, 2048, 2048, 0.95, true);
-          const res = await analyzeVistoriaImage(analysisBase64);
-
-          if (res) {
-            const aiCoordE = (res.coordE || '').toString().replace(/[^\d]/g, '');
-            const aiCoordN = (res.coordN || '').toString().replace(/[^\d]/g, '');
-            const aiLat = res.lat ?? null;
-            const aiLng = res.lng ?? null;
-
-            // Se a IA retornou lat/lng mas não UTM, converter
-            let finalCoordE = aiCoordE;
-            let finalCoordN = aiCoordN;
-            if (aiLat && aiLng && (!aiCoordE || !aiCoordN)) {
-              const utm = decimalToUTM(aiLat, aiLng);
-              finalCoordE = utm.coordE;
-              finalCoordN = utm.coordN;
-            }
-
-            setDraftReport(prev => ({
-              ...prev,
-              photos: prev.photos?.map(p => p.id === photo.id ? {
-                ...p,
-                coordE: finalCoordE,
-                coordN: finalCoordN,
-                lat: aiLat ?? undefined,
-                lng: aiLng ?? undefined,
-                isAnalyzing: false,
-              } : p)
-            }));
-          }
-        } catch (error: any) {
-          console.warn('Erro na análise da imagem (continuando):', error?.message || error);
-        } finally {
-          setDraftReport(prev => ({
-            ...prev,
-            photos: prev.photos?.map(p => p.id === photo.id ? { ...p, isAnalyzing: false } : p)
-          }));
-        }
-        if (i < needsAI.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 3000));
-        }
-      }
-    };
-
-    processImages();
   };
 
   const handleConfirmDelete = () => {
