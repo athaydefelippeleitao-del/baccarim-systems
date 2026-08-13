@@ -33,19 +33,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const cleanBase64 = base64Image.replace(/^data:image\/[a-zA-Z+]+;base64,/, '');
     const dataUri = `data:${mimeType};base64,${cleanBase64}`;
 
-    const prompt = `Você é um assistente especialista em extração de dados de imagens.
-Esta é uma foto de vistoria de campo com uma marca d'água contendo coordenadas geográficas.
-Leia com cuidado o texto sobreposto na imagem.
-Verifique se as coordenadas estão em formato UTM ou em Latitude/Longitude.
-1. Se estiverem em UTM:
-Extraia EXATAMENTE como escrito os valores de Leste (E ou X) e Norte (N ou Y).
-Retorne-os como string em coordE e coordN. Mantenha os pontos e vírgulas originais! Não invente nem arredonde.
-2. Se estiverem em Latitude e Longitude (graus decimais ou graus/minutos/segundos):
-Converta para graus decimais numéricos (ex: -23.123456) e retorne nos campos lat e lng.
-Deixe coordE e coordN vazios ("").
+    const prompt = `Você é um assistente especialista em OCR (leitura ótica).
+A imagem contém uma marca d'água com coordenadas (no canto superior direito, inferior esquerdo ou ao longo da borda).
+Exemplo comum na marca d'água: "E 506360 N 7322676 282° W"
+Neste caso: Leste (E) é 506360 e Norte (N) é 7322676. (Norte no Brasil costuma ter 7 dígitos e Leste 6 dígitos).
+
+Sua tarefa:
+1. Encontre o número correspondente a Leste (E, X, ou Easting) e coloque em coordE.
+2. Encontre o número correspondente a Norte (N, Y, ou Northing) e coloque em coordN.
+3. Se houver Latitude/Longitude em vez de UTM, extraia-os para lat e lng (como número decimal) e deixe coordE e coordN vazios ("").
+4. Retorne APENAS OS NÚMEROS nos campos UTM (remova letras como 'S', 'W', 'E', 'N', '°'). NUNCA coloque letras como "S" no campo coordN ou coordE.
+
 Retorne EXCLUSIVAMENTE um JSON neste formato exato (sem formatação markdown):
-{"coordE": "", "coordN": "", "lat": null, "lng": null}
-Se não conseguir ler as coordenadas com certeza, retorne os campos vazios/nulos.`;
+{"coordE": "506360", "coordN": "7322676", "lat": null, "lng": null}
+
+Se a imagem não tiver coordenadas visíveis, retorne vazio: {"coordE": "", "coordN": "", "lat": null, "lng": null}`;
 
     // Retry with exponential backoff on rate limit (429)
     const MAX_RETRIES = 3;
