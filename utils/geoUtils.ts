@@ -31,7 +31,7 @@ export function parseUTMCoord(val: string | number): number {
   } else if (commaCount > 0) {
     // Apenas vírgulas
     const parts = cleaned.split(',');
-    if (parts.length > 2 || parts[parts.length - 1].length === 3) {
+    if (parts.length > 2 || (parts.length === 2 && parts[0].length <= 3 && parts[1].length === 3)) {
       // milhar (ex: 7,322,678)
       cleaned = cleaned.replace(/,/g, '');
     } else {
@@ -41,7 +41,7 @@ export function parseUTMCoord(val: string | number): number {
   } else if (dotCount > 0) {
     // Apenas pontos
     const parts = cleaned.split('.');
-    if (parts.length > 2 || parts[parts.length - 1].length === 3) {
+    if (parts.length > 2 || (parts.length === 2 && parts[0].length <= 3 && parts[1].length === 3)) {
       // milhar (ex: 7.322.678 ou 506.360)
       cleaned = cleaned.replace(/\./g, '');
     } else {
