@@ -400,16 +400,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         // EXIF não disponível
       }
 
-      // --- Prioridade 2: Tesseract.js OCR local ---
-      if (!coordsFound) {
-        const ocrResult = await extractCoordsFromWatermark(base64);
-        if (ocrResult && ocrResult.coordE && ocrResult.coordN) {
-          coordE = ocrResult.coordE;
-          coordN = ocrResult.coordN;
-          coordsFound = true;
-          console.log('Coords from Tesseract OCR:', coordE, coordN);
-        }
-      }
+      // --- Prioridade 2: IA (O Tesseract foi removido pois extraía números errados, causando coordenadas tortas) ---
 
       incoming.push({
         id: `ph-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
