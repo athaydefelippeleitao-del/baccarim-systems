@@ -441,35 +441,36 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       for (let i = 0; i < needsAI.length; i++) {
         const photo = needsAI[i];
         try {
-          // Usa 2048x2048 e qualidade 0.85 para não estourar o limite de 4.5MB do Vercel (Erro 413)
           const analysisBase64 = await resizeImage((photo as any).analysisUrl, 2048, 2048, 0.85, false);
           const res = await analyzeVistoriaImage(analysisBase64);
 
           if (res) {
-            const aiCoordE = (res.coordE || '').toString().replace(/[^\d]/g, '');
-            const aiCoordN = (res.coordN || '').toString().replace(/[^\d]/g, '');
-            const aiLat = res.lat ?? null;
-            const aiLng = res.lng ?? null;
+            setDraftReport(prev => {
+              const updatedPhotos = [...(prev.photos || [])];
+              const pIndex = updatedPhotos.findIndex(p => p.id === photo.id);
+              if (pIndex !== -1) {
+                let aiCoordE = (res.coordE || '').toString().replace(/[^\d]/g, '');
+                let aiCoordN = (res.coordN || '').toString().replace(/[^\d]/g, '');
+                let aiLat = res.lat ?? undefined;
+                let aiLng = res.lng ?? undefined;
 
-            let finalCoordE = aiCoordE;
-            let finalCoordN = aiCoordN;
-            if (aiLat && aiLng && (!aiCoordE || !aiCoordN)) {
-              const utm = decimalToUTM(aiLat, aiLng);
-              finalCoordE = utm.coordE;
-              finalCoordN = utm.coordN;
-            }
+                if (aiLat && aiLng && (!aiCoordE || !aiCoordN)) {
+                  const utm = decimalToUTM(aiLat, aiLng, project?.specs?.zone || 22);
+                  aiCoordE = utm.coordE;
+                  aiCoordN = utm.coordN;
+                }
 
-            setDraftReport(prev => ({
-              ...prev,
-              photos: prev.photos?.map(p => p.id === photo.id ? {
-                ...p,
-                coordE: finalCoordE,
-                coordN: finalCoordN,
-                lat: aiLat ?? undefined,
-                lng: aiLng ?? undefined,
-                isAnalyzing: false,
-              } : p)
-            }));
+                updatedPhotos[pIndex] = {
+                  ...updatedPhotos[pIndex],
+                  coordE: aiCoordE || updatedPhotos[pIndex].coordE,
+                  coordN: aiCoordN || updatedPhotos[pIndex].coordN,
+                  lat: aiLat ?? updatedPhotos[pIndex].lat,
+                  lng: aiLng ?? updatedPhotos[pIndex].lng,
+                  isAnalyzing: false
+                };
+              }
+              return { ...prev, photos: updatedPhotos };
+            });
           }
         } catch (error: any) {
           console.warn('Erro na análise da imagem pela IA:', error?.message || error);

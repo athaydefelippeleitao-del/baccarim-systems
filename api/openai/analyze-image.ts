@@ -35,23 +35,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const cleanBase64 = base64Image.replace(/^data:image\/[a-zA-Z+]+;base64,/, '');
     const dataUri = `data:${mimeType};base64,${cleanBase64}`;
 
-    const prompt = `Você é um assistente especialista em OCR (leitura ótica).
-A imagem contém uma marca d'água com coordenadas (no canto superior direito, inferior esquerdo ou ao longo da borda).
-Exemplo comum na marca d'água: "E 506360 N 7322676 282° W"
-Neste caso: Leste (E) é 506360 e Norte (N) é 7322676. (Norte no Brasil costuma ter 7 dígitos e Leste 6 dígitos).
+    const prompt = `Você é um perito em topografia e visão computacional.
+A imagem contém uma marca d'água com coordenadas UTM ou Latitude/Longitude.
 
-Sua tarefa:
-1. Encontre o número correspondente a Leste (E, X, ou Easting) e coloque em coordE.
-2. Encontre o número correspondente a Norte (N, Y, ou Northing) e coloque em coordN.
-3. Se houver Latitude/Longitude em vez de UTM, extraia-os para lat e lng (como número decimal) e deixe coordE e coordN vazios ("").
-4. Retorne APENAS OS NÚMEROS nos campos UTM (remova letras como 'S', 'W', 'E', 'N', '°'). NUNCA coloque letras como "S" no campo coordN ou coordE.
-5. CUIDADO COM ALUCINAÇÃO: NUNCA invente "500000" ou números redondos a menos que esteja EXATAMENTE escrito assim. Se não conseguir ler os 6 dígitos do Leste com clareza, retorne vazio.
+Sua ÚNICA tarefa é ler os números EXATAMENTE como estão escritos na imagem. NÃO arredonde, NÃO invente, NÃO adivinhe.
 
+REGRAS RÍGIDAS:
+1. Leste (Easting / X): No Brasil, SEMPRE tem 6 dígitos antes da vírgula (ex: 506360). Se você ler algo diferente (ex: 5 dígitos), VOCÊ LEU ERRADO. Olhe novamente com mais cuidado.
+2. Norte (Northing / Y): No Brasil, SEMPRE tem 7 dígitos antes da vírgula (ex: 7322676). Se você ler algo diferente, VOCÊ LEU ERRADO. Olhe novamente.
+3. Se a imagem tiver Latitude/Longitude em vez de UTM (ex: -23.3106, -51.1628), preencha 'lat' e 'lng' e deixe 'coordE' e 'coordN' VAZIOS ("").
+4. Remova QUALQUER letra dos números finais. O campo deve conter apenas números e ponto/vírgula.
 
-Retorne EXCLUSIVAMENTE um JSON neste formato exato (sem formatação markdown):
+EXEMPLO DE SAÍDA JSON VALIDA:
 {"coordE": "506360", "coordN": "7322676", "lat": null, "lng": null}
 
-Se a imagem não tiver coordenadas visíveis, retorne vazio: {"coordE": "", "coordN": "", "lat": null, "lng": null}`;
+Retorne APENAS o JSON acima, sem markdown, sem explicações. Se a foto não tiver coordenadas, retorne tudo vazio.`;
 
     // Retry with exponential backoff on rate limit (429)
     const MAX_RETRIES = 3;
