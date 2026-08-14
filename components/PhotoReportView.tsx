@@ -676,37 +676,66 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         </div>
       )}
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {reports.map(report => (
-          <div key={report.id} className="bg-baccarim-card rounded-[3rem] p-8 border border-slate-100 shadow-sm hover:shadow-2xl transition-all cursor-pointer group relative" onClick={() => handleReportClick(report)}>
-            <div className="absolute top-6 left-6 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setReportToDelete(report);
-                }}
-                className="w-10 h-10 rounded-full bg-baccarim-card/90 backdrop-blur text-red-500 shadow-lg flex items-center justify-center hover:bg-red-500/20 hover:text-baccarim-text transition-all"
-              >
-                <i className="fas fa-trash-can"></i>
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditReport(report);
-                }}
-                className="w-10 h-10 rounded-full bg-baccarim-card/90 backdrop-blur text-baccarim-blue shadow-lg flex items-center justify-center hover:bg-baccarim-blue/20 hover:text-baccarim-text transition-all"
-              >
-                <i className="fas fa-edit"></i>
-              </button>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {reports.map(report => {
+          const hasPhoto = report.photos && report.photos.length > 0 && report.photos[0].url;
+          return (
+            <div 
+              key={report.id} 
+              className="group relative overflow-hidden rounded-[2.5rem] bg-baccarim-card shadow-md hover:shadow-2xl transition-all duration-500 cursor-pointer aspect-[4/3] flex flex-col justify-end border border-slate-100"
+              onClick={() => handleReportClick(report)}
+            >
+              {/* Background Image or Gradient */}
+              <div className="absolute inset-0 w-full h-full bg-slate-100">
+                {hasPhoto ? (
+                  <img src={report.photos[0].url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" alt="Capa do Relatório" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
+                    <i className="fas fa-camera text-slate-300 text-5xl"></i>
+                  </div>
+                )}
+              </div>
+
+              {/* Top Gradient Overlay for actions */}
+              <div className="absolute top-0 inset-x-0 h-32 bg-gradient-to-b from-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+
+              {/* Action Buttons */}
+              <div className="absolute top-6 left-6 z-20 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-y-2 group-hover:translate-y-0">
+                <button
+                  onClick={(e) => { e.stopPropagation(); handleEditReport(report); }}
+                  className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md text-baccarim-blue shadow-lg flex items-center justify-center hover:bg-baccarim-blue hover:text-white transition-all"
+                >
+                  <i className="fas fa-edit"></i>
+                </button>
+                <button
+                  onClick={(e) => { e.stopPropagation(); setReportToDelete(report); }}
+                  className="w-10 h-10 rounded-full bg-white/90 backdrop-blur-md text-red-500 shadow-lg flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                >
+                  <i className="fas fa-trash-can"></i>
+                </button>
+              </div>
+
+              {/* Photo Count Badge */}
+              <div className="absolute top-6 right-6 z-20">
+                <span className="px-4 py-2 bg-white/90 backdrop-blur-md text-[10px] font-black tracking-widest uppercase rounded-full text-baccarim-navy shadow-lg">
+                  {report.photos?.length || 0} Fotos
+                </span>
+              </div>
+
+              {/* Bottom Info Section with Blur Overlay */}
+              <div className="relative z-10 p-6 pt-12 bg-gradient-to-t from-black/80 via-black/40 to-transparent mt-auto">
+                <h3 className="text-xl md:text-2xl font-black text-white truncate drop-shadow-md">
+                  {report.customName || report.clientName}
+                </h3>
+                {report.customName && (
+                  <p className="text-[11px] text-white/80 font-medium truncate mt-1 tracking-wide uppercase">
+                    {report.clientName}
+                  </p>
+                )}
+              </div>
             </div>
-            <div className="aspect-video bg-baccarim-active rounded-[2rem] mb-6 overflow-hidden relative">
-              {report.photos[0] ? <img src={report.photos[0].url} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" /> : <div className="flex items-center justify-center h-full text-slate-200"><i className="fas fa-image text-5xl"></i></div>}
-              <div className="absolute top-4 right-4"><span className="px-3 py-1 bg-baccarim-card/90 backdrop-blur text-[8px] font-black uppercase rounded-full text-baccarim-navy shadow-sm">{report.photos.length} FOTOS</span></div>
-            </div>
-            <h3 className="text-lg font-black text-baccarim-navy truncate">{report.customName || report.clientName}</h3>
-            {report.customName && <p className="text-[10px] text-baccarim-text-muted font-medium truncate mt-0.5">{report.clientName}</p>}
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {showNewReportModal && (
