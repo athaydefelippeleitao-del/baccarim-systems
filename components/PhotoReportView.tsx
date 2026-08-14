@@ -678,7 +678,9 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {reports.map(report => {
-          const hasPhoto = report.photos && report.photos.length > 0 && report.photos[0].url;
+          const r = report as any;
+          const coverUrl = r._coverPhoto || (report.photos?.[0]?.url) || null;
+          const photoCount = r._photoCount ?? report.photos?.length ?? 0;
           return (
             <div 
               key={report.id} 
@@ -687,8 +689,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
             >
               {/* Background Image or Gradient */}
               <div className="absolute inset-0 w-full h-full bg-slate-100">
-                {hasPhoto ? (
-                  <img src={report.photos[0].url} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" alt="Capa do Relatório" />
+                {coverUrl ? (
+                  <img src={coverUrl} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-in-out" alt="Capa do Relatório" />
                 ) : (
                   <div className="w-full h-full bg-gradient-to-br from-slate-100 to-slate-200 flex items-center justify-center">
                     <i className="fas fa-camera text-slate-300 text-5xl"></i>
@@ -718,7 +720,7 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
               {/* Photo Count Badge */}
               <div className="absolute top-6 right-6 z-20">
                 <span className="px-4 py-2 bg-white/90 backdrop-blur-md text-[10px] font-black tracking-widest uppercase rounded-full text-baccarim-navy shadow-lg">
-                  {report.photos?.length || 0} Fotos
+                  {photoCount} Foto{photoCount !== 1 ? 's' : ''}
                 </span>
               </div>
 
