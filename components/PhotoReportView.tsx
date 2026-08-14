@@ -415,16 +415,70 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         id: `ph-${Date.now()}-${Math.random().toString(36).substr(2, 5)}`,
         url: thumbBase64,
         urlHD: hdBase64,
+        analysisUrl: coordsFound ? undefined : base64,
         caption: '',
         timestamp: new Date().toLocaleDateString('pt-BR'),
         coordE,
         coordN,
         lat: lat ?? undefined,
         lng: lng ?? undefined,
-        isAnalyzing: false,
-      });
+        isAnalyzing: !coordsFound,
+      } as any);
     }
     setDraftReport(prev => ({ ...prev, photos: [...(prev.photos || []), ...incoming] }));
+
+    // Processar pela IA apenas as fotos que não tiveram sucesso via EXIF ou Tesseract
+    const needsAI = incoming.filter(p => (p as any).analysisUrl);
+    if (needsAI.length === 0) return;
+
+    const processImages = async () => {
+      for (let i = 0; i < needsAI.length; i++) {
+        const photo = needsAI[i];
+        try {
+          const analysisBase64 = await resizeImage((photo as any).analysisUrl, 2048, 2048, 0.95, true);
+          const res = await analyzeVistoriaImage(analysisBase64);
+
+          if (res) {
+            const aiCoordE = (res.coordE || '').toString().replace(/[^\d]/g, '');
+            const aiCoordN = (res.coordN || '').toString().replace(/[^\d]/g, '');
+            const aiLat = res.lat ?? null;
+            const aiLng = res.lng ?? null;
+
+            let finalCoordE = aiCoordE;
+            let finalCoordN = aiCoordN;
+            if (aiLat && aiLng && (!aiCoordE || !aiCoordN)) {
+              const utm = decimalToUTM(aiLat, aiLng);
+              finalCoordE = utm.coordE;
+              finalCoordN = utm.coordN;
+            }
+
+            setDraftReport(prev => ({
+              ...prev,
+              photos: prev.photos?.map(p => p.id === photo.id ? {
+                ...p,
+                coordE: finalCoordE,
+                coordN: finalCoordN,
+                lat: aiLat ?? undefined,
+                lng: aiLng ?? undefined,
+                isAnalyzing: false,
+              } : p)
+            }));
+          }
+        } catch (error: any) {
+          console.warn('Erro na análise da imagem pela IA:', error?.message || error);
+        } finally {
+          setDraftReport(prev => ({
+            ...prev,
+            photos: prev.photos?.map(p => p.id === photo.id ? { ...p, isAnalyzing: false } : p)
+          }));
+        }
+        if (i < needsAI.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 3000));
+        }
+      }
+    };
+
+    processImages();
   };
 
   const handleConfirmDelete = () => {
