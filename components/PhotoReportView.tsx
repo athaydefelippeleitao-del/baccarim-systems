@@ -142,11 +142,26 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         }
 
         if (!isNaN(eNum) && !isNaN(nNum)) {
-          const converted = utmToDecimal(eNum, nNum, zone);
-          // Safety check: só aceita se cair no Brasil (lat -35 a 10, lng -80 a -25)
-          if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
-            finalLat = converted.lat;
-            finalLng = converted.lng;
+          // Só recalcula do UTM para Lat/Lng se a foto não tiver Lat/Lng original (IA) 
+          // ou se o usuário editou o UTM manualmente na tela.
+          let needsRecalc = true;
+          if (finalLat != null && finalLng != null) {
+            const originalUtm = decimalToUTM(finalLat, finalLng);
+            const origE = parseFloat(originalUtm.coordE);
+            const origN = parseFloat(originalUtm.coordN);
+            // Se a diferença for menor que 5 metros, é a mesma coordenada gerada pelo EXIF (não recalcula)
+            if (Math.abs(origE - eNum) < 5 && Math.abs(origN - nNum) < 5) {
+               needsRecalc = false;
+            }
+          }
+
+          if (needsRecalc) {
+            const converted = utmToDecimal(eNum, nNum, zone);
+            // Safety check: só aceita se cair no Brasil (lat -35 a 10, lng -80 a -25)
+            if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
+              finalLat = converted.lat;
+              finalLng = converted.lng;
+            }
           }
         }
       }
