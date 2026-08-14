@@ -127,51 +127,12 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     const zone = parseInt(zoneRaw.toString(), 10) || 22;
 
     photos.forEach(photo => {
-      let finalLat = photo.lat;
-      let finalLng = photo.lng;
-
-      if (photo.coordE && photo.coordN) {
-        let eNum = parseUTMCoord(photo.coordE);
-        let nNum = parseUTMCoord(photo.coordN);
-
-        // Auto-swap se a IA tiver invertido E e N (N no Brasil é sempre na casa dos milhões, E na casa dos milhares)
-        if (eNum > 1000000 && nNum < 1000000) {
-          const temp = eNum;
-          eNum = nNum;
-          nNum = temp;
-        }
-
-        if (!isNaN(eNum) && !isNaN(nNum)) {
-          // Só recalcula do UTM para Lat/Lng se a foto não tiver Lat/Lng original (IA) 
-          // ou se o usuário editou o UTM manualmente na tela.
-          let needsRecalc = true;
-          if (finalLat != null && finalLng != null) {
-            const originalUtm = decimalToUTM(finalLat, finalLng);
-            const origE = parseFloat(originalUtm.coordE);
-            const origN = parseFloat(originalUtm.coordN);
-            // Se a diferença for menor que 5 metros, é a mesma coordenada gerada pelo EXIF (não recalcula)
-            if (Math.abs(origE - eNum) < 5 && Math.abs(origN - nNum) < 5) {
-               needsRecalc = false;
-            }
-          }
-
-          if (needsRecalc) {
-            const converted = utmToDecimal(eNum, nNum, zone);
-            // Safety check: só aceita se cair no Brasil (lat -35 a 10, lng -80 a -25)
-            if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
-              finalLat = converted.lat;
-              finalLng = converted.lng;
-            }
-          }
-        }
-      }
-
-      if (finalLat && finalLng) {
-        let existingPoint = points.find(p => Math.abs(p.lat - finalLat!) < 0.00015 && Math.abs(p.lng - finalLng!) < 0.00015);
+      if (photo.lat && photo.lng) {
+        let existingPoint = points.find(p => Math.abs(p.lat - photo.lat!) < 0.00015 && Math.abs(p.lng - photo.lng!) < 0.00015);
         if (existingPoint) {
           existingPoint.photos.push(photo);
         } else {
-          points.push({ lat: finalLat!, lng: finalLng!, photos: [photo], pointNumber: points.length + 1 });
+          points.push({ lat: photo.lat!, lng: photo.lng!, photos: [photo], pointNumber: points.length + 1 });
         }
       }
     });
@@ -493,6 +454,39 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     if (!reportToDelete) return;
     onDeleteReport(reportToDelete.id);
     setReportToDelete(null);
+  };
+
+  const handleUTMEdit = (photoId: string, axis: 'E' | 'N', value: string) => {
+    setDraftReport(prev => {
+      const updatedPhotos = [...(prev.photos || [])];
+      const pIndex = updatedPhotos.findIndex(p => p.id === photoId);
+      if (pIndex !== -1) {
+        const photo = { ...updatedPhotos[pIndex] };
+        if (axis === 'E') photo.coordE = value;
+        else photo.coordN = value;
+
+        let eNum = parseUTMCoord(photo.coordE || '');
+        let nNum = parseUTMCoord(photo.coordN || '');
+        const project = projects.find(p => p.id === selectedReport?.projectId);
+        const zone = parseInt((project?.specs?.zone || 22).toString(), 10) || 22;
+        
+        if (eNum > 1000000 && nNum < 1000000) {
+          const temp = eNum;
+          eNum = nNum;
+          nNum = temp;
+        }
+
+        if (!isNaN(eNum) && !isNaN(nNum)) {
+          const converted = utmToDecimal(eNum, nNum, zone);
+          if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
+            photo.lat = converted.lat;
+            photo.lng = converted.lng;
+          }
+        }
+        updatedPhotos[pIndex] = photo;
+      }
+      return { ...prev, photos: updatedPhotos };
+    });
   };
 
   const handleSaveReport = () => {
@@ -922,11 +916,11 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                           <div className="grid grid-cols-2 gap-2">
                             <div className="space-y-1">
                               <label className="text-[7px] font-black text-slate-400 uppercase ml-1">UTM E</label>
-                              <input value={photo.coordE} onChange={e => setDraftReport({ ...draftReport, photos: draftReport.photos?.map(p => p.id === photo.id ? { ...p, coordE: e.target.value } : p) })} className="w-full text-[10px] p-2 bg-baccarim-card border rounded font-bold" placeholder="E" />
+                              <input value={photo.coordE} onChange={e => handleUTMEdit(photo.id, 'E', e.target.value)} className="w-full text-[10px] p-2 bg-baccarim-card border rounded font-bold" placeholder="E" />
                             </div>
                             <div className="space-y-1">
                               <label className="text-[7px] font-black text-slate-400 uppercase ml-1">UTM N</label>
-                              <input value={photo.coordN} onChange={e => setDraftReport({ ...draftReport, photos: draftReport.photos?.map(p => p.id === photo.id ? { ...p, coordN: e.target.value } : p) })} className="w-full text-[10px] p-2 bg-baccarim-card border rounded font-bold" placeholder="N" />
+                              <input value={photo.coordN} onChange={e => handleUTMEdit(photo.id, 'N', e.target.value)} className="w-full text-[10px] p-2 bg-baccarim-card border rounded font-bold" placeholder="N" />
                             </div>
                           </div>
                         </div>
