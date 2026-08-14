@@ -1,6 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import OpenAI from 'openai';
 
+export const maxDuration = 60; // Permite que a função rode por até 60s (necessário para visão computacional)
+
 function withTimeout<T>(promise: Promise<T>, ms = 55000): Promise<T> {
   const timeout = new Promise<never>((_, reject) =>
     setTimeout(() => reject(new Error(`Timeout após ${ms / 1000}s`)), ms)

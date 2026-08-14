@@ -435,8 +435,8 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       for (let i = 0; i < needsAI.length; i++) {
         const photo = needsAI[i];
         try {
-          // Usa 3000x3000 e qualidade 1.0 (100%) sem ocrEnhance para máxima nitidez e cores originais na IA
-          const analysisBase64 = await resizeImage((photo as any).analysisUrl, 3000, 3000, 1.0, false);
+          // Usa 2048x2048 e qualidade 0.85 para não estourar o limite de 4.5MB do Vercel (Erro 413)
+          const analysisBase64 = await resizeImage((photo as any).analysisUrl, 2048, 2048, 0.85, false);
           const res = await analyzeVistoriaImage(analysisBase64);
 
           if (res) {
