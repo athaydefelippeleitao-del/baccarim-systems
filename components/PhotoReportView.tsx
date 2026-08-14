@@ -389,7 +389,13 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       for (let i = 0; i < needsAI.length; i++) {
         const photo = needsAI[i];
         try {
-          const analysisBase64 = await resizeImage((photo as any).analysisUrl, 2048, 2048, 0.85, false);
+          let analysisBase64 = (photo as any).analysisUrl;
+          // Só reduz a imagem se for gigante (> 2.5MB), para não estourar o limite do Vercel.
+          // Enviar na resolução original impede que o redimensionamento do navegador borre a marca d'água.
+          if (analysisBase64 && analysisBase64.length > 3500000) {
+            analysisBase64 = await resizeImage(analysisBase64, 2400, 2400, 0.95, false);
+          }
+
           const res = await analyzeVistoriaImage(analysisBase64);
 
           if (res) {
