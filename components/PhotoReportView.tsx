@@ -354,27 +354,14 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
       // Versão HD para exibição no relatório/PDF (800px, qualidade 0.82), guardada só na memória
       const hdBase64 = await resizeImage(base64, 800, 800, 0.82);
 
-      // --- Prioridade 1: EXIF GPS ---
+      // --- O EXIF GPS FOI DESATIVADO ---
+      // A maioria dos apps de câmera de topografia salva metadados errados (drift de sinal)
+      // Forçamos a IA a ler a marca d'água impressa, que é a coordenada definitiva e confiável.
       let coordE = '';
       let coordN = '';
       let lat: number | null = null;
       let lng: number | null = null;
       let coordsFound = false;
-
-      try {
-        const gps = await exifr.gps(file);
-        if (gps && gps.latitude != null && gps.longitude != null) {
-          lat = gps.latitude;
-          lng = gps.longitude;
-          const utm = decimalToUTM(lat!, lng!);
-          coordE = utm.coordE;
-          coordN = utm.coordN;
-          coordsFound = true;
-          console.log('Coords from EXIF:', coordE, coordN);
-        }
-      } catch (_) {
-        // EXIF não disponível
-      }
 
       // --- Prioridade 2: IA (O Tesseract foi removido pois extraía números errados, causando coordenadas tortas) ---
 
@@ -419,6 +406,24 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                   const utm = decimalToUTM(aiLat, aiLng, project?.specs?.zone || 22);
                   aiCoordE = utm.coordE;
                   aiCoordN = utm.coordN;
+                }
+
+                let eNum = parseUTMCoord(aiCoordE);
+                let nNum = parseUTMCoord(aiCoordN);
+                const zone = parseInt((project?.specs?.zone || 22).toString(), 10) || 22;
+
+                if (eNum > 1000000 && nNum < 1000000) {
+                  const temp = eNum;
+                  eNum = nNum;
+                  nNum = temp;
+                }
+
+                if (!aiLat && !aiLng && !isNaN(eNum) && !isNaN(nNum)) {
+                  const converted = utmToDecimal(eNum, nNum, zone);
+                  if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
+                    aiLat = converted.lat;
+                    aiLng = converted.lng;
+                  }
                 }
 
                 updatedPhotos[pIndex] = {
