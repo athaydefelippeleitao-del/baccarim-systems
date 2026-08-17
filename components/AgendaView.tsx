@@ -348,36 +348,36 @@ const AgendaView: React.FC<AgendaViewProps> = ({
         </div>
       )}
 
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-8 border-b border-baccarim-border">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-baccarim-border">
         <div>
-          <h2 className="text-4xl font-black text-baccarim-text tracking-tighter">Agenda Técnica</h2>
-          <p className="text-baccarim-text-muted mt-2 text-sm font-medium tracking-wide">Controle de prazos, licenças e notificações</p>
+          <h2 className="text-3xl font-black text-baccarim-text tracking-tighter">Agenda Técnica</h2>
+          <p className="text-baccarim-text-muted mt-1 text-xs font-medium tracking-wide">Controle de prazos, licenças e notificações</p>
         </div>
         <div>
-          <button onClick={() => { setEditingItem(null); setShowTaskModal(true); }} className="bg-baccarim-blue text-white px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:bg-baccarim-blue-dark hover:scale-105 transition-all flex items-center gap-2">
+          <button onClick={() => { setEditingItem(null); setShowTaskModal(true); }} className="bg-baccarim-blue text-white px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg shadow-baccarim-blue/20 hover:bg-baccarim-blue-dark hover:scale-105 transition-all flex items-center gap-2">
              <i className="fas fa-plus"></i> NOVO PRAZO
           </button>
         </div>
       </div>
 
-      <div className="relative pt-10">
-        <div className="absolute left-6 md:left-[3.25rem] top-10 bottom-0 w-px bg-gradient-to-b from-baccarim-border to-transparent"></div>
-        <div className="space-y-8">
+      <div className="relative pt-6">
+        <div className="absolute left-4 md:left-8 top-6 bottom-0 w-px bg-gradient-to-b from-baccarim-border to-transparent"></div>
+        <div className="space-y-4">
           {events.map((event) => {
             const isInvalid = event.date.getTime() > 4000000000000;
             const now = new Date();
             const isPast = !isInvalid && event.date < now;
             
             return (
-              <div key={`${event.type}-${event.id}`} className="relative pl-16 md:pl-32 group">
+              <div key={`${event.type}-${event.id}`} className="relative pl-12 md:pl-20 group">
                 {/* Indicador de Data na Timeline */}
-                <div className={`absolute left-[1.15rem] md:left-[2.9rem] top-8 w-3 h-3 rounded-full ring-4 ring-baccarim-dark shadow-sm z-10 transition-transform duration-300 group-hover:scale-150 ${isPast ? 'bg-baccarim-rose' : isInvalid ? 'bg-baccarim-border' : 'bg-baccarim-blue'}`}></div>
+                <div className={`absolute left-[0.65rem] md:left-[1.65rem] top-6 w-2.5 h-2.5 rounded-full ring-[3px] ring-baccarim-dark shadow-sm z-10 transition-transform duration-300 group-hover:scale-150 ${isPast ? 'bg-baccarim-rose' : isInvalid ? 'bg-baccarim-border' : 'bg-baccarim-blue'}`}></div>
                 
                 {/* Card do Prazo */}
-                <div className={`p-6 md:p-8 rounded-3xl border shadow-lg relative transition-all duration-300 hover:shadow-2xl group-hover:-translate-y-1 ${isPast ? 'border-baccarim-rose/30 bg-gradient-to-br from-baccarim-rose/5 to-transparent' : 'border-baccarim-border bg-baccarim-card'}`}>
+                <div className={`p-4 md:p-5 rounded-2xl border shadow-sm relative transition-all duration-300 hover:shadow-lg group-hover:-translate-y-0.5 ${isPast ? 'border-baccarim-rose/30 bg-gradient-to-br from-baccarim-rose/5 to-transparent' : 'border-baccarim-border bg-baccarim-card'}`}>
                   
                   {/* Botões de Ação do Card */}
-                  <div className="flex items-center space-x-2 mb-6 md:mb-0 md:absolute md:top-8 md:right-8 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="flex items-center space-x-2 mb-4 md:mb-0 md:absolute md:top-5 md:right-5 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                       <button 
                         onClick={(e) => {
                           e.stopPropagation();
@@ -385,80 +385,80 @@ const AgendaView: React.FC<AgendaViewProps> = ({
                           if (url !== "#") window.open(url, '_blank');
                         }}
                         title="Adicionar ao Google Agenda"
-                        className="w-10 h-10 rounded-xl bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-blue hover:bg-baccarim-blue/10 flex items-center justify-center transition-all"
+                        className="w-8 h-8 rounded-lg bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-blue hover:bg-baccarim-blue/10 flex items-center justify-center transition-all"
                       >
-                        <i className="fab fa-google text-sm"></i>
+                        <i className="fab fa-google text-xs"></i>
                       </button>
                       
                       <button 
                         onClick={(e) => handleOpenEdit(e, event.id, event.type)}
                         title="Editar Prazo"
-                        className="w-10 h-10 rounded-xl bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-border flex items-center justify-center transition-all"
+                        className="w-8 h-8 rounded-lg bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-text hover:bg-baccarim-border flex items-center justify-center transition-all"
                      >
-                       <i className="fas fa-pencil-alt text-sm"></i>
+                       <i className="fas fa-pencil-alt text-xs"></i>
                      </button>
  
                      <button 
                         onClick={() => { setActiveUpload({ id: event.id, type: event.type }); fileInputRef.current?.click(); }} 
                         title="Anexar Documento"
-                        className="w-10 h-10 rounded-xl bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-blue hover:bg-baccarim-blue/10 flex items-center justify-center transition-all"
+                        className="w-8 h-8 rounded-lg bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-blue hover:bg-baccarim-blue/10 flex items-center justify-center transition-all"
                      >
-                        <i className="fas fa-paperclip text-sm"></i>
+                        <i className="fas fa-paperclip text-xs"></i>
                      </button>
                      
                      <button 
                         onClick={(e) => requestDeleteItem(e, event.id, event.type)} 
                         title="Excluir Prazo"
-                        className="w-10 h-10 rounded-xl bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-rose hover:bg-baccarim-rose/10 flex items-center justify-center transition-all"
+                        className="w-8 h-8 rounded-lg bg-baccarim-hover text-baccarim-text-muted hover:text-baccarim-rose hover:bg-baccarim-rose/10 flex items-center justify-center transition-all"
                      >
-                        <i className="fas fa-trash-can text-sm"></i>
+                        <i className="fas fa-trash-can text-xs"></i>
                      </button>
                   </div>
 
-                  <div className="md:pr-48">
-                    <div className="flex items-center space-x-3 mb-4">
-                      <span className={`px-3 py-1 rounded-lg text-[9px] font-bold uppercase tracking-widest ${event.type === 'license' ? 'bg-baccarim-blue/10 text-baccarim-blue border border-baccarim-blue/20' : 'bg-baccarim-green/10 text-baccarim-green border border-baccarim-green/20'}`}>
+                  <div className="md:pr-40">
+                    <div className="flex items-center space-x-2 mb-2">
+                      <span className={`px-2 py-0.5 rounded-md text-[8px] font-bold uppercase tracking-widest ${event.type === 'license' ? 'bg-baccarim-blue/10 text-baccarim-blue border border-baccarim-blue/20' : 'bg-baccarim-green/10 text-baccarim-green border border-baccarim-green/20'}`}>
                         {event.type === 'license' ? 'Licença' : 'Notificação'}
                       </span>
-                      {isPast && <span className="text-[9px] font-bold text-baccarim-rose uppercase tracking-widest px-3 py-1 bg-baccarim-rose/10 border border-baccarim-rose/20 rounded-lg flex items-center gap-1.5"><i className="fas fa-exclamation-triangle"></i> PRAZO VENCIDO</span>}
+                      {isPast && <span className="text-[8px] font-bold text-baccarim-rose uppercase tracking-widest px-2 py-0.5 bg-baccarim-rose/10 border border-baccarim-rose/20 rounded-md flex items-center gap-1"><i className="fas fa-exclamation-triangle"></i> PRAZO VENCIDO</span>}
                     </div>
                     
-                    <h4 className="text-2xl font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors mb-3">{event.title}</h4>
+                    <h4 className="text-lg font-black text-baccarim-text tracking-tight group-hover:text-baccarim-blue transition-colors leading-tight mb-1">{event.title}</h4>
                     
-                    <div className="flex flex-wrap items-center gap-x-3 gap-y-2 text-[11px] font-semibold text-baccarim-text-muted uppercase tracking-wider">
-                      <span className="flex items-center gap-1.5"><i className="fas fa-user opacity-50"></i> {event.subtitle}</span>
+                    <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-semibold text-baccarim-text-muted uppercase tracking-wider">
+                      <span className="flex items-center gap-1"><i className="fas fa-user opacity-50"></i> {event.subtitle}</span>
                       
                       {(event as any).projectId && (
                         <>
                           <span className="text-baccarim-border">•</span>
-                          <span className="flex items-center gap-1.5 text-baccarim-text"><i className="fas fa-building opacity-50"></i> {projects.find(p => p.id === (event as any).projectId)?.name || 'Projeto Vinc.'}</span>
+                          <span className="flex items-center gap-1 text-baccarim-text"><i className="fas fa-building opacity-50"></i> {projects.find(p => p.id === (event as any).projectId)?.name || 'Projeto Vinc.'}</span>
                         </>
                       )}
                       
                       <span className="text-baccarim-border">•</span>
-                      <span className={`flex items-center gap-1.5 ${isPast ? 'text-baccarim-rose' : 'text-baccarim-text'}`}>
+                      <span className={`flex items-center gap-1 ${isPast ? 'text-baccarim-rose' : 'text-baccarim-text'}`}>
                         <i className="far fa-calendar-alt opacity-50"></i> {event.displayDate || 'Sem Data'}
                       </span>
                     </div>
                     
                     {event.description && (
-                      <div className="mt-5 p-4 rounded-2xl bg-baccarim-hover/50 border border-baccarim-border text-xs text-baccarim-text-muted font-medium leading-relaxed italic relative group-hover:bg-baccarim-hover transition-colors">
-                        <i className="fas fa-quote-left absolute top-4 left-4 text-baccarim-border text-lg opacity-50"></i>
-                        <p className="pl-8 relative z-10">"{event.description}"</p>
+                      <div className="mt-3 p-3 rounded-xl bg-baccarim-hover/50 border border-baccarim-border text-[11px] text-baccarim-text-muted font-medium leading-relaxed italic relative group-hover:bg-baccarim-hover transition-colors">
+                        <i className="fas fa-quote-left absolute top-3 left-3 text-baccarim-border text-base opacity-50"></i>
+                        <p className="pl-6 relative z-10">"{event.description}"</p>
                       </div>
                     )}
 
                     {/* Lista de Anexos */}
-                    <div className="mt-6 flex flex-wrap gap-2">
+                    <div className="mt-3 flex flex-wrap gap-2">
                        {event.attachedFiles?.map((file, fIdx) => (
-                         <div key={fIdx} className="flex items-center space-x-2 bg-baccarim-hover/80 px-3 py-1.5 rounded-xl border border-baccarim-border animate-in zoom-in-95 group/file hover:bg-baccarim-active hover:border-baccarim-blue/30 transition-all cursor-pointer" onClick={(e) => handleViewDocument(e, file)}>
-                           <i className="fas fa-file-pdf text-baccarim-rose/80 text-[10px]"></i>
-                           <span className="text-[10px] font-semibold text-baccarim-text-muted group-hover/file:text-baccarim-blue transition-colors truncate max-w-[150px]">{file.fileName}</span>
-                           <button onClick={(e) => requestRemoveAttachment(e, event.id, event.type, file.fileName)} className="text-baccarim-text-muted hover:text-baccarim-rose ml-1 opacity-0 group-hover/file:opacity-100 transition-opacity p-1"><i className="fas fa-times"></i></button>
+                         <div key={fIdx} className="flex items-center space-x-1.5 bg-baccarim-hover/80 px-2 py-1 rounded-lg border border-baccarim-border animate-in zoom-in-95 group/file hover:bg-baccarim-active hover:border-baccarim-blue/30 transition-all cursor-pointer" onClick={(e) => handleViewDocument(e, file)}>
+                           <i className="fas fa-file-pdf text-baccarim-rose/80 text-[9px]"></i>
+                           <span className="text-[9px] font-semibold text-baccarim-text-muted group-hover/file:text-baccarim-blue transition-colors truncate max-w-[120px]">{file.fileName}</span>
+                           <button onClick={(e) => requestRemoveAttachment(e, event.id, event.type, file.fileName)} className="text-baccarim-text-muted hover:text-baccarim-rose ml-1 opacity-0 group-hover/file:opacity-100 transition-opacity p-0.5"><i className="fas fa-times text-[9px]"></i></button>
                          </div>
                        ))}
                        {(!event.attachedFiles || event.attachedFiles.length === 0) && (
-                         <span className="text-[10px] font-medium text-baccarim-text-muted/50 uppercase tracking-widest flex items-center gap-1.5"><i className="fas fa-paperclip opacity-50"></i> Nenhum anexo</span>
+                         <span className="text-[9px] font-medium text-baccarim-text-muted/50 uppercase tracking-widest flex items-center gap-1"><i className="fas fa-paperclip opacity-50"></i> Nenhum anexo</span>
                        )}
                     </div>
                   </div>
