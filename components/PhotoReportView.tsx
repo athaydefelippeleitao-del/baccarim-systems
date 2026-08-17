@@ -386,12 +386,14 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
     if (needsAI.length === 0) return;
 
     const processImages = async () => {
+      const currentProjectId = draftReport.projectId;
+      const currentProject = projects.find(p => p.id === currentProjectId);
+      const zone = parseInt(((currentProject?.specs?.zone) || 22).toString(), 10) || 22;
+
       for (let i = 0; i < needsAI.length; i++) {
         const photo = needsAI[i];
         try {
           let analysisBase64 = (photo as any).analysisUrl;
-          // Só reduz a imagem se for gigante (> 2.5MB), para não estourar o limite do Vercel.
-          // Enviar na resolução original impede que o redimensionamento do navegador borre a marca d'água.
           if (analysisBase64 && analysisBase64.length > 3500000) {
             analysisBase64 = await resizeImage(analysisBase64, 2400, 2400, 0.95, false);
           }
@@ -408,27 +410,30 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
                 let aiLat = res.lat ?? undefined;
                 let aiLng = res.lng ?? undefined;
 
+                // Se a IA retornou Lat/Lng diretamente, converte para UTM para exibição
                 if (aiLat && aiLng && (!aiCoordE || !aiCoordN)) {
-                  const utm = decimalToUTM(aiLat, aiLng, project?.specs?.zone || 22);
+                  const utm = decimalToUTM(aiLat, aiLng);
                   aiCoordE = utm.coordE;
                   aiCoordN = utm.coordN;
                 }
 
-                let eNum = parseUTMCoord(aiCoordE);
-                let nNum = parseUTMCoord(aiCoordN);
-                const zone = parseInt((project?.specs?.zone || 22).toString(), 10) || 22;
+                // Se a IA retornou UTM, converte para Lat/Lng para o mapa
+                if (!aiLat && !aiLng && aiCoordE && aiCoordN) {
+                  let eNum = parseUTMCoord(aiCoordE);
+                  let nNum = parseUTMCoord(aiCoordN);
 
-                if (eNum > 1000000 && nNum < 1000000) {
-                  const temp = eNum;
-                  eNum = nNum;
-                  nNum = temp;
-                }
+                  if (eNum > 1000000 && nNum < 1000000) {
+                    const temp = eNum;
+                    eNum = nNum;
+                    nNum = temp;
+                  }
 
-                if (!aiLat && !aiLng && !isNaN(eNum) && !isNaN(nNum)) {
-                  const converted = utmToDecimal(eNum, nNum, zone);
-                  if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
-                    aiLat = converted.lat;
-                    aiLng = converted.lng;
+                  if (!isNaN(eNum) && !isNaN(nNum)) {
+                    const converted = utmToDecimal(eNum, nNum, zone);
+                    if (converted && converted.lat > -35 && converted.lat < 10 && converted.lng > -80 && converted.lng < -25) {
+                      aiLat = converted.lat;
+                      aiLng = converted.lng;
+                    }
                   }
                 }
 
