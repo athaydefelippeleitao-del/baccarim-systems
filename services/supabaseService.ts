@@ -446,7 +446,7 @@ function mapVideoToDb(v: ProductionVideo): any {
 // ─────────────────────────────────────────────
 export async function getReports(): Promise<PhotoReport[]> {
   const { data, error } = await supabase.from('reports')
-    .select('id, project_id, project_name, client_name, title, custom_name, date, owner_name, ent_name, ent_cpf, ent_address, ent_district, ent_city, ent_cep, proj_name, proj_address, proj_district, proj_city, proj_cep, proj_license, technical_basis, resp_name, resp_role, resp_crea, resp_reg, resp_company, resp_email, resp_cnpj, resp_address, resp_city, resp_cep, resp_phone, created_at')
+    .select('id, project_id, project_name, client_name, title, custom_name, date, owner_name, ent_name, ent_cpf, ent_address, ent_district, ent_city, ent_cep, proj_name, proj_address, proj_district, proj_city, proj_cep, proj_license, technical_basis, resp_name, resp_role, resp_crea, resp_reg, resp_company, resp_email, resp_cnpj, resp_address, resp_city, resp_cep, resp_phone, cover_photo, photo_count, created_at')
     .order('created_at', { ascending: false });
   if (error) { console.error('getReports error:', error); return []; }
   return (data || []).map(mapReportFromDb);
@@ -491,8 +491,7 @@ export async function deleteReport(id: string): Promise<void> {
 }
 
 function mapReportFromDb(row: any): PhotoReport {
-  // Se a query veio sem photos (lista), monta um array sintético com a cover_photo para o card
-  const photos = row.photos || (row.cover_photo ? [{ id: 'cover', url: row.cover_photo, caption: '', timestamp: '' }] : []);
+  const coverPhoto = row.cover_photo || undefined;
   return {
     id: row.id, projectId: row.project_id, projectName: row.project_name, clientName: row.client_name,
     title: row.title, customName: row.custom_name || undefined, date: row.date,
@@ -505,9 +504,9 @@ function mapReportFromDb(row: any): PhotoReport {
     respReg: row.resp_reg, respCompany: row.resp_company, respEmail: row.resp_email,
     respCnpj: row.resp_cnpj, respAddress: row.resp_address, respCity: row.resp_city,
     respCep: row.resp_cep, respPhone: row.resp_phone,
-    photos: (row.photos || []),
-    _coverPhoto: row.cover_photo || undefined,
-    _photoCount: row.photo_count || (row.photos?.length) || photos.length,
+    photos: row.photos || [],
+    _coverPhoto: coverPhoto,
+    _photoCount: row.photo_count ?? 0,
   } as any;
 }
 
@@ -525,10 +524,8 @@ function mapReportToDb(r: PhotoReport): any {
     resp_reg: r.respReg, resp_company: r.respCompany, resp_email: r.respEmail,
     resp_cnpj: r.respCnpj, resp_address: r.respAddress, resp_city: r.respCity,
     resp_cep: r.respCep, resp_phone: r.respPhone,
-    // Miniaturas leves para o card (não precisam ser HD)
     cover_photo: firstPhoto?.url || null,
     photo_count: r.photos?.length || 0,
-    // Remover urlHD das fotos antes de salvar
     photos: (r.photos || []).map(({ urlHD: _urlHD, ...photo }) => photo),
     updated_at: new Date().toISOString(),
   };
