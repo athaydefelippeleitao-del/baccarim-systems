@@ -446,7 +446,7 @@ function mapVideoToDb(v: ProductionVideo): any {
 // ─────────────────────────────────────────────
 export async function getReports(): Promise<PhotoReport[]> {
   const { data, error } = await supabase.from('reports')
-    .select('id, project_id, project_name, client_name, title, custom_name, date, owner_name, ent_name, ent_cpf, ent_address, ent_district, ent_city, ent_cep, proj_name, proj_address, proj_district, proj_city, proj_cep, proj_license, technical_basis, resp_name, resp_role, resp_crea, resp_reg, resp_company, resp_email, resp_cnpj, resp_address, resp_city, resp_cep, resp_phone, cover_photo, photo_count, created_at')
+    .select('id, project_id, project_name, client_name, title, custom_name, date, owner_name, ent_name, ent_cpf, ent_address, ent_district, ent_city, ent_cep, proj_name, proj_address, proj_district, proj_city, proj_cep, proj_license, technical_basis, resp_name, resp_role, resp_crea, resp_reg, resp_company, resp_email, resp_cnpj, resp_address, resp_city, resp_cep, resp_phone, created_at')
     .order('created_at', { ascending: false });
   if (error) { console.error('getReports error:', error); return []; }
   return (data || []).map(mapReportFromDb);
