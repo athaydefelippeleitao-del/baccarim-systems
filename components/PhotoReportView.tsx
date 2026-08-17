@@ -349,10 +349,10 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Versão pequena para salvar no banco (320px, qualidade 0.72 para boa visualização)
-      const thumbBase64 = await resizeImage(base64, 400, 400, 0.72);
-      // Versão HD para exibição no relatório/PDF (800px, qualidade 0.82), guardada só na memória
-      const hdBase64 = await resizeImage(base64, 800, 800, 0.82);
+      // Versão ultra-leve para salvar no banco e evitar limite de 1MB do Supabase (280px, qualidade 0.60)
+      const thumbBase64 = await resizeImage(base64, 280, 280, 0.60);
+      // Versão HD para exibição imediata no relatório/PDF (1000px, qualidade 0.85), guardada só na memória temporária
+      const hdBase64 = await resizeImage(base64, 1000, 1000, 0.85);
 
       // --- O EXIF GPS FOI DESATIVADO ---
       // A maioria dos apps de câmera de topografia salva metadados errados (drift de sinal)
