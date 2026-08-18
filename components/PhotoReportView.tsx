@@ -349,9 +349,9 @@ const PhotoReportView: React.FC<PhotoReportViewProps> = ({ projects, reports, on
         const r = new FileReader(); r.onload = (ev) => res(ev.target?.result as string); r.readAsDataURL(file);
       });
 
-      // Versão ultra-leve para salvar no banco e evitar limite de 1MB do Supabase (280px, qualidade 0.60)
-      const thumbBase64 = await resizeImage(base64, 280, 280, 0.60);
-      // Versão HD para exibição imediata no relatório/PDF (1000px, qualidade 0.85), guardada só na memória temporária
+      // Versão ultra-leve para salvar no banco (180px, qualidade 0.45 → ~3-5KB por foto)
+      const thumbBase64 = await resizeImage(base64, 180, 180, 0.45);
+      // Versão HD para exibição imediata e para a IA analisar (1000px, qualidade 0.85), guardada só na memória
       const hdBase64 = await resizeImage(base64, 1000, 1000, 0.85);
 
       // --- O EXIF GPS FOI DESATIVADO ---

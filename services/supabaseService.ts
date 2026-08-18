@@ -465,7 +465,7 @@ export async function upsertReports(reports: PhotoReport[]): Promise<void> {
 export async function upsertReport(report: PhotoReport): Promise<void> {
   const row = mapReportToDb(report);
 
-  // Step 1: Save all metadata WITHOUT photos (fast, never times out)
+  // Step 1: Save all metadata WITHOUT photos (fast, lightweight payload)
   const { photos: _photos, ...metadataRow } = row;
   const { error: metaError } = await supabase.from('reports').upsert(metadataRow, { onConflict: 'id' });
   if (metaError) {
@@ -473,17 +473,34 @@ export async function upsertReport(report: PhotoReport): Promise<void> {
     throw metaError;
   }
 
-  // Step 2: Save photos in a separate UPDATE (isolated from metadata)
+  // Step 2: Clear photos first, then append in chunks of 8 to stay under payload limits
   const photosToSave = row.photos || [];
-  const { error: photosError } = await supabase
+  
+  // Clear existing photos
+  const { error: clearError } = await supabase
     .from('reports')
-    .update({ photos: photosToSave, updated_at: row.updated_at })
+    .update({ photos: [], updated_at: row.updated_at })
     .eq('id', report.id);
-  if (photosError) {
-    console.error('upsertReport (photos) error:', photosError);
-    throw photosError;
+  if (clearError) {
+    console.error('upsertReport (clear photos) error:', clearError);
+    throw clearError;
+  }
+
+  // Append photos in chunks of 8 via RPC to avoid payload size limits
+  const CHUNK_SIZE = 8;
+  for (let i = 0; i < photosToSave.length; i += CHUNK_SIZE) {
+    const chunk = photosToSave.slice(i, i + CHUNK_SIZE);
+    const { error: chunkError } = await supabase.rpc('append_photos_chunk', {
+      p_report_id: report.id,
+      p_chunk: chunk
+    });
+    if (chunkError) {
+      console.error(`upsertReport (photos chunk ${i}) error:`, chunkError);
+      throw chunkError;
+    }
   }
 }
+
 
 export async function deleteReport(id: string): Promise<void> {
   const { error } = await supabase.from('reports').delete().eq('id', id);
