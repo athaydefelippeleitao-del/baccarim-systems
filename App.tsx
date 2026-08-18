@@ -328,7 +328,7 @@ const App: React.FC = () => {
   useEffect(() => { if (isInitialLoadDone.current) emitUpdate('clients', clients); }, [clients, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current) emitUpdate('meetings', meetings); }, [meetings, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current) emitUpdate('videos', videos); }, [videos, emitUpdate]);
-  useEffect(() => { if (isInitialLoadDone.current) emitUpdate('reports', reports); }, [reports, emitUpdate]);
+  // DO NOT use emitUpdate for reports. Reports are handled individually via upsertReport to avoid wiping unloaded photos and killing the db with 50 concurrent requests.
   useEffect(() => { if (isInitialLoadDone.current && projectCategories.length > 0) emitUpdate('projectCategories', projectCategories); }, [projectCategories, emitUpdate]);
   useEffect(() => { if (isInitialLoadDone.current && Object.keys(checklistTemplates).length > 0) emitUpdate('checklistTemplates', checklistTemplates); }, [checklistTemplates, emitUpdate]);
   useEffect(() => { 
