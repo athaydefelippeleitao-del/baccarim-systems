@@ -465,39 +465,14 @@ export async function upsertReports(reports: PhotoReport[]): Promise<void> {
 export async function upsertReport(report: PhotoReport): Promise<void> {
   const row = mapReportToDb(report);
 
-  // Step 1: Save all metadata WITHOUT photos (fast, lightweight payload)
-  const { photos: _photos, ...metadataRow } = row;
-  const { error: metaError } = await supabase.from('reports').upsert(metadataRow, { onConflict: 'id' });
-  if (metaError) {
-    console.error('upsertReport (metadata) error:', metaError);
-    throw metaError;
-  }
-
-  // Step 2: Clear photos first, then append in chunks of 8 to stay under payload limits
-  const photosToSave = row.photos || [];
+  // Now that mapReportToDb correctly strips heavy AI analysis fields,
+  // we can safely save the entire report (metadata + photos) in a single operation.
+  // This avoids the O(n^2) JSONB append_photos_chunk RPC that causes statement timeouts.
+  const { error } = await supabase.from('reports').upsert(row, { onConflict: 'id' });
   
-  // Clear existing photos
-  const { error: clearError } = await supabase
-    .from('reports')
-    .update({ photos: [], updated_at: row.updated_at })
-    .eq('id', report.id);
-  if (clearError) {
-    console.error('upsertReport (clear photos) error:', clearError);
-    throw clearError;
-  }
-
-  // Append photos in chunks of 8 via RPC to avoid payload size limits
-  const CHUNK_SIZE = 8;
-  for (let i = 0; i < photosToSave.length; i += CHUNK_SIZE) {
-    const chunk = photosToSave.slice(i, i + CHUNK_SIZE);
-    const { error: chunkError } = await supabase.rpc('append_photos_chunk', {
-      p_report_id: report.id,
-      p_chunk: chunk
-    });
-    if (chunkError) {
-      console.error(`upsertReport (photos chunk ${i}) error:`, chunkError);
-      throw chunkError;
-    }
+  if (error) {
+    console.error('upsertReport error:', error);
+    throw error;
   }
 }
 
@@ -521,6 +496,7 @@ function mapReportFromDb(row: any): PhotoReport {
     respReg: row.resp_reg, respCompany: row.resp_company, respEmail: row.resp_email,
     respCnpj: row.resp_cnpj, respAddress: row.resp_address, respCity: row.resp_city,
     respCep: row.resp_cep, respPhone: row.resp_phone,
+    techResponsibilityLabel: row.tech_responsibility_label || undefined,
     photos: row.photos || [],
     _coverPhoto: coverPhoto,
     _photoCount: row.photo_count ?? 0,
@@ -541,9 +517,10 @@ function mapReportToDb(r: PhotoReport): any {
     resp_reg: r.respReg, resp_company: r.respCompany, resp_email: r.respEmail,
     resp_cnpj: r.respCnpj, resp_address: r.respAddress, resp_city: r.respCity,
     resp_cep: r.respCep, resp_phone: r.respPhone,
+    tech_responsibility_label: r.techResponsibilityLabel || null,
     cover_photo: firstPhoto?.url || null,
     photo_count: r.photos?.length || 0,
-    photos: (r.photos || []).map(({ urlHD: _urlHD, ...photo }) => photo),
+    photos: (r.photos || []).map(({ urlHD: _urlHD, analysisUrl: _analysisUrl, isAnalyzing: _isAnalyzing, ...photo }: any) => photo),
     updated_at: new Date().toISOString(),
   };
 }
