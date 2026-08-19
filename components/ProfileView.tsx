@@ -295,146 +295,166 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Formulário de Dados */}
+        {/* Formulário de Dados e Preferências */}
         <div className="lg:col-span-2 space-y-8">
-          <form onSubmit={handleSubmit} className="bg-baccarim-card rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-baccarim-border">
-            <h3 className="text-xl font-black text-baccarim-text mb-8">Informações Pessoais</h3>
+          <form onSubmit={handleSubmit} className="bg-baccarim-card rounded-[2rem] p-8 md:p-10 shadow-sm border border-baccarim-border">
+            <h3 className="text-lg font-black text-baccarim-text mb-6 flex items-center space-x-3">
+              <i className="fas fa-id-card text-baccarim-blue"></i>
+              <span>Informações Pessoais</span>
+            </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Nome Completo</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider ml-1">Nome Completo</label>
                 <input 
                   type="text" 
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all"
+                  className="w-full bg-baccarim-hover/50 border border-baccarim-border p-3.5 rounded-xl text-sm font-semibold text-baccarim-text outline-none focus:border-baccarim-blue focus:ring-2 focus:ring-baccarim-blue/20 transition-all shadow-inner"
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">E-mail Corporativo</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider ml-1">E-mail Corporativo</label>
                 <input 
                   type="email" 
                   value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all"
+                  className="w-full bg-baccarim-hover/50 border border-baccarim-border p-3.5 rounded-xl text-sm font-semibold text-baccarim-text outline-none focus:border-baccarim-blue focus:ring-2 focus:ring-baccarim-blue/20 transition-all shadow-inner"
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Telefone / WhatsApp</label>
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider ml-1">Telefone / WhatsApp</label>
                 <input 
                   type="text" 
                   value={formData.phone}
                   onChange={e => setFormData({...formData, phone: e.target.value})}
-                  className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text outline-none focus:ring-2 focus:ring-baccarim-blue transition-all"
+                  className="w-full bg-baccarim-hover/50 border border-baccarim-border p-3.5 rounded-xl text-sm font-semibold text-baccarim-text outline-none focus:border-baccarim-blue focus:ring-2 focus:ring-baccarim-blue/20 transition-all shadow-inner"
                   placeholder="(00) 00000-0000"
                 />
               </div>
-              <div className="space-y-1">
-                <label className="text-[9px] font-black text-baccarim-text-muted uppercase tracking-widest ml-1">Empresas Vinculadas</label>
-                <div className="w-full bg-baccarim-hover border border-baccarim-border p-4 rounded-xl text-xs font-bold text-baccarim-text-muted min-h-[52px] flex flex-wrap gap-2">
+              <div className="space-y-1.5">
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider ml-1">Empresas Vinculadas</label>
+                <div className="w-full bg-baccarim-hover/30 border border-baccarim-border p-3.5 rounded-xl text-sm font-semibold text-baccarim-text-muted min-h-[52px] flex flex-wrap gap-2 items-center">
                   {user.clientNames && user.clientNames.length > 0 ? (
                     user.clientNames.map(cn => (
-                      <span key={cn} className="bg-baccarim-card px-2 py-1 rounded-md border border-baccarim-border text-[9px] uppercase tracking-widest">{cn}</span>
+                      <span key={cn} className="bg-baccarim-card px-2.5 py-1 rounded border border-baccarim-border text-[10px] font-bold uppercase tracking-wider shadow-sm">{cn}</span>
                     ))
                   ) : (
-                    'Baccarim Engenharia'
+                    <span className="opacity-70">Baccarim Engenharia</span>
                   )}
                 </div>
               </div>
             </div>
 
-            <div className="mt-10 pt-8 border-t border-baccarim-border">
+            <div className="mt-8 pt-6 border-t border-baccarim-border flex justify-end">
               <button 
                 type="submit" 
                 disabled={isSaving}
-                className="w-full md:w-auto px-12 py-4 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:bg-baccarim-green transition-all disabled:opacity-50"
+                className="w-full md:w-auto px-10 py-3.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-xl text-[11px] font-black uppercase tracking-widest shadow-md shadow-blue-500/20 hover:shadow-lg hover:from-blue-500 hover:to-blue-400 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
               >
-                {isSaving ? 'Salvando...' : 'Salvar Alterações'}
+                {isSaving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+                    <span>Salvando...</span>
+                  </>
+                ) : (
+                  <>
+                    <i className="fas fa-save"></i>
+                    <span>Salvar Alterações</span>
+                  </>
+                )}
               </button>
             </div>
           </form>
 
           {/* Configurações de UI */}
-          <div className="bg-baccarim-card rounded-[2.5rem] p-8 md:p-12 shadow-2xl border border-baccarim-border">
-            <h3 className="text-xl font-black text-baccarim-text mb-8">Preferências do Sistema</h3>
-            <div className="space-y-6">
-              <div className="flex items-center justify-between p-4 bg-baccarim-hover rounded-2xl border border-baccarim-border">
+          <div className="bg-baccarim-card rounded-[2rem] p-8 md:p-10 shadow-sm border border-baccarim-border">
+            <h3 className="text-lg font-black text-baccarim-text mb-6 flex items-center space-x-3">
+              <i className="fas fa-sliders text-baccarim-blue"></i>
+              <span>Preferências do Sistema</span>
+            </h3>
+            <div className="space-y-4">
+              {/* Notificações */}
+              <div className="flex items-center justify-between p-4 bg-baccarim-hover/30 hover:bg-baccarim-hover/50 rounded-2xl border border-baccarim-border transition-colors">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-blue-500/10 text-blue-500 flex items-center justify-center shadow-sm border border-blue-500/20">
                     <i className="fas fa-bell"></i>
                   </div>
                   <div>
-                    <p className="text-xs font-black text-baccarim-text">Notificações por E-mail</p>
-                    <p className="text-[9px] text-baccarim-text-muted font-bold uppercase tracking-widest">Alertas de vencimento e mensagens</p>
+                    <p className="text-sm font-bold text-baccarim-text">Notificações por E-mail</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-0.5">Alertas de vencimento e mensagens</p>
                   </div>
                 </div>
                 <button 
                   onClick={() => setFormData({...formData, receiveNotifications: !formData.receiveNotifications})}
-                  className={`w-12 h-6 rounded-full transition-all relative ${formData.receiveNotifications ? 'bg-baccarim-green' : 'bg-baccarim-hover'}`}
+                  className={`w-12 h-6 rounded-full transition-colors relative shadow-inner ${formData.receiveNotifications ? 'bg-emerald-500' : 'bg-baccarim-hover border border-baccarim-border'}`}
                 >
-                  <div className={`absolute top-1 w-4 h-4 bg-baccarim-card rounded-full transition-all ${formData.receiveNotifications ? 'left-7' : 'left-1'}`}></div>
+                  <div className={`absolute top-[2px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${formData.receiveNotifications ? 'left-[26px]' : 'left-[2px]'}`}></div>
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-baccarim-hover rounded-2xl border border-baccarim-border">
+              {/* Visão Compacta */}
+              <div className="flex items-center justify-between p-4 bg-baccarim-hover/30 hover:bg-baccarim-hover/50 rounded-2xl border border-baccarim-border transition-colors">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-xl bg-baccarim-active text-baccarim-text flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-indigo-500/10 text-indigo-500 flex items-center justify-center shadow-sm border border-indigo-500/20">
                     <i className="fas fa-table-list"></i>
                   </div>
                   <div>
-                    <p className="text-xs font-black text-baccarim-text">Visualização Compacta</p>
-                    <p className="text-[9px] text-baccarim-text-muted font-bold uppercase tracking-widest">Otimizar espaço em tabelas</p>
+                    <p className="text-sm font-bold text-baccarim-text">Visualização Compacta</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-0.5">Otimizar espaço em tabelas</p>
                   </div>
                 </div>
                 <button 
                   type="button"
                   onClick={() => setFormData({...formData, compactView: !formData.compactView})}
-                  className={`w-12 h-6 rounded-full transition-all relative ${formData.compactView ? 'bg-baccarim-green' : 'bg-baccarim-hover'}`}
+                  className={`w-12 h-6 rounded-full transition-colors relative shadow-inner ${formData.compactView ? 'bg-emerald-500' : 'bg-baccarim-hover border border-baccarim-border'}`}
                 >
-                  <div className={`absolute top-1 w-4 h-4 bg-baccarim-card rounded-full transition-all ${formData.compactView ? 'left-7' : 'left-1'}`}></div>
+                  <div className={`absolute top-[2px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${formData.compactView ? 'left-[26px]' : 'left-[2px]'}`}></div>
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-baccarim-hover rounded-2xl border border-baccarim-border">
+              {/* Push Notifications */}
+              <div className="flex items-center justify-between p-4 bg-baccarim-hover/30 hover:bg-baccarim-hover/50 rounded-2xl border border-baccarim-border transition-colors">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-xl bg-baccarim-blue/10 text-baccarim-blue flex items-center justify-center">
+                  <div className="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-500 flex items-center justify-center shadow-sm border border-amber-500/20">
                     <i className="fas fa-mobile-screen-button"></i>
                   </div>
                   <div>
-                    <p className="text-xs font-black text-baccarim-text">Avisos no Celular</p>
-                    <p className="text-[9px] text-baccarim-text-muted font-bold uppercase tracking-widest">Receber Push de Prazos</p>
+                    <p className="text-sm font-bold text-baccarim-text">Avisos no Celular</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-0.5">Receber Push de Prazos</p>
                   </div>
                 </div>
                 <button 
                   type="button"
                   onClick={handleEnablePush}
                   disabled={pushStatus === 'loading' || pushStatus === 'success'}
-                  className={`px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
-                    pushStatus === 'success' ? 'bg-baccarim-green/20 text-baccarim-green border border-baccarim-green/30' : 
-                    pushStatus === 'error' ? 'bg-red-500/20 text-red-500 border border-red-500/30' :
-                    pushStatus === 'loading' ? 'bg-baccarim-hover text-baccarim-text-muted cursor-wait border border-baccarim-border' :
-                    'bg-baccarim-blue text-white hover:bg-baccarim-green shadow-xl shadow-baccarim-blue/20'
+                  className={`px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-widest transition-all ${
+                    pushStatus === 'success' ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20' : 
+                    pushStatus === 'error' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                    pushStatus === 'loading' ? 'bg-baccarim-hover text-baccarim-text-muted cursor-wait' :
+                    'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 dark:bg-blue-500/10 dark:text-blue-400 dark:border-blue-500/20 dark:hover:bg-blue-500/20'
                   }`}
                 >
-                  {pushStatus === 'success' ? 'Ativado ✓' : pushStatus === 'error' ? 'Erro / Bloqueado' : pushStatus === 'loading' ? 'Ativando...' : 'Habilitar'}
+                  {pushStatus === 'success' ? 'Ativado ✓' : pushStatus === 'error' ? 'Bloqueado' : pushStatus === 'loading' ? 'Ativando...' : 'Habilitar'}
                 </button>
               </div>
 
-              <div className="flex items-center justify-between p-4 bg-baccarim-hover rounded-2xl border border-baccarim-border">
+              {/* Tema Claro/Escuro */}
+              <div className="flex items-center justify-between p-4 bg-baccarim-hover/30 hover:bg-baccarim-hover/50 rounded-2xl border border-baccarim-border transition-colors">
                 <div className="flex items-center space-x-4">
-                  <div className="w-10 h-10 rounded-xl bg-baccarim-active text-baccarim-text flex items-center justify-center">
-                    <i className={`fas ${isLightMode ? 'fa-sun text-baccarim-amber' : 'fa-moon text-indigo-400'}`}></i>
+                  <div className="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-500 flex items-center justify-center shadow-sm border border-violet-500/20">
+                    <i className={`fas ${isLightMode ? 'fa-sun' : 'fa-moon'}`}></i>
                   </div>
                   <div>
-                    <p className="text-xs font-black text-baccarim-text">Tema Claro</p>
-                    <p className="text-[9px] text-baccarim-text-muted font-bold uppercase tracking-widest">Alternar modo de cores</p>
+                    <p className="text-sm font-bold text-baccarim-text">Tema {isLightMode ? 'Claro' : 'Escuro'}</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-0.5">Alternar modo de cores</p>
                   </div>
                 </div>
                 <button 
                   type="button"
                   onClick={toggleTheme}
-                  className={`w-12 h-6 rounded-full transition-all relative ${isLightMode ? 'bg-baccarim-green' : 'bg-baccarim-hover'}`}
+                  className={`w-12 h-6 rounded-full transition-colors relative shadow-inner ${isLightMode ? 'bg-emerald-500' : 'bg-baccarim-hover border border-baccarim-border'}`}
                 >
-                  <div className={`absolute top-1 w-4 h-4 bg-baccarim-card rounded-full transition-all ${isLightMode ? 'left-7' : 'left-1'}`}></div>
+                  <div className={`absolute top-[2px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${isLightMode ? 'left-[26px]' : 'left-[2px]'}`}></div>
                 </button>
               </div>
             </div>
@@ -442,68 +462,69 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
         </div>
 
         {/* Sidebar do Perfil */}
-        <div className="space-y-8">
-          <div className="bg-baccarim-card rounded-[2.5rem] p-8 text-baccarim-text shadow-2xl relative overflow-hidden border border-baccarim-border">
-            <div className="absolute bottom-0 right-0 w-32 h-32 bg-baccarim-green/10 rounded-full -mb-10 -mr-10 blur-2xl"></div>
-            <h4 className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Nível de Acesso</h4>
-            <div className="space-y-6">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 rounded-2xl bg-baccarim-hover border border-baccarim-border-hover flex items-center justify-center text-xl">
-                  <i className={`fas ${user.role === 'admin' ? 'fa-shield-halved text-baccarim-blue' : user.role === 'engineer' ? 'fa-helmet-safety text-baccarim-amber' : 'fa-building-user text-baccarim-green'}`}></i>
-                </div>
-                <div>
-                  <p className="text-sm font-black text-baccarim-text">
-                    {user.role === 'admin' ? 'Administrador' : user.role === 'engineer' ? 'Engenheiro' : 'Cliente'}
-                  </p>
-                  <p className="text-[9px] text-baccarim-text-muted font-bold uppercase tracking-widest">
-                    Acesso {user.role === 'admin' ? 'Total' : user.role === 'engineer' ? 'Técnico' : 'Restrito'}
-                  </p>
-                </div>
+        <div className="space-y-6">
+          <div className="bg-baccarim-card rounded-[2rem] p-8 text-baccarim-text shadow-sm relative overflow-hidden border border-baccarim-border group">
+            <div className="absolute -bottom-8 -right-8 w-32 h-32 bg-gradient-to-tl from-emerald-500/20 to-transparent rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+            <h4 className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider mb-6 flex items-center">
+              <i className="fas fa-sitemap mr-2 opacity-50"></i>Nível de Acesso
+            </h4>
+            <div className="flex items-start space-x-4">
+              <div className="w-12 h-12 rounded-xl bg-baccarim-hover border border-baccarim-border-hover flex items-center justify-center text-xl shadow-sm flex-shrink-0">
+                <i className={`fas ${user.role === 'admin' ? 'fa-shield-halved text-blue-500' : user.role === 'engineer' ? 'fa-helmet-safety text-amber-500' : 'fa-building-user text-emerald-500'}`}></i>
               </div>
-              <p className="text-[10px] text-baccarim-text-muted leading-relaxed">
-                {user.role === 'admin' 
-                  ? 'Você possui privilégios de edição completa de licenças, contratos e checklists em todos os projetos.' 
-                  : user.role === 'engineer'
-                  ? 'Você possui acesso técnico para gerenciar projetos, checklists e laudos fotográficos.'
-                  : 'Você possui visualização técnica dos seus empreendimentos e notificações.'}
-              </p>
+              <div>
+                <p className="text-sm font-black text-baccarim-text">
+                  {user.role === 'admin' ? 'Administrador' : user.role === 'engineer' ? 'Engenheiro' : 'Cliente'}
+                </p>
+                <p className="text-[10px] text-baccarim-text-muted font-bold uppercase tracking-wider mt-1">
+                  Acesso {user.role === 'admin' ? 'Total' : user.role === 'engineer' ? 'Técnico' : 'Restrito'}
+                </p>
+              </div>
             </div>
+            <p className="text-xs text-baccarim-text-muted leading-relaxed mt-6 bg-baccarim-hover/30 p-4 rounded-xl border border-baccarim-border">
+              {user.role === 'admin' 
+                ? 'Privilégios de edição completa de licenças, contratos e checklists em todos os projetos.' 
+                : user.role === 'engineer'
+                ? 'Acesso técnico para gerenciar projetos, checklists e laudos fotográficos.'
+                : 'Visualização técnica dos seus empreendimentos e notificações.'}
+            </p>
           </div>
 
-          <div className="bg-baccarim-card rounded-[2.5rem] p-8 border border-baccarim-border shadow-2xl text-center">
-            <h4 className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Segurança da Conta</h4>
-            <div className="w-20 h-20 bg-baccarim-green/10 text-baccarim-green rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
+          <div className="bg-baccarim-card rounded-[2rem] p-8 border border-baccarim-border shadow-sm text-center relative overflow-hidden group">
+            <div className="absolute -top-8 -left-8 w-32 h-32 bg-gradient-to-br from-emerald-500/10 to-transparent rounded-full blur-2xl group-hover:scale-125 transition-transform duration-700"></div>
+            <h4 className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider mb-6">Segurança da Conta</h4>
+            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
               <i className="fas fa-lock"></i>
             </div>
-            <p className="text-xs font-bold text-baccarim-text">Sua conta é protegida</p>
-            <p className="text-[10px] text-baccarim-text-muted mt-2">Último login: {new Date().toLocaleDateString('pt-BR')}</p>
-            <button className="mt-6 w-full py-3 border border-baccarim-border-hover rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-baccarim-hover transition-all text-baccarim-text-muted">
+            <p className="text-sm font-black text-baccarim-text">Proteção Ativa</p>
+            <p className="text-[10px] text-baccarim-text-muted mt-1 uppercase tracking-wider font-semibold">Último login: {new Date().toLocaleDateString('pt-BR')}</p>
+            <button className="mt-6 w-full py-3 border border-baccarim-border hover:border-baccarim-text/30 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-hover transition-all text-baccarim-text-muted hover:text-baccarim-text shadow-sm">
               Alterar Senha
             </button>
           </div>
 
           {(user.role === 'admin' || user.role === 'engineer') && (
-            <div className="bg-baccarim-card rounded-[2.5rem] p-8 border border-baccarim-border shadow-2xl text-center">
-              <h4 className="text-[10px] font-black text-baccarim-text-muted uppercase tracking-widest mb-6">Backup do Sistema</h4>
-              <div className="w-20 h-20 bg-baccarim-blue/5 text-baccarim-blue rounded-full flex items-center justify-center mx-auto mb-4 text-2xl">
-                <i className="fas fa-file-export"></i>
+            <div className="bg-baccarim-card rounded-[2rem] p-8 border border-baccarim-border shadow-sm text-center">
+              <h4 className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-wider mb-6">Backup Local</h4>
+              <div className="w-16 h-16 bg-blue-500/10 text-blue-500 border border-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-4 text-2xl shadow-sm">
+                <i className="fas fa-database"></i>
               </div>
-              <p className="text-xs font-bold text-baccarim-text">Exportar Base de Dados</p>
-              <p className="text-[10px] text-baccarim-text-muted mt-2">Baixe todos os registros (JSON)</p>
-              <div className="grid grid-cols-1 gap-3 mt-6">
+              <p className="text-sm font-black text-baccarim-text">Exportar Dados</p>
+              <p className="text-[10px] text-baccarim-text-muted mt-1 uppercase tracking-wider font-semibold">Cópia offline do sistema</p>
+              <div className="grid grid-cols-1 gap-2.5 mt-6">
                 <button 
                   onClick={handleExportData}
-                  className="w-full py-4 bg-baccarim-hover text-baccarim-text rounded-xl text-[9px] font-black uppercase tracking-widest hover:bg-baccarim-active transition-all"
+                  className="w-full py-3 bg-baccarim-hover border border-baccarim-border text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-baccarim-hover/80 transition-all shadow-sm"
                 >
                   Download JSON
                 </button>
                 <button 
                   onClick={handleExportZip}
                   disabled={isSaving}
-                  className="w-full py-4 bg-baccarim-blue text-white rounded-xl text-[9px] font-black uppercase tracking-widest shadow-lg hover:bg-baccarim-green transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
+                  className="w-full py-3 bg-baccarim-blue text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-md hover:bg-blue-600 hover:shadow-lg transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {isSaving ? (
-                    <div className="w-3 h-3 border-2 border-baccarim-border/20 border-t-white rounded-full animate-spin"></div>
+                    <div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
                   ) : (
                     <i className="fas fa-file-zipper"></i>
                   )}
@@ -513,23 +534,24 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
             </div>
           )}
 
-          {/* Instalar App */}
-          <div className="bg-gradient-to-br from-baccarim-navy to-baccarim-blue rounded-[2.5rem] p-8 border border-baccarim-border-hover shadow-2xl text-center text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -mr-10 -mt-10 blur-2xl"></div>
+          {/* Instalar App (Modern Gradient Card) */}
+          <div className="bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-700 rounded-[2rem] p-8 border border-white/10 shadow-lg text-center text-white relative overflow-hidden group">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full -mr-10 -mt-10 blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
+            <div className="absolute bottom-0 left-0 w-32 h-32 bg-white/5 rounded-full -ml-10 -mb-10 blur-2xl group-hover:scale-150 transition-transform duration-700"></div>
             <div className="relative z-10">
-              <div className="w-20 h-20 bg-white/10 backdrop-blur rounded-[1.5rem] flex items-center justify-center mx-auto mb-4 text-3xl border border-white/20">
+              <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-[1.25rem] flex items-center justify-center mx-auto mb-5 text-2xl border border-white/20 shadow-inner">
                 <i className="fas fa-mobile-screen-button"></i>
               </div>
-              <p className="text-sm font-black">Instalar no Celular</p>
-              <p className="text-[10px] text-white/60 mt-2 mb-6">Acesse como app, sem abrir o navegador</p>
+              <p className="text-base font-black">Instalar no Celular</p>
+              <p className="text-[10px] text-blue-100 mt-2 mb-6 uppercase tracking-wider font-semibold">Experiência nativa offline</p>
               {isInstalled ? (
-                <div className="py-3 px-4 bg-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-baccarim-green border border-baccarim-green/30">
-                  <i className="fas fa-check mr-2"></i>App Instalado ✓
+                <div className="py-3 px-4 bg-emerald-500/20 backdrop-blur-sm rounded-xl text-[10px] font-black uppercase tracking-widest text-emerald-100 border border-emerald-500/40 shadow-inner">
+                  <i className="fas fa-check mr-2"></i>App Instalado
                 </div>
               ) : (
                 <button
                   onClick={handleInstallApp}
-                  className="w-full py-4 bg-white text-baccarim-navy rounded-xl text-[10px] font-black uppercase tracking-widest shadow-xl hover:bg-baccarim-green hover:text-white transition-all"
+                  className="w-full py-3.5 bg-white/10 backdrop-blur-md text-white border border-white/20 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:bg-white hover:text-blue-900 transition-all"
                 >
                   <i className="fas fa-download mr-2"></i>Baixar App
                 </button>
