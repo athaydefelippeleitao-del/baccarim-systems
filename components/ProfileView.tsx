@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { User } from '../types';
 import { downloadFile } from '../utils/fileUtils';
 import { exportAllDataAsZip } from '../utils/zipUtils';
+import { getPushSubscriptions, savePushSubscriptions } from '../services/supabaseService';
 
 // VAPID public key (safe to expose — private key stays on server)
 const VAPID_PUBLIC_KEY = 'BFpvQ56vvUjnZVB-BsjsLtJyObMMGnuR672bTBIDQl9laRUDtx8-2IfrKONOoq1PUtqxkh-x-i4bV8Va8B5ua-o';
@@ -154,7 +155,7 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
   const handleEnablePush = async () => {
     if (!('serviceWorker' in navigator && 'PushManager' in window)) {
       setPushStatus('error');
-      alert('Seu navegador não suporta notificações push. Use Chrome ou Edge.');
+      alert('Seu navegador não suporta notificações push. Use Chrome ou Edge no Android. No iPhone, instale o app na Tela de Início primeiro.');
       return;
     }
 
@@ -167,55 +168,55 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
       // Pede permissão
       let permission = window.Notification.permission;
       if (permission === 'denied') {
-        alert('Notificações bloqueadas. Vá nas configurações do navegador e permita notificações para este site.');
+        alert('Notificações bloqueadas! Vá nas configurações do seu navegador e permita notificações para este site.');
         setPushStatus('error');
         return;
       }
-      if (permission === 'default' || permission !== 'granted') {
+      if (permission === 'default') {
         permission = await window.Notification.requestPermission();
       }
       if (permission !== 'granted') {
         setPushStatus('error');
+        alert('Permissão de notificação negada. Por favor, permita no navegador.');
         return;
       }
 
-      try {
-        // Verifica se já tem subscrição
-        let subscription = await registration.pushManager.getSubscription();
-        if (!subscription) {
-          // Cria nova subscrição usando a VAPID key pública hardcoded
-          subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-          });
-        }
-        // Envia ao backend (não bloqueia se falhar)
-        fetch('/api/push/subscribe', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ userId: user.id, subscription })
-        }).catch(e => console.warn('Push subscribe sync error (non-fatal):', e));
-      } catch (pushErr) {
-        console.warn('Erro ao assinar push server. Notificações locais funcionarão.', pushErr);
-      }
-
-      // Dispara uma notificação de teste para provar que funciona
-      if (registration && registration.showNotification) {
-        await registration.showNotification('Baccarim Systems', {
-          body: '✅ Notificações ativadas! Você receberá alertas de prazos aqui.',
-          icon: 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png',
-          badge: 'https://cdn-icons-png.flaticon.com/512/2991/2991163.png',
-          vibrate: [100, 50, 100],
+      // Cria ou recupera a subscription WebPush deste aparelho
+      let subscription = await registration.pushManager.getSubscription();
+      if (!subscription) {
+        subscription = await registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
         });
       }
 
+      // Salva a subscription DIRETAMENTE no Supabase (sem passar pelo backend Express)
+      const subsMap = await getPushSubscriptions();
+      const userSubs: any[] = subsMap[user.id] || [];
+      const exists = userSubs.find((s: any) => s.endpoint === subscription!.endpoint);
+      if (!exists) {
+        userSubs.push(subscription.toJSON());
+        subsMap[user.id] = userSubs;
+        await savePushSubscriptions(subsMap);
+      }
+
+      // Dispara uma notificação de teste imediata no aparelho atual
+      await registration.showNotification('Baccarim Systems ✅', {
+        body: 'Notificações ativadas! Você receberá alertas de prazos aqui.',
+        icon: '/apple-touch-icon.png',
+        badge: '/apple-touch-icon.png',
+        vibrate: [200, 100, 200],
+      } as any);
+
       setPushStatus('success');
+      alert(`Aparelho registrado com sucesso! A notificação de teste foi disparada.`);
     } catch (err: any) {
       console.error('Push setup error:', err);
       setPushStatus('error');
-      alert(`Erro ao ativar notificações: ${err?.message || err}`);
+      alert(`Erro ao ativar notificações: ${err?.message || String(err)}`);
     }
   };
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-10 animate-in fade-in slide-in-from-bottom-6 duration-700">
