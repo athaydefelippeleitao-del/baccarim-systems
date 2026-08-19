@@ -193,9 +193,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
       // Salva a subscription DIRETAMENTE no Supabase (sem passar pelo backend Express)
       const subsMap = await getPushSubscriptions();
       const userSubs: any[] = subsMap[user.id] || [];
-      const exists = userSubs.find((s: any) => s.endpoint === subscription!.endpoint);
+      // Serializa de forma compatível com todos os browsers (toJSON() não funciona em todos)
+      const subJson = JSON.parse(JSON.stringify(subscription));
+      const exists = userSubs.find((s: any) => s.endpoint === subJson.endpoint);
       if (!exists) {
-        userSubs.push(subscription.toJSON());
+        userSubs.push(subJson);
         subsMap[user.id] = userSubs;
         await savePushSubscriptions(subsMap);
       }
@@ -453,16 +455,28 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
                     onClick={async (e) => {
                       e.stopPropagation();
                       try {
+                        // Busca subscriptions salvas no Supabase
+                        const subsMap = await getPushSubscriptions();
+                        const userSubs: any[] = subsMap[user.id] || [];
+                        if (userSubs.length === 0) {
+                          alert('Nenhum aparelho registrado ainda. Clique em "Habilitar" primeiro pelo celular!');
+                          return;
+                        }
+                        // Dispara via backend
                         const res = await fetch('/api/push/test', {
                           method: 'POST',
                           headers: {'Content-Type': 'application/json'},
-                          body: JSON.stringify({ userId: user.id })
+                          body: JSON.stringify({ userId: user.id, title: 'Teste Baccarim Systems 🔔', message: 'O servidor enviou esse aviso com sucesso!' })
                         });
+                        if (!res.ok) {
+                          const err = await res.json().catch(() => ({}));
+                          alert(`Erro do servidor: ${err.error || res.status}. Verifique se o Vercel está atualizado.`);
+                          return;
+                        }
                         const data = await res.json();
-                        if (data.error) alert(data.error);
-                        else alert(`Enviado! ${data.count} aparelho(s) receberam o teste agora.`);
-                      } catch(err) {
-                        alert("Erro ao disparar teste");
+                        alert(`✅ Enviado! ${data.count ?? '?'} aparelho(s) notificados.`);
+                      } catch(err: any) {
+                        alert(`Erro ao disparar teste: ${err?.message || 'Verifique sua conexão.'}`);
                       }
                     }}
                     className="px-5 py-2 w-full rounded-xl text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400"
