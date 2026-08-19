@@ -433,19 +433,42 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
                     <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-1">Receber Push de Prazos</p>
                   </div>
                 </div>
-                <button 
-                  type="button"
-                  onClick={handleEnablePush}
-                  disabled={pushStatus === 'loading' || pushStatus === 'success'}
-                  className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${
-                    pushStatus === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 
-                    pushStatus === 'error' ? 'bg-red-50 text-red-600 border border-red-200' :
-                    pushStatus === 'loading' ? 'bg-baccarim-hover text-baccarim-text-muted cursor-wait' :
-                    'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:-translate-y-0.5'
-                  } dark:bg-opacity-10 dark:border-opacity-20`}
-                >
-                  {pushStatus === 'success' ? 'Ativado ✓' : pushStatus === 'error' ? 'Bloqueado' : pushStatus === 'loading' ? 'Ativando...' : 'Habilitar'}
-                </button>
+                <div className="flex flex-col space-y-2 items-end">
+                  <button 
+                    type="button"
+                    onClick={handleEnablePush}
+                    disabled={pushStatus === 'loading' || pushStatus === 'success'}
+                    className={`px-5 py-2.5 w-full rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${
+                      pushStatus === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 
+                      pushStatus === 'error' ? 'bg-red-50 text-red-600 border border-red-200' :
+                      pushStatus === 'loading' ? 'bg-baccarim-hover text-baccarim-text-muted cursor-wait' :
+                      'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:-translate-y-0.5'
+                    } dark:bg-opacity-10 dark:border-opacity-20`}
+                  >
+                    {pushStatus === 'success' ? 'Ativado ✓' : pushStatus === 'error' ? 'Bloqueado' : pushStatus === 'loading' ? 'Ativando...' : 'Habilitar'}
+                  </button>
+                  <button 
+                    type="button"
+                    onClick={async (e) => {
+                      e.stopPropagation();
+                      try {
+                        const res = await fetch('/api/push/test', {
+                          method: 'POST',
+                          headers: {'Content-Type': 'application/json'},
+                          body: JSON.stringify({ userId: user.id })
+                        });
+                        const data = await res.json();
+                        if (data.error) alert(data.error);
+                        else alert(`Enviado! ${data.count} aparelho(s) receberam o teste agora.`);
+                      } catch(err) {
+                        alert("Erro ao disparar teste");
+                      }
+                    }}
+                    className="px-5 py-2 w-full rounded-xl text-[9px] font-bold uppercase tracking-wider text-slate-500 bg-slate-100 hover:bg-slate-200 border border-slate-200 transition-all dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400"
+                  >
+                    Testar Disparo
+                  </button>
+                </div>
               </div>
 
               {/* Tema Claro/Escuro */}
