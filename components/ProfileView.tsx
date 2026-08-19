@@ -228,25 +228,67 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
         </div>
       )}
 
-      {/* Header do Perfil */}
-      <div className="bg-gradient-to-r from-baccarim-navy to-baccarim-blue rounded-[3rem] p-10 md:p-14 text-white shadow-2xl relative overflow-hidden border border-baccarim-border-hover">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-baccarim-hover rounded-full -mr-20 -mt-20 blur-3xl"></div>
-        <div className="relative z-10 flex flex-col md:flex-row items-center space-y-6 md:space-y-0 md:space-x-10">
-          <div className="w-24 h-24 md:w-32 md:h-32 bg-baccarim-card rounded-[2rem] flex items-center justify-center text-[#002D62] text-3xl md:text-5xl font-black shadow-2xl">
-            {userInitials}
+      {/* Header do Perfil Moderno */}
+      <div className="relative bg-[#0b1120] rounded-[2.5rem] p-8 md:p-12 text-white shadow-2xl overflow-hidden border border-white/5">
+        {/* Animated Gradient Background */}
+        <div className="absolute inset-0 opacity-40">
+          <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-600 rounded-full mix-blend-screen filter blur-[80px] animate-pulse"></div>
+          <div className="absolute top-1/2 left-1/4 w-72 h-72 bg-teal-500 rounded-full mix-blend-screen filter blur-[80px] animate-pulse" style={{ animationDelay: '2s' }}></div>
+          <div className="absolute -bottom-24 right-0 w-96 h-96 bg-indigo-600 rounded-full mix-blend-screen filter blur-[80px] animate-pulse" style={{ animationDelay: '4s' }}></div>
+        </div>
+
+        <div className="relative z-10 flex flex-col md:flex-row items-center md:items-start space-y-8 md:space-y-0 md:space-x-10">
+          {/* Avatar Section */}
+          <div className="relative group flex-shrink-0">
+            <div className="absolute inset-0 bg-gradient-to-tr from-blue-500 to-teal-400 rounded-[2.5rem] blur-xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+            <div className="relative w-28 h-28 md:w-36 md:h-36 bg-white/10 backdrop-blur-md rounded-[2.5rem] border border-white/20 flex items-center justify-center text-white text-4xl md:text-5xl font-black shadow-2xl">
+              {userInitials}
+            </div>
+            <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 flex items-center space-x-1.5 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full border border-white/10">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.8)] animate-pulse"></div>
+              <span className="text-[9px] font-bold uppercase tracking-widest text-emerald-100">Online</span>
+            </div>
           </div>
-          <div className="text-center md:text-left">
-            <h2 className="text-3xl md:text-4xl font-black tracking-tight">{user.name}</h2>
-            <p className="text-baccarim-text-subtle text-[10px] md:text-xs font-black uppercase tracking-[0.3em] mt-2">
-              {user.role === 'admin' ? 'Administrador do Sistema' : user.role === 'engineer' ? 'Engenheiro de Licenciamento' : 'Cliente Estratégico'}
-            </p>
-            <div className="mt-6 flex flex-wrap justify-center md:justify-start gap-3">
-              <span className="bg-baccarim-active px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-baccarim-border-hover">
+
+          {/* User Info Section */}
+          <div className="flex-1 text-center md:text-left flex flex-col justify-center h-full pt-2">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-blue-200 mb-4">
+              {user.name}
+            </h2>
+            
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-6">
+              <span className="flex items-center space-x-2 bg-white/5 backdrop-blur-md border border-white/10 px-4 py-2 rounded-full shadow-lg">
+                <i className="fas fa-user-shield text-blue-400 text-xs"></i>
+                <span className="text-[10px] font-black uppercase tracking-[0.2em] text-blue-100">
+                  {user.role === 'admin' ? 'Administrador do Sistema' : user.role === 'engineer' ? 'Engenheiro' : 'Cliente Estratégico'}
+                </span>
+              </span>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-center md:justify-start gap-3 mb-8">
+              <span className="bg-black/30 backdrop-blur-sm px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-white/5 text-gray-300">
                 Membro desde {user.createdAt || 'Jan 2024'}
               </span>
-              <span className="bg-baccarim-green/20 text-baccarim-green px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-baccarim-green/20">
+              <span className="bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full text-[9px] font-black uppercase tracking-widest border border-emerald-500/20 shadow-[0_0_15px_rgba(16,185,129,0.1)]">
                 Conta Ativa
               </span>
+            </div>
+
+            {/* Stats Row */}
+            <div className="flex flex-wrap justify-center md:justify-start gap-4">
+              {[
+                { label: 'Projetos', count: allData?.projects?.length || 0, icon: 'fa-building' },
+                { label: 'Notificações', count: allData?.notifications?.filter((n:any)=>!n.read)?.length || 0, icon: 'fa-bell' },
+                { label: 'Contratos', count: allData?.contracts?.length || 0, icon: 'fa-file-signature' }
+              ].map((stat, i) => (
+                <div key={i} className="bg-white/5 backdrop-blur-md border border-white/10 rounded-xl px-5 py-3 flex flex-col items-start min-w-[110px] hover:bg-white/10 transition-colors cursor-default">
+                  <div className="flex items-center space-x-2 mb-1 opacity-70">
+                    <i className={`fas ${stat.icon} text-[10px]`}></i>
+                    <span className="text-[9px] font-bold uppercase tracking-wider">{stat.label}</span>
+                  </div>
+                  <span className="text-xl font-black">{stat.count}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
