@@ -298,54 +298,53 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
         {/* Formulário de Dados e Preferências */}
         <div className="lg:col-span-2 space-y-8">
           
-          {/* Informações Pessoais - Dark Glass Card */}
-          <form onSubmit={handleSubmit} className="bg-[#0b1120] rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-white/10 relative overflow-hidden group">
-            {/* Efeitos de Luz no Fundo */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/10 rounded-full blur-[80px] -mr-40 -mt-40 pointer-events-none group-hover:bg-blue-500/20 transition-colors duration-1000"></div>
-            <div className="absolute bottom-0 left-0 w-96 h-96 bg-teal-500/5 rounded-full blur-[80px] -ml-40 -mb-40 pointer-events-none group-hover:bg-teal-500/10 transition-colors duration-1000"></div>
+          {/* Informações Pessoais - Modern Light Card */}
+          <form onSubmit={handleSubmit} className="bg-baccarim-card rounded-[2.5rem] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-baccarim-border relative overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500">
+            {/* Efeito sutil no fundo (opcional, quase invisível no claro) */}
+            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-50 rounded-full blur-[80px] -mr-40 -mt-40 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-1000 dark:bg-blue-900/10"></div>
             
-            <h3 className="text-xl font-black text-white mb-8 flex items-center space-x-4 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-lg shadow-blue-500/30 border border-white/10">
-                <i className="fas fa-id-card text-white text-lg"></i>
+            <h3 className="text-xl font-black text-baccarim-text mb-8 flex items-center space-x-4 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-sm border border-blue-500/20">
+                <i className="fas fa-id-card text-lg"></i>
               </div>
               <span className="tracking-tight">Informações Pessoais</span>
             </h3>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-10">
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest ml-2">Nome Completo</label>
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest ml-2">Nome Completo</label>
                 <input 
                   type="text" 
                   value={formData.name}
                   onChange={e => setFormData({...formData, name: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-sm font-semibold text-white outline-none focus:bg-white/10 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all hover:border-white/20 shadow-inner"
+                  className="w-full bg-baccarim-hover/50 border border-baccarim-border p-4 rounded-2xl text-sm font-semibold text-baccarim-text outline-none focus:bg-baccarim-card focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all hover:border-blue-500/30"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest ml-2">E-mail Corporativo</label>
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest ml-2">E-mail Corporativo</label>
                 <input 
                   type="email" 
                   value={formData.email}
                   onChange={e => setFormData({...formData, email: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-sm font-semibold text-white outline-none focus:bg-white/10 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all hover:border-white/20 shadow-inner"
+                  className="w-full bg-baccarim-hover/50 border border-baccarim-border p-4 rounded-2xl text-sm font-semibold text-baccarim-text outline-none focus:bg-baccarim-card focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all hover:border-blue-500/30"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest ml-2">Telefone / WhatsApp</label>
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest ml-2">Telefone / WhatsApp</label>
                 <input 
                   type="text" 
                   value={formData.phone}
                   onChange={e => setFormData({...formData, phone: e.target.value})}
-                  className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-sm font-semibold text-white outline-none focus:bg-white/10 focus:border-blue-400 focus:ring-2 focus:ring-blue-500/30 transition-all hover:border-white/20 shadow-inner"
+                  className="w-full bg-baccarim-hover/50 border border-baccarim-border p-4 rounded-2xl text-sm font-semibold text-baccarim-text outline-none focus:bg-baccarim-card focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all hover:border-blue-500/30"
                   placeholder="(00) 00000-0000"
                 />
               </div>
               <div className="space-y-2">
-                <label className="text-[10px] font-bold text-blue-200/60 uppercase tracking-widest ml-2">Empresas Vinculadas</label>
-                <div className="w-full bg-white/5 border border-white/10 p-4 rounded-2xl text-sm font-semibold text-white/50 min-h-[56px] flex flex-wrap gap-2 items-center shadow-inner hover:border-white/20 transition-all">
+                <label className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest ml-2">Empresas Vinculadas</label>
+                <div className="w-full bg-baccarim-hover/50 border border-baccarim-border p-4 rounded-2xl text-sm font-semibold text-baccarim-text-muted min-h-[56px] flex flex-wrap gap-2 items-center hover:border-blue-500/30 transition-all">
                   {user.clientNames && user.clientNames.length > 0 ? (
                     user.clientNames.map(cn => (
-                      <span key={cn} className="bg-white/10 px-3 py-1.5 rounded-lg border border-white/10 text-[10px] font-bold uppercase tracking-wider shadow-sm text-white">{cn}</span>
+                      <span key={cn} className="bg-baccarim-card px-3 py-1.5 rounded-lg border border-baccarim-border text-[10px] font-bold uppercase tracking-wider shadow-sm text-baccarim-text">{cn}</span>
                     ))
                   ) : (
                     <span>Baccarim Engenharia</span>
@@ -354,11 +353,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
               </div>
             </div>
 
-            <div className="mt-10 pt-8 border-t border-white/10 flex justify-end relative z-10">
+            <div className="mt-10 pt-8 border-t border-baccarim-border flex justify-end relative z-10">
               <button 
                 type="submit" 
                 disabled={isSaving}
-                className="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(37,99,235,0.3)] hover:shadow-[0_0_30px_rgba(37,99,235,0.5)] hover:scale-[1.02] transition-all disabled:opacity-50 flex items-center justify-center space-x-3 border border-white/10"
+                className="w-full md:w-auto px-10 py-4 bg-gradient-to-r from-blue-600 to-blue-500 text-white rounded-2xl text-[11px] font-black uppercase tracking-widest shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center space-x-3"
               >
                 {isSaving ? (
                   <>
@@ -375,11 +374,11 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
             </div>
           </form>
 
-          {/* Preferências do Sistema - Dark Glass Card */}
-          <div className="bg-[#0b1120] rounded-[2.5rem] p-8 md:p-10 shadow-2xl border border-white/10 relative overflow-hidden">
-            <h3 className="text-xl font-black text-white mb-8 flex items-center space-x-4 relative z-10">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-700 to-slate-800 flex items-center justify-center shadow-lg border border-white/10">
-                <i className="fas fa-sliders text-white text-lg"></i>
+          {/* Preferências do Sistema - Modern Light Card */}
+          <div className="bg-baccarim-card rounded-[2.5rem] p-8 md:p-10 shadow-[0_8px_30px_rgb(0,0,0,0.06)] border border-baccarim-border relative overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500">
+            <h3 className="text-xl font-black text-baccarim-text mb-8 flex items-center space-x-4 relative z-10">
+              <div className="w-12 h-12 rounded-2xl bg-slate-500/10 text-slate-600 dark:text-slate-400 flex items-center justify-center shadow-sm border border-slate-500/20">
+                <i className="fas fa-sliders text-lg"></i>
               </div>
               <span className="tracking-tight">Preferências do Sistema</span>
             </h3>
@@ -388,18 +387,18 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
               {/* Notificações */}
               <div 
                 onClick={() => setFormData({...formData, receiveNotifications: !formData.receiveNotifications})}
-                className="flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all cursor-pointer group"
+                className="flex items-center justify-between p-5 bg-baccarim-hover/30 hover:bg-baccarim-hover rounded-2xl border border-transparent hover:border-baccarim-border transition-all cursor-pointer group/item"
               >
                 <div className="flex items-center space-x-5">
-                  <div className="w-12 h-12 rounded-2xl bg-blue-500/20 text-blue-400 flex items-center justify-center shadow-inner border border-blue-500/30 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 flex items-center justify-center shadow-sm border border-blue-500/20 group-hover/item:scale-110 transition-transform">
                     <i className="fas fa-bell text-lg"></i>
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">Notificações por E-mail</p>
-                    <p className="text-[10px] text-blue-200/50 font-semibold uppercase tracking-wider mt-1">Alertas de vencimento e mensagens</p>
+                    <p className="text-sm font-bold text-baccarim-text">Notificações por E-mail</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-1">Alertas de vencimento e mensagens</p>
                   </div>
                 </div>
-                <div className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${formData.receiveNotifications ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-white/10'}`}>
+                <div className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${formData.receiveNotifications ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-200 dark:bg-slate-700'}`}>
                   <div className={`absolute top-[3px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${formData.receiveNotifications ? 'left-[33px]' : 'left-[3px]'}`}></div>
                 </div>
               </div>
@@ -407,43 +406,43 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
               {/* Visão Compacta */}
               <div 
                 onClick={() => setFormData({...formData, compactView: !formData.compactView})}
-                className="flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all cursor-pointer group"
+                className="flex items-center justify-between p-5 bg-baccarim-hover/30 hover:bg-baccarim-hover rounded-2xl border border-transparent hover:border-baccarim-border transition-all cursor-pointer group/item"
               >
                 <div className="flex items-center space-x-5">
-                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center shadow-inner border border-indigo-500/30 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-indigo-500/10 text-indigo-600 flex items-center justify-center shadow-sm border border-indigo-500/20 group-hover/item:scale-110 transition-transform">
                     <i className="fas fa-table-list text-lg"></i>
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">Visualização Compacta</p>
-                    <p className="text-[10px] text-blue-200/50 font-semibold uppercase tracking-wider mt-1">Otimizar espaço em tabelas</p>
+                    <p className="text-sm font-bold text-baccarim-text">Visualização Compacta</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-1">Otimizar espaço em tabelas</p>
                   </div>
                 </div>
-                <div className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${formData.compactView ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-white/10'}`}>
+                <div className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${formData.compactView ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.3)]' : 'bg-slate-200 dark:bg-slate-700'}`}>
                   <div className={`absolute top-[3px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${formData.compactView ? 'left-[33px]' : 'left-[3px]'}`}></div>
                 </div>
               </div>
 
               {/* Push Notifications */}
-              <div className="flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all group">
+              <div className="flex items-center justify-between p-5 bg-baccarim-hover/30 hover:bg-baccarim-hover rounded-2xl border border-transparent hover:border-baccarim-border transition-all group/item">
                 <div className="flex items-center space-x-5">
-                  <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center shadow-inner border border-amber-500/30 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 flex items-center justify-center shadow-sm border border-amber-500/20 group-hover/item:scale-110 transition-transform">
                     <i className="fas fa-mobile-screen-button text-lg"></i>
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">Avisos no Celular</p>
-                    <p className="text-[10px] text-blue-200/50 font-semibold uppercase tracking-wider mt-1">Receber Push de Prazos</p>
+                    <p className="text-sm font-bold text-baccarim-text">Avisos no Celular</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-1">Receber Push de Prazos</p>
                   </div>
                 </div>
                 <button 
                   type="button"
                   onClick={handleEnablePush}
                   disabled={pushStatus === 'loading' || pushStatus === 'success'}
-                  className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg ${
-                    pushStatus === 'success' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]' : 
-                    pushStatus === 'error' ? 'bg-red-500/20 text-red-400 border border-red-500/30' :
-                    pushStatus === 'loading' ? 'bg-white/5 text-white/50 cursor-wait border border-white/10' :
-                    'bg-white/10 text-white border border-white/20 hover:bg-white/20 hover:scale-105'
-                  }`}
+                  className={`px-5 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm ${
+                    pushStatus === 'success' ? 'bg-emerald-50 text-emerald-600 border border-emerald-200' : 
+                    pushStatus === 'error' ? 'bg-red-50 text-red-600 border border-red-200' :
+                    pushStatus === 'loading' ? 'bg-baccarim-hover text-baccarim-text-muted cursor-wait' :
+                    'bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100 hover:-translate-y-0.5'
+                  } dark:bg-opacity-10 dark:border-opacity-20`}
                 >
                   {pushStatus === 'success' ? 'Ativado ✓' : pushStatus === 'error' ? 'Bloqueado' : pushStatus === 'loading' ? 'Ativando...' : 'Habilitar'}
                 </button>
@@ -452,48 +451,51 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
               {/* Tema Claro/Escuro */}
               <div 
                 onClick={toggleTheme}
-                className="flex items-center justify-between p-5 bg-white/5 hover:bg-white/10 rounded-2xl border border-white/5 transition-all cursor-pointer group"
+                className="flex items-center justify-between p-5 bg-baccarim-hover/30 hover:bg-baccarim-hover rounded-2xl border border-transparent hover:border-baccarim-border transition-all cursor-pointer group/item"
               >
                 <div className="flex items-center space-x-5">
-                  <div className="w-12 h-12 rounded-2xl bg-violet-500/20 text-violet-400 flex items-center justify-center shadow-inner border border-violet-500/30 group-hover:scale-110 transition-transform">
+                  <div className="w-12 h-12 rounded-2xl bg-violet-500/10 text-violet-600 flex items-center justify-center shadow-sm border border-violet-500/20 group-hover/item:scale-110 transition-transform">
                     <i className={`fas ${isLightMode ? 'fa-sun' : 'fa-moon'} text-lg`}></i>
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">Tema Global: {isLightMode ? 'Claro' : 'Escuro'}</p>
-                    <p className="text-[10px] text-blue-200/50 font-semibold uppercase tracking-wider mt-1">Alternar cor de fundo do app</p>
+                    <p className="text-sm font-bold text-baccarim-text">Tema Global: {isLightMode ? 'Claro' : 'Escuro'}</p>
+                    <p className="text-[10px] text-baccarim-text-muted font-semibold uppercase tracking-wider mt-1">Alternar cor de fundo do app</p>
                   </div>
                 </div>
-                <div className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${isLightMode ? 'bg-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.4)]' : 'bg-white/10'}`}>
-                  <div className={`absolute top-[3px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${isLightMode ? 'left-[33px]' : 'left-[3px]'}`}></div>
+                <div className={`w-14 h-7 rounded-full transition-colors relative shadow-inner ${!isLightMode ? 'bg-violet-500 shadow-[0_0_15px_rgba(139,92,246,0.3)]' : 'bg-slate-200'}`}>
+                  <div className={`absolute top-[3px] w-5 h-5 bg-white rounded-full transition-all shadow-sm ${!isLightMode ? 'left-[33px]' : 'left-[3px]'}`}></div>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Sidebar do Perfil - Dark Glass Cards */}
+        {/* Sidebar do Perfil - Modern Light Cards */}
         <div className="space-y-6">
           
           {/* Nível de Acesso */}
-          <div className="bg-[#0b1120] rounded-[2.5rem] p-8 text-white shadow-2xl relative overflow-hidden border border-white/10 group hover:border-white/20 transition-all">
-            <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-gradient-to-tl from-emerald-500/20 to-transparent rounded-full blur-3xl group-hover:scale-125 transition-transform duration-700 pointer-events-none"></div>
-            <h4 className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mb-6 flex items-center">
-              <i className="fas fa-sitemap mr-2"></i>Nível de Acesso
+          <div className="bg-baccarim-card rounded-[2.5rem] p-8 text-baccarim-text shadow-[0_8px_30px_rgb(0,0,0,0.06)] relative overflow-hidden border border-baccarim-border group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500">
+            <h4 className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-6 flex items-center">
+              <i className="fas fa-sitemap mr-2 opacity-50"></i>Nível de Acesso
             </h4>
             <div className="flex items-start space-x-5">
-              <div className="w-14 h-14 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-2xl shadow-inner flex-shrink-0 group-hover:scale-110 transition-transform">
-                <i className={`fas ${user.role === 'admin' ? 'fa-shield-halved text-blue-400 drop-shadow-[0_0_10px_rgba(96,165,250,0.8)]' : user.role === 'engineer' ? 'fa-helmet-safety text-amber-400 drop-shadow-[0_0_10px_rgba(251,191,36,0.8)]' : 'fa-building-user text-emerald-400 drop-shadow-[0_0_10px_rgba(52,211,153,0.8)]'}`}></i>
+              <div className={`w-14 h-14 rounded-2xl flex items-center justify-center text-2xl shadow-sm flex-shrink-0 group-hover:scale-110 transition-transform border ${
+                user.role === 'admin' ? 'bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20' : 
+                user.role === 'engineer' ? 'bg-amber-50 text-amber-600 border-amber-200 dark:bg-amber-500/10 dark:border-amber-500/20' : 
+                'bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20'
+              }`}>
+                <i className={`fas ${user.role === 'admin' ? 'fa-shield-halved' : user.role === 'engineer' ? 'fa-helmet-safety' : 'fa-building-user'}`}></i>
               </div>
               <div>
-                <p className="text-base font-black text-white">
+                <p className="text-base font-black text-baccarim-text">
                   {user.role === 'admin' ? 'Administrador' : user.role === 'engineer' ? 'Engenheiro' : 'Cliente'}
                 </p>
-                <p className="text-[10px] text-blue-200/60 font-bold uppercase tracking-widest mt-1">
+                <p className="text-[10px] text-baccarim-text-muted font-bold uppercase tracking-widest mt-1">
                   Acesso {user.role === 'admin' ? 'Total' : user.role === 'engineer' ? 'Técnico' : 'Restrito'}
                 </p>
               </div>
             </div>
-            <div className="mt-8 bg-white/5 p-4 rounded-2xl border border-white/5 text-xs text-blue-100/70 leading-relaxed font-medium">
+            <div className="mt-8 bg-baccarim-hover/50 p-4 rounded-2xl border border-baccarim-border text-xs text-baccarim-text-muted leading-relaxed font-medium">
               {user.role === 'admin' 
                 ? 'Privilégios de edição completa de licenças, contratos e checklists em todos os projetos.' 
                 : user.role === 'engineer'
@@ -503,49 +505,46 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
           </div>
 
           {/* Segurança */}
-          <div className="bg-[#0b1120] rounded-[2.5rem] p-8 border border-white/10 shadow-2xl text-center relative overflow-hidden group hover:border-white/20 transition-all">
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-emerald-500/20 blur-3xl rounded-full pointer-events-none"></div>
-            <h4 className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mb-6 relative z-10">Segurança da Conta</h4>
+          <div className="bg-baccarim-card rounded-[2.5rem] p-8 border border-baccarim-border shadow-[0_8px_30px_rgb(0,0,0,0.06)] text-center relative overflow-hidden group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500">
+            <h4 className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-6">Segurança da Conta</h4>
             
-            <div className="w-16 h-16 bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl shadow-[0_0_20px_rgba(16,185,129,0.15)] group-hover:scale-110 transition-transform relative z-10">
+            <div className="w-16 h-16 bg-emerald-50 text-emerald-600 border border-emerald-200 dark:bg-emerald-500/10 dark:border-emerald-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl shadow-sm group-hover:scale-110 transition-transform">
               <i className="fas fa-lock"></i>
             </div>
             
-            <p className="text-base font-black text-white relative z-10">Proteção Ativa</p>
-            <p className="text-[10px] text-blue-200/60 mt-1 uppercase tracking-widest font-bold relative z-10">Login: {new Date().toLocaleDateString('pt-BR')}</p>
+            <p className="text-base font-black text-baccarim-text">Proteção Ativa</p>
+            <p className="text-[10px] text-baccarim-text-muted mt-1 uppercase tracking-widest font-bold">Login: {new Date().toLocaleDateString('pt-BR')}</p>
             
-            <button className="mt-6 w-full py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-[10px] font-black uppercase tracking-widest text-white transition-all shadow-sm relative z-10">
+            <button className="mt-6 w-full py-3.5 bg-baccarim-hover/50 hover:bg-baccarim-hover border border-baccarim-border rounded-xl text-[10px] font-black uppercase tracking-widest text-baccarim-text-muted hover:text-baccarim-text transition-all shadow-sm">
               Alterar Senha
             </button>
           </div>
 
           {/* Backup */}
           {(user.role === 'admin' || user.role === 'engineer') && (
-            <div className="bg-[#0b1120] rounded-[2.5rem] p-8 border border-white/10 shadow-2xl text-center group hover:border-white/20 transition-all relative overflow-hidden">
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-40 h-20 bg-blue-500/20 blur-3xl rounded-full pointer-events-none"></div>
-              
-              <h4 className="text-[10px] font-bold text-blue-200/50 uppercase tracking-widest mb-6 relative z-10">Backup Local</h4>
-              <div className="w-16 h-16 bg-blue-500/10 text-blue-400 border border-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl shadow-[0_0_20px_rgba(59,130,246,0.15)] group-hover:scale-110 transition-transform relative z-10">
+            <div className="bg-baccarim-card rounded-[2.5rem] p-8 border border-baccarim-border shadow-[0_8px_30px_rgb(0,0,0,0.06)] text-center group hover:shadow-[0_8px_30px_rgb(0,0,0,0.12)] transition-all duration-500 relative overflow-hidden">
+              <h4 className="text-[10px] font-bold text-baccarim-text-muted uppercase tracking-widest mb-6">Backup Local</h4>
+              <div className="w-16 h-16 bg-blue-50 text-blue-600 border border-blue-200 dark:bg-blue-500/10 dark:border-blue-500/20 rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl shadow-sm group-hover:scale-110 transition-transform">
                 <i className="fas fa-database"></i>
               </div>
               
-              <p className="text-base font-black text-white relative z-10">Exportar Dados</p>
-              <p className="text-[10px] text-blue-200/60 mt-1 uppercase tracking-widest font-bold relative z-10">Cópia offline segura</p>
+              <p className="text-base font-black text-baccarim-text">Exportar Dados</p>
+              <p className="text-[10px] text-baccarim-text-muted mt-1 uppercase tracking-widest font-bold">Cópia offline segura</p>
               
-              <div className="grid grid-cols-1 gap-3 mt-6 relative z-10">
+              <div className="grid grid-cols-1 gap-3 mt-6">
                 <button 
                   onClick={handleExportData}
-                  className="w-full py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 text-white rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
+                  className="w-full py-3.5 bg-baccarim-hover/50 hover:bg-baccarim-hover border border-baccarim-border text-baccarim-text-muted hover:text-baccarim-text rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-sm"
                 >
                   Download JSON
                 </button>
                 <button 
                   onClick={handleExportZip}
                   disabled={isSaving}
-                  className="w-full py-3.5 bg-blue-600 text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(37,99,235,0.4)] hover:bg-blue-500 hover:shadow-[0_0_25px_rgba(37,99,235,0.6)] hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center space-x-2 border border-blue-400/30"
+                  className="w-full py-3.5 bg-baccarim-text text-baccarim-card rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:-translate-y-0.5 transition-all disabled:opacity-50 flex items-center justify-center space-x-2"
                 >
                   {isSaving ? (
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <div className="w-4 h-4 border-2 border-baccarim-card/30 border-t-baccarim-card rounded-full animate-spin"></div>
                   ) : (
                     <i className="fas fa-file-zipper text-sm"></i>
                   )}
@@ -556,25 +555,24 @@ const ProfileView: React.FC<ProfileViewProps> = ({ user, onUpdateUser, allData }
           )}
 
           {/* Instalar App (Modern Gradient Card) */}
-          <div className="bg-gradient-to-br from-indigo-600 via-purple-600 to-fuchsia-700 rounded-[2.5rem] p-8 border border-white/20 shadow-[0_10px_40px_rgba(124,58,237,0.3)] text-center text-white relative overflow-hidden group">
+          <div className="bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 rounded-[2.5rem] p-8 border border-white/20 shadow-[0_15px_40px_rgba(139,92,246,0.3)] text-center text-white relative overflow-hidden group">
             <div className="absolute top-0 right-0 w-40 h-40 bg-white/10 rounded-full -mr-10 -mt-10 blur-3xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
-            <div className="absolute bottom-0 left-0 w-40 h-40 bg-black/10 rounded-full -ml-10 -mb-10 blur-3xl group-hover:scale-150 transition-transform duration-700 pointer-events-none"></div>
             
             <div className="relative z-10">
-              <div className="w-16 h-16 bg-white/10 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl border border-white/30 shadow-inner group-hover:scale-110 transition-transform">
+              <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-5 text-2xl border border-white/30 shadow-inner group-hover:scale-110 transition-transform">
                 <i className="fas fa-mobile-screen-button drop-shadow-[0_0_10px_rgba(255,255,255,0.5)]"></i>
               </div>
               <p className="text-xl font-black">Instalar no Celular</p>
-              <p className="text-[10px] text-fuchsia-100 mt-2 mb-8 uppercase tracking-widest font-bold">Experiência nativa offline</p>
+              <p className="text-[10px] text-white/80 mt-2 mb-8 uppercase tracking-widest font-bold">Experiência nativa offline</p>
               
               {isInstalled ? (
                 <div className="py-4 px-4 bg-white/20 backdrop-blur-md rounded-xl text-[11px] font-black uppercase tracking-widest text-white border border-white/40 shadow-inner">
-                  <i className="fas fa-check-circle mr-2 text-emerald-300"></i>App Instalado
+                  <i className="fas fa-check-circle mr-2 text-emerald-100"></i>App Instalado
                 </div>
               ) : (
                 <button
                   onClick={handleInstallApp}
-                  className="w-full py-4 bg-white text-purple-900 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_10px_20px_rgba(0,0,0,0.2)] hover:scale-[1.02] hover:shadow-[0_15px_30px_rgba(0,0,0,0.3)] transition-all flex justify-center items-center"
+                  className="w-full py-4 bg-white text-purple-700 rounded-xl text-[11px] font-black uppercase tracking-widest shadow-[0_10px_20px_rgba(0,0,0,0.1)] hover:scale-[1.02] hover:shadow-[0_15px_30px_rgba(0,0,0,0.2)] transition-all flex justify-center items-center"
                 >
                   <i className="fas fa-download mr-2 text-sm"></i>Baixar PWA
                 </button>
