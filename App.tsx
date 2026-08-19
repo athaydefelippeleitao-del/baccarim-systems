@@ -865,60 +865,48 @@ const App: React.FC = () => {
           </div>
         </div>
 
-        <nav className="flex-1 space-y-3">
-          <button onClick={() => setActiveTab('dashboard')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'dashboard' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-chart-pie w-5"></i>
-            <span className="text-sm font-bold">Dashboard</span>
-          </button>
-          <button onClick={() => setActiveTab('map')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'map' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-map-location-dot w-5"></i>
-            <span className="text-sm font-bold">Mapa de Obras</span>
-          </button>
-          <button onClick={() => setActiveTab('notifications')} className={`w-full flex items-center justify-between p-4 rounded-2xl transition-all ${activeTab === 'notifications' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <div className="flex items-center space-x-4">
-              <i className="fas fa-bell w-5"></i>
-              <span className="text-sm font-bold">Notificações</span>
-            </div>
-            {stats.notifs > 0 && <span className="w-5 h-5 bg-baccarim-rose text-baccarim-text text-[9px] font-black rounded-full flex items-center justify-center animate-bounce">{stats.notifs}</span>}
-          </button>
-          <button onClick={() => setActiveTab('clients')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'clients' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-building-circle-check w-5"></i>
-            <span className="text-sm font-bold">{currentUser.role === 'client' ? 'Meus Projetos' : 'Clientes'}</span>
-          </button>
-          <button onClick={() => setActiveTab('agenda')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'agenda' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-calendar-day w-5"></i>
-            <span className="text-sm font-bold">Agenda Técnica</span>
-          </button>
-          <button onClick={() => setActiveTab('reports')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'reports' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-camera-retro w-5"></i>
-            <span className="text-sm font-bold">Relatórios Fotog.</span>
-          </button>
-          <button onClick={() => setActiveTab('spreadsheets')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'spreadsheets' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-table w-5"></i>
-            <span className="text-sm font-bold">Planilhas e Relatórios</span>
-          </button>
-          <button onClick={() => setActiveTab('finance')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'finance' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-            <i className="fas fa-file-invoice-dollar w-5"></i>
-            <span className="text-sm font-bold">Financeiro</span>
-          </button>
-          {(currentUser.role === 'admin' || currentUser.role === 'engineer') && (
-            <button onClick={() => setActiveTab('config')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'config' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-              <i className="fas fa-sliders w-5"></i>
-              <span className="text-sm font-bold">Config. Checklists</span>
-            </button>
-          )}
-          {currentUser.role === 'admin' && (
-            <>
-              <button onClick={() => setActiveTab('users')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'users' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-                <i className="fas fa-users-gear w-5"></i>
-                <span className="text-sm font-bold">Gestão de Contas</span>
+        <nav className="flex-1 space-y-1">
+          {/* Helper: nav item with colored icon box */}
+          {([
+            { tab: 'dashboard',    icon: 'fa-chart-pie',           label: 'Dashboard',           iconBg: 'from-blue-500 to-blue-600' },
+            { tab: 'map',          icon: 'fa-map-location-dot',    label: 'Mapa de Obras',       iconBg: 'from-teal-400 to-emerald-500' },
+            { tab: 'notifications',icon: 'fa-bell',                label: 'Notificações',        iconBg: 'from-amber-400 to-orange-500', badge: stats.notifs },
+            { tab: 'clients',      icon: 'fa-building-circle-check',label: currentUser.role === 'client' ? 'Meus Projetos' : 'Clientes', iconBg: 'from-violet-500 to-purple-600' },
+            { tab: 'agenda',       icon: 'fa-calendar-day',        label: 'Agenda Técnica',      iconBg: 'from-green-400 to-green-600' },
+            { tab: 'reports',      icon: 'fa-camera-retro',        label: 'Relatórios Fotog.',   iconBg: 'from-rose-400 to-pink-600' },
+            { tab: 'spreadsheets', icon: 'fa-table',               label: 'Planilhas e Relatórios', iconBg: 'from-indigo-400 to-blue-600' },
+            { tab: 'finance',      icon: 'fa-file-invoice-dollar', label: 'Financeiro',          iconBg: 'from-emerald-400 to-teal-600' },
+            ...((currentUser.role === 'admin' || currentUser.role === 'engineer') ? [{ tab: 'config', icon: 'fa-sliders', label: 'Config. Checklists', iconBg: 'from-slate-400 to-slate-600' }] : []),
+            ...(currentUser.role === 'admin' ? [
+              { tab: 'users',  icon: 'fa-users-gear', label: 'Gestão de Contas', iconBg: 'from-cyan-400 to-cyan-600' },
+              { tab: 'server', icon: 'fa-server',     label: 'Servidor & Nuvem', iconBg: 'from-gray-500 to-gray-700' },
+            ] : []),
+          ] as Array<{ tab: string; icon: string; label: string; iconBg: string; badge?: number }>).map(({ tab, icon, label, iconBg, badge }) => {
+            const isActive = activeTab === tab;
+            return (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`w-full flex items-center space-x-3 px-3 py-2.5 rounded-2xl transition-all duration-200 group
+                  ${isActive
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-lg shadow-blue-500/25'
+                    : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}
+              >
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-200
+                  ${isActive
+                    ? 'bg-white/20 shadow-inner'
+                    : `bg-gradient-to-br ${iconBg} shadow-md`}`}>
+                  <i className={`fas ${icon} text-sm ${isActive ? 'text-white' : 'text-white'}`}></i>
+                </div>
+                <span className={`text-[13px] font-bold flex-1 text-left ${isActive ? 'text-white' : ''}`}>{label}</span>
+                {badge != null && badge > 0 && (
+                  <span className="w-5 h-5 bg-rose-500 text-white text-[9px] font-black rounded-full flex items-center justify-center animate-bounce shadow-md">
+                    {badge > 99 ? '99+' : badge}
+                  </span>
+                )}
               </button>
-              <button onClick={() => setActiveTab('server')} className={`w-full flex items-center space-x-4 p-4 rounded-2xl transition-all ${activeTab === 'server' ? 'bg-baccarim-active text-baccarim-text shadow-lg' : 'text-baccarim-text-muted hover:bg-baccarim-hover'}`}>
-                <i className="fas fa-server w-5"></i>
-                <span className="text-sm font-bold">Servidor & Nuvem</span>
-              </button>
-            </>
-          )}
+            );
+          })}
         </nav>
 
         <div className="mt-auto pt-8 border-t border-baccarim-border">
