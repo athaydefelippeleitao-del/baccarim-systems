@@ -43,7 +43,7 @@ export const convertPdfToImage = async (file: File): Promise<string> => {
   await page.render({
     canvasContext: ctx,
     viewport: viewport
-  }).promise;
+  } as any).promise;
   
   return canvas.toDataURL('image/jpeg', 0.8);
 };
@@ -66,7 +66,6 @@ export const convertPdfToImages = async (file: File, maxPages: number = 4): Prom
   for (let i = 1; i <= numPages; i++) {
     const page = await pdf.getPage(i);
     const viewport = page.getViewport({ scale: 2.0 });
-    
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) continue;
@@ -75,9 +74,9 @@ export const convertPdfToImages = async (file: File, maxPages: number = 4): Prom
     canvas.height = viewport.height;
     
     await page.render({
-      canvasContext: ctx,
+      canvasContext: ctx as any,
       viewport: viewport
-    }).promise;
+    } as any).promise;
     
     dataUris.push(canvas.toDataURL('image/jpeg', 0.8));
   }

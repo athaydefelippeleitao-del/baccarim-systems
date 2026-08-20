@@ -77,7 +77,8 @@ Lembre-se: retorne APENAS um JSON válido.`;
       
       let pdfText = '';
       try {
-        const { default: pdfParse } = await import('pdf-parse');
+        const pdfParseModule = (await import('pdf-parse')) as any;
+        const pdfParse = pdfParseModule.default || pdfParseModule;
         const parsed = await pdfParse(buffer);
         pdfText = parsed.text;
       } catch (err) {
@@ -99,11 +100,11 @@ Lembre-se: retorne APENAS um JSON válido.`;
         temperature: 0.1
       }));
 
-      const text = response.choices[0]?.message?.content || '{}';
+      const text = (response as any).choices[0]?.message?.content || '{}';
       result = JSON.parse(text);
     } else if (isImage) {
       // For images: use vision API directly
-      const imagesContent = dataUris.map((uri: string) => ({
+      const imagesContent: any[] = dataUris.map((uri: string) => ({
         type: 'image_url',
         image_url: { url: uri, detail: 'high' }
       }));

@@ -23,7 +23,7 @@ interface ServerManagementProps {
     meetings: any[];
     videos: any[];
     reports: any[];
-    checklistTemplates: any[];
+    checklistTemplates: Record<string, any[]>;
   };
 }
 

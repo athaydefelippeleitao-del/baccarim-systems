@@ -14,7 +14,7 @@ interface ProjectStatusSummaryProps {
   onNavigateToNotifications?: (projectId: string) => void;
 }
 
-const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, licenses, notifications, onUpdateProject }) => {
+const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, licenses, notifications, onUpdateProject, onNavigateToClient, onNavigateToNotifications }) => {
   const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
   const [popoverProjectId, setPopoverProjectId] = useState<string | null>(null);
   const [statusFilter, setStatusFilter] = useState<string>('todos');
@@ -367,7 +367,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           doc.setTextColor(100, 116, 139);
           doc.text(`Gerado em ${new Date().toLocaleDateString()}`, textX, 22);
           
-          const str = 'Página ' + doc.internal.getNumberOfPages();
+          const str = 'Página ' + (doc as any).internal.getNumberOfPages();
           doc.setFontSize(8);
           doc.text(str, data.settings.margin.left, doc.internal.pageSize.height - 10);
         }
@@ -509,7 +509,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
       </div>
 
       {/* Grid container to be exported */}
-      <div ref={containerRef}>
+      <div ref={containerRef as any}>
         <div className="bg-white rounded-[2rem] shadow-2xl border border-baccarim-border overflow-x-auto p-4 md:p-8">
             <table className="w-full text-left border-collapse min-w-[1000px]">
               <thead>
@@ -791,7 +791,7 @@ const ProjectStatusSummary: React.FC<ProjectStatusSummaryProps> = ({ projects, l
           </div>
         </div>
         );
-      })}
+      })()}
 
       {meetingMinutesProject && (
         <ProjectMeetingMinutesView
