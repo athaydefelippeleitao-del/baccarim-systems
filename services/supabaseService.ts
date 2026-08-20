@@ -2,10 +2,10 @@ import { createClient } from '@supabase/supabase-js';
 import type { EnvironmentalLicense, Notification, Project, Contract, Meeting, ProductionVideo, PhotoReport, AuditEntry, User } from '../types';
 
 const SUPABASE_URL = (typeof process !== 'undefined' && process.env?.SUPABASE_URL) || 
-                     (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_URL) ||
+                     (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_SUPABASE_URL) ||
                      'https://klubieisjdxqgqnxbrig.supabase.co';
 const SUPABASE_ANON_KEY = (typeof process !== 'undefined' && process.env?.SUPABASE_ANON_KEY) || 
-                         (typeof import.meta !== 'undefined' && import.meta.env?.VITE_SUPABASE_ANON_KEY) ||
+                         (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_SUPABASE_ANON_KEY) ||
                          'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtsdWJpZWlzamR4cWdxbnhicmlnIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIxNDY1ODgsImV4cCI6MjA5NzcyMjU4OH0.Ao7rvAEu0OFIMoop01XdU050Qi67UZvV0oOcjAqRq8k';
 
 

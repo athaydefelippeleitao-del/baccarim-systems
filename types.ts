@@ -202,6 +202,8 @@ export interface ProjectTechnicalSpecs {
   customExtensionReport?: string;
   extensionDays?: string;
   extensionReason?: string;
+  ultimaMovimentacao?: string;
+  nomeResponsavel?: string;
 }
 
 export interface ProjectMeetingMinute {
@@ -243,6 +245,8 @@ export interface PhotoItem {
   lat?: number;
   lng?: number;
   analysis?: string;
+  isAnalyzing?: boolean;
+  analysisUrl?: string;
   tags?: string[];
 }
 

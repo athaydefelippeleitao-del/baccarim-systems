@@ -68,7 +68,8 @@ Retorne APENAS um JSON válido, sem formatação markdown em volta, apenas o JSO
         const buffer = Buffer.from(base64, 'base64');
         
         try {
-          const { default: pdfParse } = await import('pdf-parse');
+          const pdfParseModule = (await import('pdf-parse')) as any;
+          const pdfParse = pdfParseModule.default || pdfParseModule;
           const parsed = await pdfParse(buffer);
           pdfText = parsed.text;
         } catch (err) {

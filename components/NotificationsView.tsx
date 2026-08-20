@@ -1,10 +1,11 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { Notification, NotificationSeverity, Attachment, Project } from '../types';
+import { Notification, NotificationSeverity, Attachment, Project, User } from '../types';
 import { generateNotificationDraft, createNotificationFromText } from '../services/openaiClient';
 import { downloadFile, convertPdfToImages } from '../utils/fileUtils';
 import { getNotificationFiles } from '../services/supabaseService';
 
 interface NotificationsViewProps {
+  currentUser: User;
   notifications: Notification[];
   clients: string[];
   projects: Project[];
@@ -13,7 +14,7 @@ interface NotificationsViewProps {
   onDeleteNotification: (id: string) => void;
 }
 
-const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, clients, projects, onAddNotification, onUpdateNotification, onDeleteNotification }) => {
+const NotificationsView: React.FC<NotificationsViewProps> = ({ currentUser, notifications, clients, projects, onAddNotification, onUpdateNotification, onDeleteNotification }) => {
   const [filter, setFilter] = useState<'All' | 'Open' | 'Resolved'>('Open');
   const [categoryFilter, setCategoryFilter] = useState<'All' | 'Notificação' | 'Licença'>('All');
   const [editingNotifId, setEditingNotifId] = useState<string | null>(null);
@@ -371,29 +372,35 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
   const triggerManualPush = async (notifId: string) => {
     setPushSendingId(notifId);
     try {
-      // Simulate network request
-      await new Promise(resolve => setTimeout(resolve, 800));
-
-      // Local push notification using service worker if active
-      if ('serviceWorker' in navigator && 'PushManager' in window && window.Notification.permission === 'granted') {
-        const registration = await navigator.serviceWorker.ready;
-        await registration.showNotification('Alerta de Prazo', {
-          body: `Lembrete: Notificação "${notifications.find(n => n.id === notifId)?.title}" pendente.`,
-          icon: '/logo_baccarim.jpg',
-          badge: '/logo_baccarim.jpg',
-          tag: notifId
-        });
-        
+      const notif = notifications.find(n => n.id === notifId);
+      
+      const response = await fetch('/api/push/test', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: currentUser?.id,
+          title: 'Alerta de Prazo',
+          message: `Lembrete: Notificação "${notif?.title || 'Pendência'}" pendente.`
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Erro ao enviar push via servidor');
+      }
+      
+      if (data.count === 0) {
+        alert('Nenhum aparelho registrado. Ative as notificações no perfil (botão azul) pelo celular primeiro!');
+      } else {
         setPushSentIds(prev => ({ ...prev, [notifId]: true }));
         setTimeout(() => {
           setPushSentIds(prev => ({ ...prev, [notifId]: false }));
         }, 3000);
-      } else {
-        alert('Aviso: Notificações não estão permitidas ou configuradas no seu dispositivo.');
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
-      alert('Erro ao exibir notificação local.');
+      alert(e.message || 'Erro ao solicitar notificação ao servidor.');
     } finally {
       setPushSendingId(null);
     }
@@ -700,7 +707,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ notifications, cl
               {!editingNotifId && (
                 <button
                   type="button"
-                  onClick={() => { setAiMode(!aiMode); setAiRawText(''); }}
+                  onClick={() => { setAiMode(!aiMode); }}
                   className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
                     aiMode
                       ? 'bg-baccarim-blue text-white border-baccarim-blue shadow-lg shadow-blue-500/30'

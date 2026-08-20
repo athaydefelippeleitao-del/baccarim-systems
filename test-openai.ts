@@ -24,7 +24,7 @@ async function test() {
     });
     console.log(JSON.stringify(res, null, 2));
   } catch(e) {
-    console.error(e.message);
+    console.error((e as any).message);
   }
 }
 test();

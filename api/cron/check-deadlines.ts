@@ -1,4 +1,4 @@
-﻿import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 import { loadStateFromSupabase } from '../../services/supabaseService.js';
 
@@ -21,18 +21,59 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     // Verifica Licenças
     if (state.licenses) {
       const expiringLicenses = state.licenses.filter((l: any) => {
-        if (!l.validade || l.status !== 'Ativo') return false;
-        const vDate = new Date(l.validade);
+        if (!l.expiryDate || l.status !== 'Ativa') return false;
+        
+        let vDate: Date;
+        if (l.expiryDate.includes('/')) {
+          const parts = l.expiryDate.split('/');
+          vDate = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+        } else {
+          vDate = new Date(l.expiryDate);
+        }
+
         return vDate > now && vDate <= thresholdDate;
       });
       
       if (expiringLicenses.length > 0) {
         const payload = JSON.stringify({
           title: "🚨 Licenças Vencendo!",
-          body: expiringLicenses.length + " licenca(s) vencendo nos proximos " + alertThresholdDays + " dias."
+          body: expiringLicenses.length + " licença(s) vencendo nos próximos " + alertThresholdDays + " dias."
         });
         
-        // Envia para admins
+        const admins = state.users.filter((u: any) => u.role === 'admin' && u.pushSubscriptions && u.pushSubscriptions.length > 0);
+        for (const admin of admins) {
+          for (const sub of admin.pushSubscriptions) {
+            try {
+              await webpush.sendNotification(sub, payload);
+              totalSent++;
+            } catch(e) {}
+          }
+        }
+      }
+    }
+
+    // Verifica Notificações
+    if (state.notifications) {
+      const expiringNotifications = state.notifications.filter((n: any) => {
+        if (!n.deadline || n.status !== 'Open') return false;
+
+        let dDate: Date;
+        if (n.deadline.includes('/')) {
+          const parts = n.deadline.split('/');
+          dDate = new Date(Number(parts[2]), Number(parts[1]) - 1, Number(parts[0]));
+        } else {
+          dDate = new Date(n.deadline);
+        }
+
+        return dDate > now && dDate <= thresholdDate;
+      });
+
+      if (expiringNotifications.length > 0) {
+        const payload = JSON.stringify({
+          title: "🚨 Notificações Pendentes!",
+          body: expiringNotifications.length + " notificação(ões) com prazo fatal nos próximos " + alertThresholdDays + " dias."
+        });
+        
         const admins = state.users.filter((u: any) => u.role === 'admin' && u.pushSubscriptions && u.pushSubscriptions.length > 0);
         for (const admin of admins) {
           for (const sub of admin.pushSubscriptions) {
