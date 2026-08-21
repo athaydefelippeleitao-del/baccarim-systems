@@ -255,7 +255,7 @@ const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, prese
       {activeSubTab === 'presence' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {presence.length > 0 ? presence.map((user) => (
-            <div key={user.socketId} className="bg-baccarim-card p-8 rounded-[2.5rem] border border-baccarim-border shadow-2xl relative overflow-hidden group hover:border-baccarim-blue/50 transition-all">
+            <div key={user.id || Math.random().toString()} className="bg-baccarim-card p-8 rounded-[2.5rem] border border-baccarim-border shadow-2xl relative overflow-hidden group hover:border-baccarim-blue/50 transition-all">
               <div className="absolute top-0 right-0 w-24 h-24 bg-baccarim-blue/5 rounded-full -mr-12 -mt-12 blur-2xl group-hover:bg-baccarim-blue/10 transition-all"></div>
               <div className="flex items-center space-x-5 relative z-10">
                 <div className="relative">
@@ -276,8 +276,8 @@ const ServerManagementView: React.FC<ServerManagementProps> = ({ auditLog, prese
                 </div>
               </div>
               <div className="mt-6 pt-6 border-t border-baccarim-border flex justify-between items-center">
-                <span className="text-[8px] font-black text-baccarim-text-muted uppercase tracking-widest">Conectado via WebSocket</span>
-                <span className="text-[8px] font-mono text-baccarim-blue opacity-50">{user.socketId.substring(0, 8)}...</span>
+                <span className="text-[8px] font-black text-baccarim-text-muted uppercase tracking-widest">Conectado via Supabase Realtime</span>
+                <span className="text-[8px] font-mono text-baccarim-blue opacity-50">{user.id?.substring(0, 8)}...</span>
               </div>
             </div>
           )) : (
