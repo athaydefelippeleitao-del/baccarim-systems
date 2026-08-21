@@ -240,10 +240,51 @@ const App: React.FC = () => {
       })
       .subscribe();
 
+    // ──────────────────────────────────────────────────────────────────────
+    // PRESENCE
+    // ──────────────────────────────────────────────────────────────────────
+    let presenceChannel: ReturnType<typeof supabase.channel> | null = null;
+    
+    if (currentUser) {
+      presenceChannel = supabase.channel('online-users');
+      
+      presenceChannel.on('presence', { event: 'sync' }, () => {
+        const state = presenceChannel!.presenceState();
+        const onlineUsers: any[] = [];
+        
+        for (const id in state) {
+          // Supabase presence keeps an array of presences per user/tab
+          const userPresences = state[id] as any[];
+          if (userPresences.length > 0) {
+            onlineUsers.push(userPresences[0]);
+          }
+        }
+        
+        // Remove duplicates by user ID (in case user has multiple tabs open)
+        const uniqueUsers = Array.from(new Map(onlineUsers.map(u => [u.id, u])).values());
+        setPresence(uniqueUsers);
+      });
+
+      presenceChannel.subscribe(async (status) => {
+        if (status === 'SUBSCRIBED') {
+          await presenceChannel!.track({
+            id: currentUser.id,
+            name: currentUser.name,
+            email: currentUser.email,
+            role: currentUser.role,
+            onlineAt: new Date().toISOString(),
+          });
+        }
+      });
+    } else {
+      setPresence([]);
+    }
+
     return () => {
       supabase.removeChannel(projectsChannel);
       supabase.removeChannel(licensesChannel);
       supabase.removeChannel(notificationsChannel);
+      if (presenceChannel) supabase.removeChannel(presenceChannel);
     };
 
   }, [currentUser]); // Run only on login/logout
