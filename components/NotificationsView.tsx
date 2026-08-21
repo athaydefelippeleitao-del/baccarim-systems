@@ -465,8 +465,6 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ currentUser, noti
               </button>
             ))}
           </div>
-          {/* Hidden file input for direct AI creation */}
-          <input
           <div className="flex items-center gap-3">
             <button
               onClick={() => { setAiMode(false); setEditingNotifId(null); setShowAddModal(true); }}
