@@ -467,24 +467,7 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ currentUser, noti
           </div>
           {/* Hidden file input for direct AI creation */}
           <input
-            ref={aiDirectFileRef}
-            type="file"
-            accept="image/*,application/pdf"
-            className="hidden"
-            onChange={e => { const f = e.target.files?.[0]; if (f) handleAiCreate(f); }}
-          />
           <div className="flex items-center gap-3">
-            <button
-              onClick={() => aiDirectFileRef.current?.click()}
-              disabled={aiCreating}
-              className="px-6 py-3.5 bg-baccarim-blue text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-blue/20 hover:-translate-y-1 transition-all flex items-center gap-2 disabled:opacity-60 disabled:cursor-wait"
-            >
-              {aiCreating ? (
-                <><div className="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div><span>Analisando...</span></>
-              ) : (
-                <><i className="fas fa-wand-magic-sparkles"></i><span>Criar com IA</span></>
-              )}
-            </button>
             <button
               onClick={() => { setAiMode(false); setEditingNotifId(null); setShowAddModal(true); }}
               className="px-8 py-3.5 bg-baccarim-green text-white rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-baccarim-green/20 hover:-translate-y-1 transition-all"
@@ -704,20 +687,6 @@ const NotificationsView: React.FC<NotificationsViewProps> = ({ currentUser, noti
           <div className="bg-baccarim-card rounded-[3rem] w-full max-w-lg shadow-2xl p-10 md:p-12 relative overflow-y-auto max-h-[90vh] border border-baccarim-border-hover pb-safe">
             <div className="flex items-center justify-between mb-8">
               <h3 className="text-2xl font-black text-baccarim-text">{editingNotifId ? 'Editar Registro' : 'Nova Notificação SEMA/IAT'}</h3>
-              {!editingNotifId && (
-                <button
-                  type="button"
-                  onClick={() => { setAiMode(!aiMode); }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all border ${
-                    aiMode
-                      ? 'bg-baccarim-blue text-white border-baccarim-blue shadow-lg shadow-blue-500/30'
-                      : 'bg-baccarim-hover text-baccarim-text-muted border-baccarim-border hover:border-baccarim-blue hover:text-baccarim-blue'
-                  }`}
-                >
-                  <i className="fas fa-wand-magic-sparkles"></i>
-                  <span>Criar com IA</span>
-                </button>
-              )}
             </div>
 
             {/* AI MODE: File Upload */}
