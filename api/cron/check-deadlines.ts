@@ -37,7 +37,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (expiringLicenses.length > 0) {
         const payload = JSON.stringify({
           title: "🚨 Licenças Vencendo!",
-          body: expiringLicenses.length + " licença(s) vencendo nos próximos " + alertThresholdDays + " dias."
+          body: expiringLicenses.length + " licença(s) vencendo nos próximos " + alertThresholdDays + " dias.",
+          url: 'https://baccarim-systems-blond.vercel.app/'
         });
         
         const admins = state.users.filter((u: any) => u.role === 'admin' && u.pushSubscriptions && u.pushSubscriptions.length > 0);
@@ -71,7 +72,8 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       if (expiringNotifications.length > 0) {
         const payload = JSON.stringify({
           title: "🚨 Notificações Pendentes!",
-          body: expiringNotifications.length + " notificação(ões) com prazo fatal nos próximos " + alertThresholdDays + " dias."
+          body: expiringNotifications.length + " notificação(ões) com prazo fatal nos próximos " + alertThresholdDays + " dias.",
+          url: 'https://baccarim-systems-blond.vercel.app/'
         });
         
         const admins = state.users.filter((u: any) => u.role === 'admin' && u.pushSubscriptions && u.pushSubscriptions.length > 0);

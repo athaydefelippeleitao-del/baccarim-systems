@@ -1,4 +1,4 @@
-﻿import type { VercelRequest, VercelResponse } from '@vercel/node';
+import type { VercelRequest, VercelResponse } from '@vercel/node';
 import webpush from 'web-push';
 import { getPushSubscriptions } from '../../services/supabaseService.js';
 
@@ -17,7 +17,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     if (userSubs.length === 0) {
       return res.status(404).json({ error: 'Nenhum aparelho registrado. Clique em Habilitar pelo celular primeiro!' });
     }
-    const payload = JSON.stringify({ title: title || 'Teste Baccarim Systems', body: message || 'Notificacao de teste do servidor!' });
+    const payload = JSON.stringify({ 
+      title: title || 'Teste Baccarim Systems', 
+      body: message || 'Notificacao de teste do servidor!',
+      url: 'https://baccarim-systems-blond.vercel.app/' 
+    });
     let successCount = 0;
     for (const sub of userSubs) {
       try { await webpush.sendNotification(sub, payload); successCount++; } catch(e) { console.error('push failed', e); }
